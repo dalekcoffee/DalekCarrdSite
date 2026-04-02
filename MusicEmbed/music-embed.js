@@ -116,16 +116,37 @@ function fetchItunesUrl(artist, track) {
           if (tn && tn.toLowerCase().indexOf(tl) !== -1) { result = data.results[i]; break; }
         }
       }
-      if (!result) result = data.results[0];
+      /* No confident match — return null so artist art can be tried instead */
       if (!result || !result.artworkUrl100) return null;
       return result.artworkUrl100.replace('100x100bb', '250x250bb');
     })
     .catch(function() { if (timer) clearTimeout(timer); return null; });
 }
 
+/* ─── iTunes: artist album art fallback ─── */
+function fetchItunesArtistUrl(artist) {
+  var q    = encodeURIComponent(cleanStr(artist));
+  var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, 8000) : null;
+  return fetch('https://itunes.apple.com/search?term=' + q + '&entity=album&attribute=artistTerm&limit=5&media=music', ctrl ? {signal:ctrl.signal} : {})
+    .then(function(r) { if (timer) clearTimeout(timer); if (!r.ok) return null; return r.json(); })
+    .then(function(data) {
+      if (!data || !data.results || !data.results.length) return null;
+      var al = cleanStr(artist).toLowerCase();
+      for (var i = 0; i < data.results.length; i++) {
+        var an = data.results[i].artistName;
+        if (an && an.toLowerCase().indexOf(al) !== -1 && data.results[i].artworkUrl100) {
+          return data.results[i].artworkUrl100.replace('100x100bb', '250x250bb');
+        }
+      }
+      return null;
+    })
+    .catch(function() { if (timer) clearTimeout(timer); return null; });
+}
+
 /*
  * ─── loadCoverArt ───────────────────────────────────────────────────────────
- * Cascade: direct CAA → CAA release → CAA release-group → iTunes
+ * Cascade: direct CAA → CAA release → CAA release-group → iTunes track → iTunes artist → placeholder
  * imgEl / wipeEl are the specific DOM elements to update.
  */
 function loadCoverArt(imgEl, wipeEl, info, artist, track) {
@@ -136,9 +157,9 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
       if (imgEl.parentNode) imgEl.parentNode.classList.add('dkt-loaded');
     };
     imgEl.onerror = function() {
-      /* If CAA image fails, try iTunes once */
-      if (!imgEl.dataset.itunesTried) {
-        imgEl.dataset.itunesTried = '1';
+      /* If a URL loads but the image 404s, try the next fallback once */
+      if (!imgEl.dataset.fallbackTried) {
+        imgEl.dataset.fallbackTried = '1';
         tryItunes();
       } else {
         if (wipeEl) wipeEl.style.display = 'none';
@@ -146,10 +167,16 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
     };
     imgEl.src = url;
   }
+  function tryItunesArtist() {
+    fetchItunesArtistUrl(artist).then(function(url) {
+      if (url) showUrl(url);
+      else if (wipeEl) wipeEl.style.display = 'none';
+    });
+  }
   function tryItunes() {
     fetchItunesUrl(artist, track).then(function(url) {
       if (url) showUrl(url);
-      else if (wipeEl) wipeEl.style.display = 'none';
+      else tryItunesArtist();
     });
   }
   if (!info) { tryItunes(); return; }
