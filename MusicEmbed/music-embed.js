@@ -340,7 +340,7 @@ document.getElementById('dkt-tab-container').addEventListener('click', function(
 setTimeout(function() {
   pollNowPlaying();
   loadData('this_month');
-  setInterval(pollNowPlaying, 300000);
+  setInterval(pollNowPlaying, 210000);
 }, 800);
 
 })();
