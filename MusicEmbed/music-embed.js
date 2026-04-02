@@ -150,7 +150,24 @@ function fetchItunesArtistUrl(artist) {
  * imgEl / wipeEl are the specific DOM elements to update.
  */
 function loadCoverArt(imgEl, wipeEl, info, artist, track) {
+  var cacheKey = (artist + '||' + track).toLowerCase();
+  if (artCache[cacheKey]) {
+    /* Resolved before — skip all API calls */
+    var cached = artCache[cacheKey];
+    if (cached !== 'none') {
+      imgEl.onload = function() {
+        imgEl.style.display = 'block';
+        if (wipeEl) wipeEl.style.display = 'none';
+        if (imgEl.parentNode) imgEl.parentNode.classList.add('dkt-loaded');
+      };
+      imgEl.src = cached;
+    } else {
+      if (wipeEl) wipeEl.style.display = 'none';
+    }
+    return;
+  }
   function showUrl(url) {
+    artCache[cacheKey] = url;
     imgEl.onload = function() {
       imgEl.style.display = 'block';
       if (wipeEl) wipeEl.style.display = 'none';
@@ -169,8 +186,9 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
   }
   function tryItunesArtist() {
     fetchItunesArtistUrl(artist).then(function(url) {
-      if (url) showUrl(url);
-      else if (wipeEl) wipeEl.style.display = 'none';
+      if (url) { showUrl(url); return; }
+      artCache[cacheKey] = 'none';
+      if (wipeEl) wipeEl.style.display = 'none';
     });
   }
   function tryItunes() {
@@ -193,6 +211,12 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
     }
   });
 }
+
+/* ─── Artwork URL cache — keyed by "artist||track", avoids duplicate API calls ─── */
+var artCache = {};
+
+/* ─── Tab data cache — keyed by range, fetched once per page load ─── */
+var dataCache = {};
 
 /* ─── Now Playing ─────────────────────────────────────────────────── */
 var npTrackKey = null; /* track change detection — avoid re-fetching art on every poll */
@@ -290,6 +314,7 @@ function render(tracks, isRecent) {
 }
 
 function loadData(range) {
+  if (dataCache[range]) { render(dataCache[range], range === 'recent'); return; }
   var url = range === 'recent'
     ? 'https://api.listenbrainz.org/1/user/' + LB_USER + '/listens?count=10'
     : 'https://api.listenbrainz.org/1/stats/user/' + LB_USER + '/recordings?range=' + range + '&count=10';
@@ -297,7 +322,7 @@ function loadData(range) {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var tracks = range === 'recent' ? d.payload.listens : d.payload.recordings;
-      if (tracks && tracks.length) render(tracks, range === 'recent');
+      if (tracks && tracks.length) { dataCache[range] = tracks; render(tracks, range === 'recent'); }
     })
     .catch(function() {});
 }
@@ -315,7 +340,7 @@ document.getElementById('dkt-tab-container').addEventListener('click', function(
 setTimeout(function() {
   pollNowPlaying();
   loadData('this_month');
-  setInterval(pollNowPlaying, 30000);
+  setInterval(pollNowPlaying, 300000);
 }, 800);
 
 })();
