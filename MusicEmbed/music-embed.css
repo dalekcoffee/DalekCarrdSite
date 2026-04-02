@@ -9,8 +9,8 @@
 /* ── Now Playing ── */
 .dkt-np-strip{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--dkt-border);background:#0c0c0c}
 .dkt-np-dot{width:8px;height:8px;border-radius:50%;background:#2a2a2a;flex-shrink:0;transition:background .3s}
-.dkt-np-dot.active{background:#22c55e;animation:dktPulse 1.5s infinite}
-@keyframes dktPulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(34,197,94,.6)}70%{transform:scale(1);box-shadow:0 0 0 7px rgba(34,197,94,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.dkt-np-dot.active{background:#fff;animation:dktPulse 1.5s infinite}
+@keyframes dktPulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{transform:scale(1);box-shadow:0 0 0 7px rgba(255,255,255,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,255,255,0)}}
 .dkt-np-label{font-size:8px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;color:#333;font-family:"Space Mono",monospace;transition:color .3s}
 .dkt-np-label.active{color:#fff}
 .dkt-np-body{max-height:0;opacity:0;overflow:hidden;transition:max-height .6s cubic-bezier(.4,0,.2,1),opacity .4s ease}

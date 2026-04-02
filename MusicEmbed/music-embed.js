@@ -100,10 +100,21 @@ function fetchItunesUrl(artist, track) {
     .then(function(data) {
       if (!data || !data.results || !data.results.length) return null;
       var tl = cleanStr(track).toLowerCase();
+      var al = cleanStr(artist).toLowerCase();
       var result = null;
+      /* First pass: match both track name AND artist name */
       for (var i = 0; i < data.results.length; i++) {
         var tn = data.results[i].trackName;
-        if (tn && tn.toLowerCase().indexOf(tl) !== -1) { result = data.results[i]; break; }
+        var an = data.results[i].artistName;
+        if (tn && tn.toLowerCase().indexOf(tl) !== -1 &&
+            an && an.toLowerCase().indexOf(al) !== -1) { result = data.results[i]; break; }
+      }
+      /* Second pass: track name only */
+      if (!result) {
+        for (var i = 0; i < data.results.length; i++) {
+          var tn = data.results[i].trackName;
+          if (tn && tn.toLowerCase().indexOf(tl) !== -1) { result = data.results[i]; break; }
+        }
       }
       if (!result) result = data.results[0];
       if (!result || !result.artworkUrl100) return null;
