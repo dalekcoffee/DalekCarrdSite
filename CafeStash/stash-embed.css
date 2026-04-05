@@ -233,7 +233,7 @@ body {
 ════════════════════════════ */
 .dual-col {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   border-bottom: 1px solid var(--b1);
   align-items: start;
 }
