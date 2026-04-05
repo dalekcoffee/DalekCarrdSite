@@ -440,7 +440,7 @@ body {
 /* ════════════════════════════
    RESPONSIVE — mobile / narrow
 ════════════════════════════ */
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
 
   /* ── Grids: 4-col → 2-col ── */
   .coffee-beans-grid,

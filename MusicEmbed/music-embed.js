@@ -215,16 +215,71 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
 /* ─── Artwork URL cache — keyed by "artist||track", avoids duplicate API calls ─── */
 var artCache = {};
 
-/* ─── Tab data cache — keyed by range, fetched once per page load ─── */
+/*
+ * ─── Tab data cache — in-memory + sessionStorage ────────────────────────────
+ * sessionStorage survives page refreshes within the same browser session,
+ * cutting repeat LB stats fetches for users who reload the page.
+ * TTL: recent listens = 5 min (changes as you listen);
+ *      monthly/yearly/all-time stats = 30 min (updated daily by LB).
+ */
 var dataCache = {};
+var SC_NS  = 'dkt1_';
+var SC_TTL = {recent: 5 * 60 * 1000, this_month: 30 * 60 * 1000, this_year: 30 * 60 * 1000, all_time: 30 * 60 * 1000};
 
-/* ─── Now Playing ─────────────────────────────────────────────────── */
-var npTrackKey = null; /* track change detection — avoid re-fetching art on every poll */
+function scGet(range) {
+  try {
+    var raw = sessionStorage.getItem(SC_NS + range);
+    if (!raw) return null;
+    var entry = JSON.parse(raw);
+    if (Date.now() - entry.ts > (SC_TTL[range] || 30 * 60 * 1000)) {
+      sessionStorage.removeItem(SC_NS + range);
+      return null;
+    }
+    return entry.data;
+  } catch(e) { return null; }
+}
+
+function scSet(range, data) {
+  try { sessionStorage.setItem(SC_NS + range, JSON.stringify({ts: Date.now(), data: data})); } catch(e) {}
+}
+
+/*
+ * ─── Now Playing polling ─────────────────────────────────────────────────────
+ * Uses setTimeout instead of setInterval so the interval is dynamic:
+ *   - Normal cadence: 3.5 min
+ *   - On 429: back off by the Retry-After / X-RateLimit-Reset-In value
+ *   - Tab hidden: skip the poll, reschedule at normal cadence
+ *   - Tab becomes visible: cancel pending timer, poll immediately
+ */
+var npTrackKey  = null;
+var npTimer     = null;
+var NP_INTERVAL = 210000; /* 3.5 min */
+
+function scheduleNextPoll(delay) {
+  clearTimeout(npTimer);
+  npTimer = setTimeout(function() {
+    if (!document.hidden) {
+      pollNowPlaying();
+    } else {
+      scheduleNextPoll(NP_INTERVAL); /* hidden — skip and try again later */
+    }
+  }, delay !== undefined ? delay : NP_INTERVAL);
+}
 
 function pollNowPlaying() {
   fetch('https://api.listenbrainz.org/1/user/' + LB_USER + '/playing-now')
-    .then(function(r) { return r.json(); })
+    .then(function(r) {
+      if (r.status === 429) {
+        /* Respect rate-limit: honour Retry-After header, fall back to 2 min */
+        var after = parseInt(r.headers.get('Retry-After') || r.headers.get('X-RateLimit-Reset-In') || '120', 10);
+        scheduleNextPoll(after * 1000);
+        return null;
+      }
+      scheduleNextPoll(); /* success — resume normal cadence */
+      return r.json();
+    })
     .then(function(d) {
+      if (!d) return;
       var track = d.payload && d.payload.listens && d.payload.listens[0];
       var dot   = document.getElementById('dkt-np-dot');
       var label = document.getElementById('dkt-np-label');
@@ -256,8 +311,16 @@ function pollNowPlaying() {
         body.classList.remove('open');
       }
     })
-    .catch(function() {});
+    .catch(function() { scheduleNextPoll(); });
 }
+
+/* Resume immediately when the user switches back to this tab */
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) {
+    clearTimeout(npTimer);
+    pollNowPlaying();
+  }
+});
 
 /* ─── Build a chart row ─── */
 function buildRow(t, idx, isRecent) {
@@ -314,7 +377,9 @@ function render(tracks, isRecent) {
 }
 
 function loadData(range) {
-  if (dataCache[range]) { render(dataCache[range], range === 'recent'); return; }
+  /* Check in-memory cache first, then sessionStorage */
+  var cached = dataCache[range] || scGet(range);
+  if (cached) { dataCache[range] = cached; render(cached, range === 'recent'); return; }
   var url = range === 'recent'
     ? 'https://api.listenbrainz.org/1/user/' + LB_USER + '/listens?count=10'
     : 'https://api.listenbrainz.org/1/stats/user/' + LB_USER + '/recordings?range=' + range + '&count=10';
@@ -322,7 +387,7 @@ function loadData(range) {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       var tracks = range === 'recent' ? d.payload.listens : d.payload.recordings;
-      if (tracks && tracks.length) { dataCache[range] = tracks; render(tracks, range === 'recent'); }
+      if (tracks && tracks.length) { dataCache[range] = tracks; scSet(range, tracks); render(tracks, range === 'recent'); }
     })
     .catch(function() {});
 }
@@ -340,7 +405,6 @@ document.getElementById('dkt-tab-container').addEventListener('click', function(
 setTimeout(function() {
   pollNowPlaying();
   loadData('this_month');
-  setInterval(pollNowPlaying, 210000);
 }, 800);
 
 })();
