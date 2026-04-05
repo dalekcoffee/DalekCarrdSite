@@ -1,5 +1,5 @@
 {
-  "intro": "Items for our lovely cafe community — please check out our merch, Dalek's coffee picks, and Dalek's setup!",
+  "intro": "Items for our lovely cafe community - please check out our merch, Dalek's coffee picks, and Dalek's setup!",
   "merch": {
     "heading": "Dalek Shop",
     "tag": "Fourthwall",
@@ -13,15 +13,15 @@
   "coffee": {
     "heading": "What I Brew",
     "tag": "Amazon",
-    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best — look around and see what you like! Amazon links are Amazon affiliate links. Items marked Alt Pick are alternatives Dalek found after his original item was discontinued — compatibility between parts has not been verified.",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like! Amazon links are Amazon affiliate links. Items marked Alt Pick are alternatives Dalek found after his original item was discontinued - compatibility between parts has not been verified.",
     "left": {
       "label": "Beans I Like",
       "icon": "☕",
       "items": [
-        { "label": "Whole Bean", "name": "Lavazza Crema E Aroma",    "desc": "Most ordered — rich, smooth Italian espresso blend.", "url": "https://amzn.to/41byfJY", "img": "Images/Coffee/Lavazza Crema E Aroma.png", "favorite": true },
+        { "label": "Whole Bean", "name": "Lavazza Crema E Aroma",    "desc": "Most ordered - rich, smooth Italian espresso blend.", "url": "https://amzn.to/41byfJY", "img": "Images/Coffee/Lavazza Crema E Aroma.png", "favorite": true },
         { "label": "Whole Bean", "name": "Stumptown Holler Mountain", "desc": "Bright, fruity medium roast with citrus notes.",      "url": "https://amzn.to/3NIs1OI", "img": "Images/Coffee/Stumptown Coffee - Holler Mountain.png" },
         { "label": "Whole Bean", "name": "Stumptown Hair Bender",     "desc": "Complex blend with dark fruit and chocolate.",        "url": "https://amzn.to/4bXzZeA", "img": "Images/Coffee/Stumptown Hair Bender.png" },
-        { "label": "Whole Bean", "name": "Lavazza Espresso",          "desc": "Classic Italian espresso — bold and aromatic.",       "url": "https://amzn.to/4cr1S08", "img": "Images/Coffee/Lavazza Espresso Whole Bean Coffee.png" }
+        { "label": "Whole Bean", "name": "Lavazza Espresso",          "desc": "Classic Italian espresso - bold and aromatic.",       "url": "https://amzn.to/4cr1S08", "img": "Images/Coffee/Lavazza Espresso Whole Bean Coffee.png" }
       ]
     },
     "right": {
@@ -30,7 +30,7 @@
       "items": [
         { "label": "Espresso Machine",   "name": "De'Longhi 15-Bar Pump",       "desc": "Dalek's daily driver for espresso shots.",                                    "url": "https://amzn.to/4toHdiT", "img": "Images/Coffee/De'Longhi 15-Bar Pump Espresso Machine.png" },
         { "label": "Portafilter",        "name": "KOFIKOFI 51mm Bottomless",    "desc": "2-ear bottomless portafilter.",                                               "url": "https://amzn.to/4v6kBp3", "img": "Images/Coffee/KOFIKOFI 51mm 2-Ears Bottomless Portafilter.png",  "alt": true },
-        { "label": "Grinder",            "name": "AMZCHEF Single Dose",         "desc": "Single dose burr grinder — burr grinding is critical for even extraction.",                                         "url": "https://amzn.to/4cfT10e", "img": "Images/Coffee/AMZCHEF Single Dose Coffee Grinder.png",          "alt": true },
+        { "label": "Grinder",            "name": "AMZCHEF Single Dose",         "desc": "Single dose burr grinder - burr grinding is critical for even extraction.",                                         "url": "https://amzn.to/4cfT10e", "img": "Images/Coffee/AMZCHEF Single Dose Coffee Grinder.png",          "alt": true },
         { "label": "Storage",            "name": "Fellow Atmos Canister",       "desc": "Vacuum-sealed to keep beans fresh longer.",                                   "url": "https://amzn.to/3O8XY2B", "img": "Images/Coffee/Fellow Atmos Vacuum Coffee Canister.png" },
         { "label": "Dosing Funnel",      "name": "Normcore 51mm Magnetic",      "desc": "Magnetic ring keeps grounds in the basket.",                                  "url": "https://amzn.to/4shzEK3", "img": "Images/Coffee/Normcore 51mm Dosing Funnel.png",                  "alt": true },
         { "label": "WDT Tool",           "name": "MHW-3BOMBER WDT",             "desc": "Breaks up clumps for even extraction.",                                       "url": "https://amzn.to/41NC741", "img": "Images/Coffee/MHW-3BOMBER WDT Tool.png",                         "alt": true },
@@ -55,7 +55,7 @@
   "setup": {
     "heading": "My Setup",
     "tag": "Amazon · Steam · AliExpress",
-    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best — look around and see what you like! Amazon links are Amazon affiliate links. Items marked Alt Pick are alternatives Dalek found after his original item was discontinued — compatibility between parts has not been verified.",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like! Amazon links are Amazon affiliate links. Items marked Alt Pick are alternatives Dalek found after his original item was discontinued - compatibility between parts has not been verified.",
     "left": [
       {
         "group": "Main PC",
@@ -92,7 +92,7 @@
           { "label": "Controllers",  "name": "Index Controllers",         "desc": "Precise finger-tracking SteamVR controllers.",                        "url": "https://store.steampowered.com/app/1059550/Valve_Index_Controllers/", "img": "Images/Setup/ValveIndexControllers.png" },
           { "label": "Trackers ×4",  "name": "Vive Tracker 3.0",          "desc": "Full-body tracking pucks.",                                            "url": "https://amzn.to/49QHqDF",                                            "img": "Images/Setup/ViveTracker.png" },
           { "label": "Base Sta. ×3", "name": "Index Base Station",        "desc": "Lighthouse tracking stations for SteamVR.",                           "url": "https://store.steampowered.com/app/1059570/Valve_Index_Base_Station/","img": "Images/Setup/Valve Index BaseStation.png" },
-          { "label": "USB-C Cable",  "name": "CableCreation 3.3FT USB-C", "desc": "Has a power delivery display — great for monitoring charge while in VR.", "url": "https://amzn.to/483obGT",                                         "img": "Images/Setup/CableCreation 3.3FT USB C to USB C Cable.png" },
+          { "label": "USB-C Cable",  "name": "CableCreation 3.3FT USB-C", "desc": "Has a power delivery display - great for monitoring charge while in VR.", "url": "https://amzn.to/483obGT",                                         "img": "Images/Setup/CableCreation 3.3FT USB C to USB C Cable.png" },
           { "label": "Mag. Adapter", "name": "USB-C Magnetic Adapter",    "desc": "Protects the headset port when the cable gets yanked.",                "url": "https://amzn.to/3NOj2eS",                                            "img": "Images/Setup/USB C Magnetic Adapter.png" },
           { "label": "Power Bank",   "name": "UGREEN 100W Power Bank",    "desc": "Keeps the headset running through long sessions.",                     "url": "https://amzn.to/41hGTXn",                                            "img": "Images/Setup/UGREEN 100W Power Bank Bundle.png", "alt": true }
         ]

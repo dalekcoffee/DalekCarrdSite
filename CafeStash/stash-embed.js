@@ -44,7 +44,7 @@
       '</span><span class="col-group-label">' + esc(label) + '</span></div>';
   }
 
-  var ALT_BADGE  = '<span class="alt-badge" data-tooltip="Alt Pick items are alternatives Dalek found after his original item was discontinued — compatibility between parts has not been verified.">Alt Pick</span>';
+  var ALT_BADGE  = '<span class="alt-badge" data-tooltip="Alt Pick items are alternatives Dalek found after his original item was discontinued - compatibility between parts has not been verified.">Alt Pick</span>';
   var DISC_BADGE = '<span class="disc-badge">Discontinued</span>';
 
   function tabFooter(text) {
