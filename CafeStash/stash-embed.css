@@ -471,9 +471,9 @@ body {
   /* ── Setup row text + thumb ── */
   .c-thumb { width: 72px; height: 72px; }
   .c-label  { font-size: 12px; }
-  .c-name   { font-size: 15px; }
-  .c-desc   { font-size: 12px; }
-  .c-row    { padding: 14px 16px; gap: 12px; }
+  .c-name   { font-size: 15px; white-space: normal; }
+  .c-desc   { font-size: 12px; white-space: normal; }
+  .c-row    { padding: 14px 16px; gap: 12px; align-items: flex-start; }
 
   /* ── Global text ── */
   .intro-text      { font-size: 11px; }
