@@ -33,7 +33,7 @@ body {
 }
 .intro-text {
   font-size: 8px;
-  color: rgba(255,255,255,.3);
+  color: #fff;
   letter-spacing: 0.08em;
   line-height: 1.8;
   text-transform: uppercase;
@@ -48,7 +48,7 @@ body {
 .tab {
   flex: 1; padding: 13px 5px; text-align: center;
   font-size: 9px; text-transform: uppercase; font-weight: 700;
-  letter-spacing: 0.1em; color: rgba(255,255,255,.25);
+  letter-spacing: 0.1em; color: #fff;
   cursor: pointer; background: none; border: none;
   border-right: 1px solid var(--b1);
   font-family: 'Space Mono', monospace;
@@ -56,7 +56,7 @@ body {
 }
 .tab:last-child { border-right: none; }
 .tab.active { color: #fff; background: #141414; border-bottom: 2px solid #fff; }
-.tab:hover:not(.active) { color: rgba(255,255,255,.5); }
+.tab:hover:not(.active) { color: #fff; }
 .tab:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
 
 .tab-panel { display: none; }
@@ -75,7 +75,7 @@ body {
 }
 .sec-tag {
   font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
-  color: rgba(255,255,255,.25);
+  color: #fff;
 }
 
 /* ── SHIMMER ── */
@@ -142,7 +142,7 @@ body {
 .merch-cta {
   margin-top: 6px; display: inline-flex; align-items: center; gap: 5px;
   font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
-  text-transform: uppercase; color: rgba(255,255,255,.25); transition: color var(--t);
+  text-transform: uppercase; color: #fff; transition: color var(--t);
 }
 .merch-item:hover .merch-cta,
 .merch-item:active .merch-cta { color: var(--fw); }
@@ -235,11 +235,11 @@ body {
   border-bottom: 1px solid var(--b1);
   background: #0a0a0a;
 }
-.col-group-icon { font-size: 15px; opacity: 0.4; flex-shrink: 0; }
+.col-group-icon { font-size: 15px; opacity: 1; flex-shrink: 0; }
 .col-group-label {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 16px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(255,255,255,.4);
+  color: #fff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
@@ -378,7 +378,7 @@ body {
 .tab-footer .alt-badge { margin-top: 1px; }
 .tab-footer p {
   font-size: 8px;
-  color: rgba(255,255,255,.7);
+  color: #fff;
   letter-spacing: 0.07em;
   line-height: 1.85;
   text-transform: uppercase;
@@ -392,11 +392,11 @@ body {
   background: #0a0a0a;
 }
 .footer-note {
-  font-size: 9px; color: rgba(255,255,255,.7);
+  font-size: 9px; color: #fff;
   letter-spacing: 0.1em; text-transform: uppercase;
 }
 .footer-note a {
-  color: rgba(255,255,255,.7); text-decoration: none; transition: color var(--t);
+  color: #fff; text-decoration: none; transition: color var(--t);
 }
 .footer-note a:hover { color: #fff; }
 .footer-badges { display: flex; gap: 8px; align-items: center; }
