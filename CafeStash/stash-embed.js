@@ -14,12 +14,21 @@
     return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
   }
 
-  function shimmerThumb() {
-    return '<div class="c-thumb"><div class="shimmer"></div>' + PHOTO_ICON + '<img src="" alt=""></div>';
+  function shimmerThumb(src) {
+    var imgTag = src
+      ? '<img src="' + esc(src) + '" alt="" ' +
+        'onload="this.classList.add(\'loaded\');var c=this.parentNode;c.querySelector(\'.shimmer\').style.display=\'none\';c.querySelector(\'.ph-icon\').style.display=\'none\';" ' +
+        'onerror="this.parentNode.querySelector(\'.shimmer\').style.display=\'none\';">'
+      : '<img src="" alt="">';
+    return '<div class="c-thumb"><div class="shimmer"></div>' + PHOTO_ICON + imgTag + '</div>';
+  }
+
+  function imgUrl(path) {
+    return path ? BASE + encodeURI(path) : '';
   }
 
   function merch_imgWrap(item) {
-    var src = item.img || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23111'/%3E%3C/svg%3E";
+    var src = imgUrl(item.img) || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect width='2' height='2' fill='%23111'/%3E%3C/svg%3E";
     return '<div class="merch-img-wrap"><div class="shimmer"></div>' +
       '<img src="' + src + '" alt="' + esc(item.name) + '" class="loading" ' +
       'onload="this.classList.remove(\'loading\');this.previousElementSibling.style.display=\'none\'" ' +
@@ -48,7 +57,7 @@
     var attrs = hasLink ? ' href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer"' : '';
     var desc  = item.desc ? '<div class="c-desc">' + esc(item.desc) + '</div>' : '';
     return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
-      shimmerThumb() +
+      shimmerThumb(imgUrl(item.img)) +
       '<div class="c-text">' +
         '<div class="c-label">' + esc(item.label) + '</div>' +
         '<div class="c-name">'  + esc(item.name)  + '</div>' +
