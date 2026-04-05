@@ -2,7 +2,7 @@
   'use strict';
 
   var BASE     = 'https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/';
-  var DATA_URL = BASE + 'shop-data.json';
+  var DATA_URL = BASE + 'stash-data.json';
 
   /* ── SVG snippets ── */
   var ARROW_SVG   = '<svg class="c-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6h7M6.5 3L9.5 6l-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
