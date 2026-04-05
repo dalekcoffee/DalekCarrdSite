@@ -8,6 +8,7 @@
   --b2:  #111;
   --fw:  #f5a623;
   --amz: #ff9900;
+  --cof: #c8956c;
   --pur: #7c83ff;
 }
 
@@ -61,10 +62,10 @@ body {
 
 /* per-tab accent colours */
 .tab:nth-child(1).active        { color: var(--fw);  border-bottom-color: var(--fw); }
-.tab:nth-child(2).active        { color: var(--amz); border-bottom-color: var(--amz); }
+.tab:nth-child(2).active        { color: var(--cof); border-bottom-color: var(--cof); }
 .tab:nth-child(3).active        { color: var(--pur); border-bottom-color: var(--pur); }
 .tab:nth-child(1):focus-visible { outline-color: var(--fw); }
-.tab:nth-child(2):focus-visible { outline-color: var(--amz); }
+.tab:nth-child(2):focus-visible { outline-color: var(--cof); }
 .tab:nth-child(3):focus-visible { outline-color: var(--pur); }
 
 .tab-panel { display: none; }
@@ -178,10 +179,10 @@ body {
   transition: background var(--t);
 }
 .coffee-card:hover, .coffee-card:active { background: var(--bg3); }
-.coffee-card:focus-visible { outline: 2px solid var(--amz); outline-offset: -2px; }
+.coffee-card:focus-visible { outline: 2px solid var(--cof); outline-offset: -2px; }
 .coffee-card::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--amz); opacity: 0; transition: opacity var(--t);
+  background: var(--cof); opacity: 0; transition: opacity var(--t);
 }
 .coffee-card:hover::before, .coffee-card:active::before { opacity: 1; }
 .coffee-card.no-link { cursor: default; }
@@ -224,7 +225,7 @@ body {
   letter-spacing: 0.03em; line-height: 1.45;
 }
 .coffee-card:hover .coffee-card-label,
-.coffee-card:active .coffee-card-label { color: var(--amz); }
+.coffee-card:active .coffee-card-label { color: var(--cof); }
 .coffee-card.no-link:hover .coffee-card-label { color: rgba(255,255,255,.3); }
 
 /* ════════════════════════════
@@ -324,7 +325,7 @@ body {
 }
 
 /* coffee accent override */
-.c-row.coffee-accent { --accent: var(--amz); }
+.c-row.coffee-accent { --accent: var(--cof); }
 
 /* ── FAVORITE OVERLAY (coffee card image, top-left) ── */
 .coffee-fav {
