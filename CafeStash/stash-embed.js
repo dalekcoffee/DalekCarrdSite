@@ -44,7 +44,7 @@
       '</span><span class="col-group-label">' + esc(label) + '</span></div>';
   }
 
-  var ALT_BADGE = '<span class="alt-badge">Alt Pick</span>';
+  var ALT_BADGE = '<span class="alt-badge" data-tooltip="Alt Pick items are alternatives Dalek found after his original item was discontinued — compatibility between parts has not been verified.">Alt Pick</span>';
 
   function tabFooter(text) {
     return '<div class="tab-footer">' + ALT_BADGE + '<p>' + esc(text) + '</p></div>';
@@ -119,9 +119,10 @@
         'onerror="this.parentNode.querySelector(\'.shimmer\').style.display=\'none\';">'
       : '<img src="" alt="">';
     var badge = item.alt ? ALT_BADGE : '';
+    var fav   = item.favorite ? '<div class="coffee-fav"><span class="coffee-fav-star">★</span>Favorite</div>' : '';
     var desc  = item.desc ? '<span class="coffee-card-desc">' + esc(item.desc) + '</span>' : '';
     return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
-      '<div class="coffee-card-img"><div class="shimmer"></div>' + PHOTO_ICON + imgTag + '</div>' +
+      '<div class="coffee-card-img"><div class="shimmer"></div>' + PHOTO_ICON + imgTag + fav + '</div>' +
       '<div class="coffee-card-info">' +
         '<span class="coffee-card-label">' + esc(item.label) + '</span>' +
         '<span class="coffee-card-name">'  + esc(item.name)  + '</span>' +
