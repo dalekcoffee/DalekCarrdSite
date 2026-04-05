@@ -48,16 +48,24 @@ body {
 .tab {
   flex: 1; padding: 13px 5px; text-align: center;
   font-size: 9px; text-transform: uppercase; font-weight: 700;
-  letter-spacing: 0.1em; color: #fff;
+  letter-spacing: 0.1em; color: rgba(255,255,255,.35);
   cursor: pointer; background: none; border: none;
   border-right: 1px solid var(--b1);
   font-family: 'Space Mono', monospace;
   transition: color var(--t), background var(--t);
 }
 .tab:last-child { border-right: none; }
-.tab.active { color: #fff; background: #141414; border-bottom: 2px solid #fff; }
-.tab:hover:not(.active) { color: #fff; }
+.tab.active { background: #141414; border-bottom: 2px solid; }
+.tab:hover:not(.active) { color: rgba(255,255,255,.65); }
 .tab:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+
+/* per-tab accent colours */
+.tab:nth-child(1).active        { color: var(--fw);  border-bottom-color: var(--fw); }
+.tab:nth-child(2).active        { color: var(--amz); border-bottom-color: var(--amz); }
+.tab:nth-child(3).active        { color: var(--pur); border-bottom-color: var(--pur); }
+.tab:nth-child(1):focus-visible { outline-color: var(--fw); }
+.tab:nth-child(2):focus-visible { outline-color: var(--amz); }
+.tab:nth-child(3):focus-visible { outline-color: var(--pur); }
 
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
