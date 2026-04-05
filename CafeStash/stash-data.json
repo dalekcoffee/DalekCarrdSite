@@ -70,8 +70,8 @@
         ]
       },
       {
-        "group": "Stream PC",
-        "icon": "📡",
+        "group": "Secondary PC · Streaming Recording Storage",
+        "icon": "📹",
         "items": [
           { "label": "CPU",           "name": "Ryzen 7 2700",       "desc": "Solid 8-core workhorse for encoding.",              "url": "https://amzn.to/49eqGXQ", "img": "Images/Setup/AMD Ryzen 7 2700.png" },
           { "label": "MOBO",          "name": "ASUS Prime B550M-A", "desc": "Compact and dependable AM4 board.",                 "url": "https://amzn.to/452Usw8", "img": "Images/Setup/ASUS Prime B550M-A WiFi II.png" },
