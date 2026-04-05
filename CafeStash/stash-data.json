@@ -89,9 +89,9 @@
           { "label": "Controllers",  "name": "Index Controllers",  "desc": "Precise finger-tracking SteamVR controllers.",       "url": "https://store.steampowered.com/app/1059550/Valve_Index_Controllers/", "img": "Images/Setup/ValveIndexControllers.webp" },
           { "label": "Trackers ×4",  "name": "Vive Tracker 3.0",   "desc": "Full-body tracking pucks.",                          "url": "https://amzn.to/49QHqDF",                                            "img": "Images/Setup/ViveTracker.jpg" },
           { "label": "Base Sta. ×3", "name": "Index Base Station",          "desc": "Lighthouse tracking stations for SteamVR.",                                          "url": "https://store.steampowered.com/app/1059570/Valve_Index_Base_Station/","img": "Images/Setup/ValveIndex.jpg" },
-          { "label": "USB-C Cable",   "name": "CableCreation 3.3FT USB-C",  "desc": "Has a power delivery display — great for monitoring charge while in VR.",          "url": "https://amzn.to/483obGT",                                            "img": "" },
-          { "label": "Mag. Adapter",  "name": "USB-C Magnetic Adapter",      "desc": "Protects the headset port when the cable gets yanked.",                           "url": "https://amzn.to/3NOj2eS",                                            "img": "" },
-          { "label": "Power Bank",    "name": "UGREEN 100W Power Bank",      "desc": "Alt pick — keeps the headset running through long sessions.",                     "url": "https://amzn.to/41hGTXn",                                            "img": "" }
+          { "label": "USB-C Cable",   "name": "CableCreation 3.3FT USB-C",  "desc": "Has a power delivery display — great for monitoring charge while in VR.",          "url": "https://amzn.to/483obGT",                                            "img": "Images/Setup/CableCreation 3.3FT USB C to USB C Cable.jpg" },
+          { "label": "Mag. Adapter",  "name": "USB-C Magnetic Adapter",      "desc": "Protects the headset port when the cable gets yanked.",                           "url": "https://amzn.to/3NOj2eS",                                            "img": "Images/Setup/USB C Magnetic Adapter.jpg" },
+          { "label": "Power Bank",    "name": "UGREEN 100W Power Bank",      "desc": "Alt pick — keeps the headset running through long sessions.",                     "url": "https://amzn.to/41hGTXn",                                            "img": "Images/Setup/UGREEN 100W Power Bank Bundle.jpg" }
         ]
       },
       {
