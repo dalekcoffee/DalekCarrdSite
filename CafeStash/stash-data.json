@@ -86,9 +86,9 @@
         "icon": "🥽",
         "items": [
           { "label": "HMD",          "name": "Meta Quest Pro",     "desc": "Standalone wireless headset.",                       "url": "",                                                                    "img": "Images/Setup/Quest Pro.webp" },
-          { "label": "Controllers",  "name": "Index Controllers",  "desc": "Precise finger-tracking SteamVR controllers.",       "url": "https://store.steampowered.com/app/1059550/Valve_Index_Controllers/", "img": "Images/Setup/ValveIndex.jpg" },
+          { "label": "Controllers",  "name": "Index Controllers",  "desc": "Precise finger-tracking SteamVR controllers.",       "url": "https://store.steampowered.com/app/1059550/Valve_Index_Controllers/", "img": "Images/Setup/ValveIndexControllers.webp" },
           { "label": "Trackers ×4",  "name": "Vive Tracker 3.0",   "desc": "Full-body tracking pucks.",                          "url": "https://amzn.to/49QHqDF",                                            "img": "Images/Setup/ViveTracker.jpg" },
-          { "label": "Base Sta. ×3", "name": "Index Base Station", "desc": "Lighthouse tracking stations for SteamVR.",         "url": "https://store.steampowered.com/app/1059570/Valve_Index_Base_Station/","img": "Images/Setup/ValveIndex.avif" }
+          { "label": "Base Sta. ×3", "name": "Index Base Station", "desc": "Lighthouse tracking stations for SteamVR.",         "url": "https://store.steampowered.com/app/1059570/Valve_Index_Base_Station/","img": "Images/Setup/ValveIndex.jpg" }
         ]
       },
       {
