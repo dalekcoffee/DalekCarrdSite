@@ -433,3 +433,58 @@ body {
 .badge:hover { opacity: 1; }
 .badge-fw  { color: var(--fw);  border-color: var(--fw); }
 .badge-amz { color: var(--amz); border-color: var(--amz); }
+
+/* ════════════════════════════
+   RESPONSIVE — mobile / narrow
+════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* ── Grids: 4-col → 2-col ── */
+  .coffee-beans-grid,
+  .gear-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── Merch: 3-col → 2-col ── */
+  .merch-grid { grid-template-columns: 1fr 1fr; }
+  .merch-item:nth-child(3n)       { border-right: 1px solid var(--b1); }
+  .merch-item:nth-child(even)     { border-right: none; }
+  .merch-item:nth-last-child(-n+3){ border-bottom: 1px solid var(--b1); }
+  .merch-item:nth-last-child(-n+2){ border-bottom: none; }
+
+  /* ── Setup: 2-col → 1-col stack ── */
+  .dual-col { grid-template-columns: 1fr; }
+  .dual-col-side { border-right: none !important; border-bottom: 1px solid var(--b1); }
+  .dual-col-side:last-child { border-bottom: none; }
+
+  /* ── Coffee card text ── */
+  .coffee-card-label { font-size: 11px; }
+  .coffee-card-name  { font-size: 14px; }
+  .coffee-card-desc  { font-size: 11px; }
+  .coffee-card-info  { padding: 10px 10px; }
+
+  /* ── Merch text ── */
+  .merch-sub  { font-size: 11px; }
+  .merch-name { font-size: 14px; }
+  .merch-desc { font-size: 11px; }
+  .merch-cta  { font-size: 8px; }
+  .merch-info { padding: 10px 10px; }
+
+  /* ── Setup row text + thumb ── */
+  .c-thumb { width: 72px; height: 72px; }
+  .c-label  { font-size: 12px; }
+  .c-name   { font-size: 15px; }
+  .c-desc   { font-size: 12px; }
+  .c-row    { padding: 14px 16px; gap: 12px; }
+
+  /* ── Global text ── */
+  .intro-text      { font-size: 11px; }
+  .col-group-label { font-size: 14px; }
+  .tab-footer p    { font-size: 11px; }
+  .sec-head h2     { font-size: 18px; }
+  .sec-tag         { font-size: 9px; }
+
+  /* ── Tooltip: keep readable but constrain width ── */
+  .alt-badge::after { width: 260px; font-size: 11px; left: 0; transform: none; }
+
+  /* ── Footer ── */
+  .footer-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
