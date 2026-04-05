@@ -44,8 +44,10 @@
       '</span><span class="col-group-label">' + esc(label) + '</span></div>';
   }
 
+  var ALT_BADGE = '<span class="alt-badge">Alt Pick</span>';
+
   function tabFooter(text) {
-    return '<div class="tab-footer"><p>' + esc(text) + '</p></div>';
+    return '<div class="tab-footer">' + ALT_BADGE + '<p>' + esc(text) + '</p></div>';
   }
 
   /* ── Build compact row ── */
@@ -55,12 +57,14 @@
     if (!hasLink) cls += ' no-link';
     var tag   = hasLink ? 'a' : 'div';
     var attrs = hasLink ? ' href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer"' : '';
+    var badge = item.alt ? ALT_BADGE : '';
     var desc  = item.desc ? '<div class="c-desc">' + esc(item.desc) + '</div>' : '';
     return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
       shimmerThumb(imgUrl(item.img)) +
       '<div class="c-text">' +
         '<div class="c-label">' + esc(item.label) + '</div>' +
         '<div class="c-name">'  + esc(item.name)  + '</div>' +
+        badge +
         desc +
       '</div>' +
       (hasLink ? ARROW_SVG : '') +
@@ -114,12 +118,14 @@
         'onload="this.classList.add(\'loaded\');var c=this.parentNode;c.querySelector(\'.shimmer\').style.display=\'none\';c.querySelector(\'.ph-icon\').style.display=\'none\';" ' +
         'onerror="this.parentNode.querySelector(\'.shimmer\').style.display=\'none\';">'
       : '<img src="" alt="">';
-    var desc = item.desc ? '<span class="coffee-card-desc">' + esc(item.desc) + '</span>' : '';
+    var badge = item.alt ? ALT_BADGE : '';
+    var desc  = item.desc ? '<span class="coffee-card-desc">' + esc(item.desc) + '</span>' : '';
     return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
       '<div class="coffee-card-img"><div class="shimmer"></div>' + PHOTO_ICON + imgTag + '</div>' +
       '<div class="coffee-card-info">' +
         '<span class="coffee-card-label">' + esc(item.label) + '</span>' +
         '<span class="coffee-card-name">'  + esc(item.name)  + '</span>' +
+        badge +
         desc +
       '</div>' +
       '</' + tag + '>';
