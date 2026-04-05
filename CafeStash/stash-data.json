@@ -28,7 +28,7 @@
       "label": "Gear",
       "icon": "⚙️",
       "items": [
-        { "label": "Espresso Machine",   "name": "De'Longhi 15-Bar Pump",       "desc": "Dalek's daily driver for espresso shots.",                                    "url": "https://amzn.to/4toHdiT", "img": "Images/Coffee/De'Longhi 15-Bar Pump Espresso Machine.png" },
+        { "label": "Espresso Machine",   "name": "De'Longhi 15-Bar Pump",       "desc": "Dalek's daily driver for espresso shots. It's not the fanciest out there, but it gets the job done!",                                    "url": "https://amzn.to/4toHdiT", "img": "Images/Coffee/De'Longhi 15-Bar Pump Espresso Machine.png" },
         { "label": "Portafilter",        "name": "KOFIKOFI 51mm Bottomless",    "desc": "2-ear bottomless portafilter.",                                               "url": "https://amzn.to/4v6kBp3", "img": "Images/Coffee/KOFIKOFI 51mm 2-Ears Bottomless Portafilter.png",  "alt": true },
         { "label": "Grinder",            "name": "AMZCHEF Single Dose",         "desc": "Single dose burr grinder - burr grinding is critical for even extraction.",                                         "url": "https://amzn.to/4cfT10e", "img": "Images/Coffee/AMZCHEF Single Dose Coffee Grinder.png",          "alt": true },
         { "label": "Storage",            "name": "Fellow Atmos Canister",       "desc": "Vacuum-sealed to keep beans fresh longer.",                                   "url": "https://amzn.to/3O8XY2B", "img": "Images/Coffee/Fellow Atmos Vacuum Coffee Canister.png" },
