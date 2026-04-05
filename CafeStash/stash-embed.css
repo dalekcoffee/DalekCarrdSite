@@ -395,12 +395,11 @@ body {
 
 /* ── PER-TAB DISCLAIMER ── */
 .tab-footer {
-  display: flex; align-items: flex-start; gap: 14px;
+  display: flex; flex-direction: column; gap: 10px;
   padding: 13px 20px;
   border-top: 1px solid var(--b1);
   background: #0a0a0a;
 }
-.tab-footer .alt-badge { margin-top: 1px; }
 .tab-footer p {
   font-size: 15px;
   font-weight: 400;
@@ -408,6 +407,10 @@ body {
   letter-spacing: 0.03em;
   line-height: 1.6;
 }
+.tab-footer-alt {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.tab-footer-alt .alt-badge { flex-shrink: 0; margin-top: 3px; }
 
 /* ── CARD FOOTER ── */
 .footer-bar {

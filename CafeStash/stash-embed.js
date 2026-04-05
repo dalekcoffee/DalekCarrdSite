@@ -48,7 +48,11 @@
   var DISC_BADGE = '<span class="disc-badge">Discontinued</span>';
 
   function tabFooter(text) {
-    return '<div class="tab-footer">' + ALT_BADGE + '<p>' + esc(text) + '</p></div>';
+    var paras = text.split('\n\n');
+    var last  = paras.pop();
+    var body  = paras.map(function(p) { return '<p>' + esc(p) + '</p>'; }).join('');
+    body += '<div class="tab-footer-alt">' + ALT_BADGE + '<p>' + esc(last) + '</p></div>';
+    return '<div class="tab-footer">' + body + '</div>';
   }
 
   /* ── Build compact row ── */
