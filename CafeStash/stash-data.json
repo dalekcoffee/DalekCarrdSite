@@ -13,25 +13,39 @@
   "coffee": {
     "heading": "What I Brew",
     "tag": "Amazon",
-    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best — look around and see what you like! Amazon links are Amazon affiliate links.",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best — look around and see what you like! Amazon links are Amazon affiliate links. Items marked Alt Pick are alternatives Dalek found after his original item was discontinued — compatibility between parts has not been verified.",
     "left": {
       "label": "Beans",
       "icon": "☕",
       "items": [
-        { "label": "01 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" },
-        { "label": "02 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" },
-        { "label": "03 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" },
-        { "label": "04 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" }
+        { "label": "★ Favorite",  "name": "Lavazza Crema E Aroma",       "desc": "Most ordered — rich, smooth Italian espresso blend.", "url": "https://amzn.to/41byfJY", "img": "" },
+        { "label": "Whole Bean",  "name": "Stumptown Holler Mountain",    "desc": "Bright, fruity medium roast with citrus notes.",      "url": "https://amzn.to/3NIs1OI", "img": "" },
+        { "label": "Whole Bean",  "name": "Stumptown Hair Bender",        "desc": "Complex blend with dark fruit and chocolate.",        "url": "https://amzn.to/4bXzZeA", "img": "" },
+        { "label": "Whole Bean",  "name": "Lavazza Espresso",             "desc": "Classic Italian espresso — bold and aromatic.",       "url": "https://amzn.to/4cr1S08", "img": "" }
       ]
     },
     "right": {
       "label": "Gear",
       "icon": "⚙️",
       "items": [
-        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" },
-        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" },
-        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" },
-        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" }
+        { "label": "Espresso Machine",  "name": "De'Longhi 15-Bar Pump",         "desc": "Dalek's daily driver for espresso shots.",                    "url": "https://amzn.to/4toHdiT", "img": "" },
+        { "label": "Portafilter",       "name": "KOFIKOFI 51mm Bottomless",      "desc": "Alt pick — 2-ear bottomless portafilter.",                    "url": "https://amzn.to/4v6kBp3", "img": "" },
+        { "label": "Grinder",           "name": "AMZCHEF Single Dose",           "desc": "Alt pick — single dose grinder for dialing in.",              "url": "https://amzn.to/4cfT10e", "img": "" },
+        { "label": "Storage",           "name": "Fellow Atmos Canister",         "desc": "Vacuum-sealed to keep beans fresh longer.",                  "url": "https://amzn.to/3O8XY2B", "img": "" },
+        { "label": "Dosing Funnel",     "name": "Normcore 51mm Magnetic",        "desc": "Alt pick — magnetic ring keeps grounds in the basket.",       "url": "https://amzn.to/4shzEK3", "img": "" },
+        { "label": "WDT Tool",          "name": "MHW-3BOMBER WDT",               "desc": "Alt pick — breaks up clumps for even extraction.",            "url": "https://amzn.to/41NC741", "img": "" },
+        { "label": "Tamper",            "name": "Normcore 51mm Tamper",          "desc": "Consistent tamp pressure every time.",                       "url": "https://amzn.to/4t0JZeI", "img": "" },
+        { "label": "Tamping Station",   "name": "Normcore Tamping Station",      "desc": "Alt pick — keeps the workflow tidy and stable.",              "url": "https://amzn.to/41jiT6b", "img": "" },
+        { "label": "Lever Press",       "name": "HUGH Leverpresso 51mm",         "desc": "Manual lever for hands-on pressure control.",                "url": "https://amzn.to/4dvEXSl", "img": "" },
+        { "label": "Puck Screen",       "name": "Normcore 51mm Puck Screen",     "desc": "Keeps the shower screen clean between shots.",               "url": "https://amzn.to/4mk54y8", "img": "" },
+        { "label": "Scale",             "name": "MHW-3BOMBER Mini Scale",        "desc": "Alt pick — precision scale for dialing in shots.",            "url": "https://amzn.to/48tFRLH", "img": "" },
+        { "label": "Knock Box",         "name": "Bincoo Espresso Knock Box",     "desc": "Alt pick — solid and compact puck disposal.",                 "url": "https://amzn.to/4dqBAw0", "img": "" },
+        { "label": "Cold Brew",         "name": "Cold Brew Maker 34oz",          "desc": "Easy cold brew for hot days.",                               "url": "https://amzn.to/3NIsjFi", "img": "" },
+        { "label": "Pour Over",         "name": "COSORI Pour Over Maker",        "desc": "Clean, precise pour over brewing.",                          "url": "https://amzn.to/4e3VX2c", "img": "" },
+        { "label": "Kettle",            "name": "Ulcreigo Gooseneck Kettle",     "desc": "Electric gooseneck for slow, controlled pours.",             "url": "https://amzn.to/4txLFw0", "img": "" },
+        { "label": "Pour Over Caddy",   "name": "HEXNUB Pour Over Caddy",        "desc": "Keeps your pour over kit tidy on the counter.",              "url": "https://amzn.to/4t4kjgU", "img": "" },
+        { "label": "Grinder Brush",     "name": "VSGO Magnetic Grinder Brush",   "desc": "Alt pick — magnetic handle for easy grinder cleanup.",        "url": "https://amzn.to/4crNvbS", "img": "" },
+        { "label": "Descaler",          "name": "De'Longhi EcoDecalk",           "desc": "Keep the machine running clean and healthy.",                 "url": "https://amzn.to/4e3vYrK", "img": "" }
       ]
     }
   },
