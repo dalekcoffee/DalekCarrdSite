@@ -138,6 +138,7 @@ body {
 .merch-sub {
   font-size: 15px; color: rgba(255,255,255,.3);
   letter-spacing: 0.1em; text-transform: uppercase;
+  transition: color var(--t);
 }
 .merch-name {
   font-size: 20px; font-weight: 700; letter-spacing: 0.06em;
@@ -152,8 +153,10 @@ body {
   font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; color: #fff; transition: color var(--t);
 }
+.merch-item:hover .merch-sub,
+.merch-item:active .merch-sub { color: var(--fw); }
 .merch-item:hover .merch-cta,
-.merch-item:active .merch-cta { color: var(--fw); }
+.merch-item:active .merch-cta { color: #fff; }
 
 /* ════════════════════════════
    COFFEE — stacked grid layout
