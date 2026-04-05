@@ -358,13 +358,13 @@ body {
   bottom: calc(100% + 7px);
   left: 50%;
   transform: translateX(-50%);
-  width: 240px;
+  width: 360px;
   background: #1c1c1c;
   border: 1px solid #2a2a2a;
   border-top: 2px solid var(--amz);
   color: rgba(255,255,255,.75);
-  font-size: 8px; font-weight: 400;
-  letter-spacing: 0.06em; line-height: 1.7;
+  font-size: 15px; font-weight: 400;
+  letter-spacing: 0.03em; line-height: 1.6;
   text-transform: none;
   padding: 9px 11px;
   pointer-events: none;
