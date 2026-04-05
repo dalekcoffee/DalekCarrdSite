@@ -247,7 +247,7 @@ body {
   border-bottom: 1px solid var(--b1);
   background: #0a0a0a;
 }
-.col-group-icon { font-size: 15px; opacity: 1; flex-shrink: 0; }
+.col-group-icon { font-size: 22px; line-height: 1; opacity: 1; flex-shrink: 0; display: flex; align-items: center; }
 .col-group-label {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase;
