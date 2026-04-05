@@ -44,7 +44,8 @@
       '</span><span class="col-group-label">' + esc(label) + '</span></div>';
   }
 
-  var ALT_BADGE = '<span class="alt-badge" data-tooltip="Alt Pick items are alternatives Dalek found after his original item was discontinued — compatibility between parts has not been verified.">Alt Pick</span>';
+  var ALT_BADGE  = '<span class="alt-badge" data-tooltip="Alt Pick items are alternatives Dalek found after his original item was discontinued — compatibility between parts has not been verified.">Alt Pick</span>';
+  var DISC_BADGE = '<span class="disc-badge">Discontinued</span>';
 
   function tabFooter(text) {
     return '<div class="tab-footer">' + ALT_BADGE + '<p>' + esc(text) + '</p></div>';
@@ -57,7 +58,7 @@
     if (!hasLink) cls += ' no-link';
     var tag   = hasLink ? 'a' : 'div';
     var attrs = hasLink ? ' href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer"' : '';
-    var badge = item.alt ? ALT_BADGE : '';
+    var badge = item.alt ? ALT_BADGE : (item.discontinued ? DISC_BADGE : '');
     var desc  = item.desc ? '<div class="c-desc">' + esc(item.desc) + '</div>' : '';
     return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
       shimmerThumb(imgUrl(item.img)) +
