@@ -253,7 +253,7 @@ body {
 }
 .tab-footer p {
   font-size: 7px;
-  color: rgba(255,255,255,.18);
+  color: rgba(255,255,255,.7);
   letter-spacing: 0.07em;
   line-height: 1.85;
   text-transform: uppercase;
@@ -267,11 +267,11 @@ body {
   background: #0a0a0a;
 }
 .footer-note {
-  font-size: 8px; color: rgba(255,255,255,.2);
+  font-size: 8px; color: rgba(255,255,255,.7);
   letter-spacing: 0.1em; text-transform: uppercase;
 }
 .footer-note a {
-  color: rgba(255,255,255,.3); text-decoration: none; transition: color var(--t);
+  color: rgba(255,255,255,.7); text-decoration: none; transition: color var(--t);
 }
 .footer-note a:hover { color: #fff; }
 .footer-badges { display: flex; gap: 8px; align-items: center; }
