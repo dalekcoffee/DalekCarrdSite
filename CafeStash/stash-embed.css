@@ -128,15 +128,15 @@ body {
   border-top: 1px solid var(--b1);
 }
 .merch-sub {
-  font-size: 9px; color: rgba(255,255,255,.3);
+  font-size: 15px; color: rgba(255,255,255,.3);
   letter-spacing: 0.1em; text-transform: uppercase;
 }
 .merch-name {
-  font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em;
+  font-size: 20px; font-weight: 700; letter-spacing: 0.06em;
   text-transform: uppercase; line-height: 1.4; color: #fff;
 }
 .merch-desc {
-  font-size: 10px; color: rgba(255,255,255,.28);
+  font-size: 15px; color: rgba(255,255,255,.28);
   letter-spacing: 0.04em; line-height: 1.45;
 }
 .merch-cta {
@@ -200,16 +200,16 @@ body {
   border-top: 1px solid var(--b1);
 }
 .coffee-card-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.1em;
   text-transform: uppercase; color: rgba(255,255,255,.3);
   transition: color var(--t);
 }
 .coffee-card-name {
-  font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+  font-size: 20px; font-weight: 700; letter-spacing: 0.04em;
   text-transform: uppercase; color: #fff; line-height: 1.3;
 }
 .coffee-card-desc {
-  font-size: 10px; color: rgba(255,255,255,.28);
+  font-size: 15px; color: rgba(255,255,255,.28);
   letter-spacing: 0.03em; line-height: 1.45;
 }
 .coffee-card:hover .coffee-card-label,
