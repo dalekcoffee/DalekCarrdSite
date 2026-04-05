@@ -36,7 +36,7 @@
         { "label": "WDT Tool",           "name": "MHW-3BOMBER WDT",             "desc": "Breaks up clumps for even extraction.",                                       "url": "https://amzn.to/41NC741", "img": "Images/Coffee/MHW-3BOMBER WDT Tool.png",                         "alt": true },
         { "label": "Tamper",             "name": "Normcore 51mm Tamper",        "desc": "Consistent tamp pressure every time.",                                        "url": "https://amzn.to/4t0JZeI", "img": "Images/Coffee/Normcore 51mm Espresso Tamper.png" },
         { "label": "Tamping Station",    "name": "Normcore Tamping Station",    "desc": "Keeps the workflow tidy and stable.",                                         "url": "https://amzn.to/41jiT6b", "img": "Images/Coffee/Normcore Espresso Tamping Station.png",            "alt": true },
-        { "label": "Lever Press",        "name": "HUGH Leverpresso 51mm",       "desc": "Manual lever for hands-on pressure control.",                                 "url": "https://amzn.to/4dvEXSl", "img": "Images/Coffee/HUGH Leverpresso 51mm.png" },
+        { "label": "Basket",              "name": "HUGH Leverpresso 51mm",       "desc": "Increased perforation density for higher precision.",                          "url": "https://amzn.to/4dvEXSl", "img": "Images/Coffee/HUGH Leverpresso 51mm.png" },
         { "label": "Puck Screen",        "name": "Normcore 51mm Puck Screen",   "desc": "Keeps the shower screen clean between shots.",                                "url": "https://amzn.to/4mk54y8", "img": "Images/Coffee/Normcore 51mm Puck Screen.png" },
         { "label": "Scale",              "name": "MHW-3BOMBER Mini Scale",      "desc": "Precision scale for dialing in shots.",                                       "url": "https://amzn.to/48tFRLH", "img": "Images/Coffee/MHW-3BOMBER Mini Coffee Scale.png",                "alt": true },
         { "label": "Knock Box",          "name": "Bincoo Espresso Knock Box",   "desc": "Solid and compact puck disposal.",                                            "url": "https://amzn.to/4dqBAw0", "img": "Images/Coffee/Bincoo Espresso Knock Box.png",                    "alt": true },
@@ -63,7 +63,7 @@
           { "label": "RAM",         "name": "G.SKILL Flare X5 32GB", "desc": "Fast DDR5 tuned for Ryzen performance.",           "url": "https://amzn.to/4aPTB5J", "img": "Images/Setup/G.SKILL Flare X5 Series DDR5 RAM.png" },
           { "label": "MOBO",        "name": "X870E Aorus Elite",      "desc": "Feature-rich AM5 board with solid VRMs.",         "url": "https://amzn.to/3L9Xacy", "img": "Images/Setup/GIGABYTE X870E AORUS Elite WIFI7.png" },
           { "label": "GPU",         "name": "RTX 3090 FTW3",          "desc": "Beefy card that handles anything thrown at it.",  "url": "https://amzn.to/4aQGocQ", "img": "Images/Setup/EVGA GeForce RTX 3090 FTW3.png" },
-          { "label": "SSD · Win",   "name": "WD_BLACK SN850X 1TB",   "desc": "Fast NVMe boot drive.",                           "url": "https://amzn.to/4jtRWF2", "img": "Images/Setup/WD_BLACK SN850X 1TB NVMe SSD.png" },
+          { "label": "SSD · Windows",   "name": "WD_BLACK SN850X 1TB",   "desc": "Fast NVMe boot drive.",                           "url": "https://amzn.to/4jtRWF2", "img": "Images/Setup/WD_BLACK SN850X 1TB NVMe SSD.png" },
           { "label": "SSD · Linux", "name": "T-Force Vulcan Z 1TB",  "desc": "Reliable drive for the Linux side.",              "url": "https://amzn.to/4jtyg4a", "img": "Images/Setup/TEAMGROUP T-FORCE VULCAN Z.png" }
         ]
       },
@@ -76,7 +76,7 @@
           { "label": "GPU",           "name": "RTX 3060 Ti XC",    "desc": "Handles stream output without breaking a sweat.",   "url": "https://amzn.to/3NkDR0B", "img": "Images/Setup/EVGA GeForce RTX 3060 Ti XC.png" },
           { "label": "SSD · Win",     "name": "PNY CS900 1TB",      "desc": "Budget-friendly and reliable OS drive.",            "url": "https://amzn.to/45KBjiF", "img": "Images/Setup/PNY CS900.png" },
           { "label": "SSD · Rec",     "name": "Kingston A400 120GB","desc": "Small, fast scratch drive for recordings.",         "url": "https://amzn.to/4bkLUEI", "img": "Images/Setup/Kingston 240GB A400.png" },
-          { "label": "HDD · RAID ×4", "name": "BarraCuda 2TB",      "desc": "Reliable bulk storage across the RAID array.",     "url": "https://amzn.to/451ywBB", "img": "Images/Setup/Seagate BarraCuda.png" }
+          { "label": "HDD ×4 · RAID 5", "name": "BarraCuda 2TB",      "desc": "Reliable bulk storage across the RAID array.",     "url": "https://amzn.to/451ywBB", "img": "Images/Setup/Seagate BarraCuda.png" }
         ]
       }
     ],
@@ -86,7 +86,7 @@
         "icon": "🥽",
         "items": [
           { "label": "HMD",          "name": "Meta Quest Pro",            "desc": "Standalone wireless headset.",                                        "url": "",                                                                    "img": "Images/Setup/Quest Pro.png", "discontinued": true },
-          { "label": "Headset",      "name": "Valve Index",               "desc": "PC VR tethered headset.",                                             "url": "https://store.steampowered.com/app/1059530/Valve_Index_Headset/",     "img": "Images/Setup/ValveIndex.png" },
+          { "label": "Headset",      "name": "Valve Index",               "desc": "Used as dongles for the controllers only.",                                             "url": "https://store.steampowered.com/app/1059530/Valve_Index_Headset/",     "img": "Images/Setup/ValveIndex.png" },
           { "label": "Controllers",  "name": "Index Controllers",         "desc": "Precise finger-tracking SteamVR controllers.",                        "url": "https://store.steampowered.com/app/1059550/Valve_Index_Controllers/", "img": "Images/Setup/ValveIndexControllers.png" },
           { "label": "Trackers ×4",  "name": "Vive Tracker 3.0",          "desc": "Full-body tracking pucks.",                                            "url": "https://amzn.to/49QHqDF",                                            "img": "Images/Setup/ViveTracker.png" },
           { "label": "Base Sta. ×3", "name": "Index Base Station",        "desc": "Lighthouse tracking stations for SteamVR.",                           "url": "https://store.steampowered.com/app/1059570/Valve_Index_Base_Station/","img": "Images/Setup/Valve Index BaseStation.png" },
@@ -101,7 +101,7 @@
         "items": [
           { "label": "Microphone", "name": "Hollyland Lark M2", "desc": "Compact wireless lav for clear voice pickup.",        "url": "https://amzn.to/4syimtl",                                                        "img": "Images/Setup/Hollyland Lark M2 USBC.png" },
           { "label": "IEMs",       "name": "GK KUNTEN",         "desc": "Budget in-ears with solid staging.",                  "url": "https://www.aliexpress.us/w/wholesale-GK-KUNTEN.html?spm=a2g0o.detail.search.0","img": "Images/Setup/GK KUNTEN.png" },
-          { "label": "IEM TX",     "name": "Melonare PM-2",     "desc": "Wireless IEM transmitter for cable-free monitoring.", "url": "https://amzn.to/3NZZKD2",                                                        "img": "Images/Setup/PM-2 Portable Wireless in Ear Monitor System.png" }
+          { "label": "Wireless IEM", "name": "Melonare PM-2",     "desc": "Wireless IEM transmitter for cable-free monitoring.", "url": "https://amzn.to/3NZZKD2",                                                        "img": "Images/Setup/PM-2 Portable Wireless in Ear Monitor System.png" }
         ]
       }
     ]
