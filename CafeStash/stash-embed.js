@@ -102,20 +102,41 @@
       '</div>';
   }
 
+  /* ── Build coffee card (grid item) ── */
+  function buildCoffeeCard(item) {
+    var hasLink = item.url && item.url.length > 0;
+    var cls   = 'coffee-card' + (hasLink ? '' : ' no-link');
+    var tag   = hasLink ? 'a' : 'div';
+    var attrs = hasLink ? ' href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer"' : '';
+    var src   = imgUrl(item.img);
+    var imgTag = src
+      ? '<img src="' + esc(src) + '" alt="' + esc(item.name) + '" ' +
+        'onload="this.classList.add(\'loaded\');var c=this.parentNode;c.querySelector(\'.shimmer\').style.display=\'none\';c.querySelector(\'.ph-icon\').style.display=\'none\';" ' +
+        'onerror="this.parentNode.querySelector(\'.shimmer\').style.display=\'none\';">'
+      : '<img src="" alt="">';
+    var desc = item.desc ? '<span class="coffee-card-desc">' + esc(item.desc) + '</span>' : '';
+    return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
+      '<div class="coffee-card-img"><div class="shimmer"></div>' + PHOTO_ICON + imgTag + '</div>' +
+      '<div class="coffee-card-info">' +
+        '<span class="coffee-card-label">' + esc(item.label) + '</span>' +
+        '<span class="coffee-card-name">'  + esc(item.name)  + '</span>' +
+        desc +
+      '</div>' +
+      '</' + tag + '>';
+  }
+
   /* ── Render coffee panel ── */
   function renderCoffee(data) {
     var c = data.coffee;
-    var left  = colGroup(c.left.icon, c.left.label) +
-      c.left.items.map(function (i) { return buildCRow(i, 'coffee-accent'); }).join('');
-    var right = colGroup(c.right.icon, c.right.label) +
-      c.right.items.map(function (i) { return buildCRow(i, 'coffee-accent'); }).join('');
+    var beans = c.left.items.map(buildCoffeeCard).join('');
+    var gear  = c.right.items.map(buildCoffeeCard).join('');
     var disclaimer = c.disclaimer ? tabFooter(c.disclaimer) : '';
     return '<div class="tab-panel">' +
       secHead(c.heading, c.tag) +
-      '<div class="dual-col">' +
-        '<div class="dual-col-side">' + left  + '</div>' +
-        '<div class="dual-col-side">' + right + '</div>' +
-      '</div>' +
+      colGroup(c.left.icon, c.left.label) +
+      '<div class="coffee-beans-grid">' + beans + '</div>' +
+      colGroup(c.right.icon, c.right.label) +
+      '<div class="gear-grid">' + gear + '</div>' +
       disclaimer +
       '</div>';
   }

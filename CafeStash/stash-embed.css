@@ -148,7 +148,74 @@ body {
 .merch-item:active .merch-cta { color: var(--fw); }
 
 /* ════════════════════════════
-   COMPACT 2-COL (coffee/setup)
+   COFFEE — stacked grid layout
+════════════════════════════ */
+.coffee-beans-grid,
+.gear-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--b1);
+}
+.coffee-beans-grid { grid-template-columns: repeat(4, 1fr); }
+.gear-grid         { grid-template-columns: repeat(3, 1fr); }
+
+.coffee-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  text-decoration: none; color: #fff;
+  background: var(--bg);
+  transition: background var(--t);
+}
+.coffee-card:hover, .coffee-card:active { background: var(--bg3); }
+.coffee-card:focus-visible { outline: 2px solid var(--amz); outline-offset: -2px; }
+.coffee-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--amz); opacity: 0; transition: opacity var(--t);
+}
+.coffee-card:hover::before, .coffee-card:active::before { opacity: 1; }
+.coffee-card.no-link { cursor: default; }
+.coffee-card.no-link::before { display: none; }
+
+.coffee-card-img {
+  position: relative;
+  width: 100%; aspect-ratio: 1/1;
+  background: #111; overflow: hidden;
+}
+.coffee-card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  display: none; position: absolute; top: 0; left: 0;
+}
+.coffee-card-img img.loaded { display: block; }
+.coffee-card-img .ph-icon {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.coffee-card-img .ph-icon svg { opacity: 0.18; }
+
+.coffee-card-info {
+  padding: 12px 14px; flex: 1;
+  display: flex; flex-direction: column; gap: 4px;
+  border-top: 1px solid var(--b1);
+}
+.coffee-card-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,.3);
+  transition: color var(--t);
+}
+.coffee-card-name {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: #fff; line-height: 1.3;
+}
+.coffee-card-desc {
+  font-size: 9px; color: rgba(255,255,255,.28);
+  letter-spacing: 0.03em; line-height: 1.45;
+}
+.coffee-card:hover .coffee-card-label,
+.coffee-card:active .coffee-card-label { color: var(--amz); }
+.coffee-card.no-link:hover .coffee-card-label { color: rgba(255,255,255,.3); }
+
+/* ════════════════════════════
+   COMPACT ROWS (setup)
 ════════════════════════════ */
 .dual-col {
   display: grid;
@@ -176,8 +243,8 @@ body {
 
 /* compact row */
 .c-row {
-  display: flex; align-items: center; gap: 16px;
-  padding: 16px 20px;
+  display: flex; align-items: center; gap: 18px;
+  padding: 18px 22px;
   border-bottom: 1px solid var(--b1);
   text-decoration: none; color: #fff;
   transition: background var(--t); position: relative;
@@ -198,7 +265,7 @@ body {
 /* thumbnail */
 .c-thumb {
   position: relative;
-  width: 64px; height: 64px;
+  width: 72px; height: 72px;
   flex-shrink: 0;
   background: #111;
   overflow: hidden;
@@ -216,17 +283,17 @@ body {
 
 .c-text { flex: 1; min-width: 0; }
 .c-label {
-  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
   text-transform: uppercase; color: rgba(255,255,255,.3);
   margin-bottom: 4px; transition: color var(--t);
 }
 .c-name {
-  font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
+  font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
   text-transform: uppercase; color: #fff; line-height: 1.3;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .c-desc {
-  font-size: 10px; color: rgba(255,255,255,.22);
+  font-size: 11px; color: rgba(255,255,255,.22);
   letter-spacing: 0.03em; line-height: 1.35;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   margin-top: 3px;
