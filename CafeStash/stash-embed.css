@@ -490,6 +490,8 @@ body {
 
   /* ── Footer ── */
   .footer-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .tab-footer { flex-direction: column; }
+  .tab-footer-alt { flex-direction: column; }
 
   /* ── Favorite overlay — keep current size on mobile ── */
   .coffee-fav      { font-size: 8.5px; }
