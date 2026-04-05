@@ -99,7 +99,7 @@ body {
 ════════════════════════════ */
 .merch-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   border-bottom: 1px solid var(--b1);
 }
 .merch-item {
@@ -110,8 +110,8 @@ body {
   transition: background var(--t);
   position: relative;
 }
-.merch-item:nth-child(even) { border-right: none; }
-.merch-item:nth-last-child(-n+2) { border-bottom: none; }
+.merch-item:nth-child(3n) { border-right: none; }
+.merch-item:nth-last-child(-n+3) { border-bottom: none; }
 .merch-item:hover, .merch-item:active { background: var(--bg3); }
 .merch-item:focus-visible { outline: 2px solid var(--fw); outline-offset: -2px; }
 .merch-item::before {
