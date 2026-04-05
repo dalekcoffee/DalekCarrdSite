@@ -476,9 +476,9 @@ body {
   .c-row    { padding: 14px 16px; gap: 12px; align-items: flex-start; }
 
   /* ── Global text ── */
-  .intro-text      { font-size: 11px; }
+  .intro-text      { font-size: 9px; }
   .col-group-label { font-size: 14px; }
-  .tab-footer p    { font-size: 11px; }
+  .tab-footer p    { font-size: 9px; }
   .sec-head h2     { font-size: 18px; }
   .sec-tag         { font-size: 9px; }
 
