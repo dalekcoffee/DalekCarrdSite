@@ -172,18 +172,31 @@
   }
 
   /* ── Wire up tabs (index-based) ── */
-  function initTabs() {
+  var TAB_HASHES = ['#StashMerch', '#StashCoffee', '#StashSetup'];
+
+  function activateTab(index) {
     var tabs   = document.querySelectorAll('.tab');
     var panels = document.querySelectorAll('.tab-panel');
+    tabs.forEach(function (t)   { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    panels.forEach(function (p) { p.classList.remove('active'); });
+    if (tabs[index])   { tabs[index].classList.add('active');   tabs[index].setAttribute('aria-selected', 'true'); }
+    if (panels[index]) { panels[index].classList.add('active'); }
+  }
+
+  function initTabs() {
+    var tabs = document.querySelectorAll('.tab');
+
     tabs.forEach(function (tab, i) {
       tab.addEventListener('click', function () {
-        tabs.forEach(function (t)   { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-        panels.forEach(function (p) { p.classList.remove('active'); });
-        tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
-        if (panels[i]) panels[i].classList.add('active');
+        activateTab(i);
+        history.replaceState(null, '', TAB_HASHES[i]);
       });
     });
+
+    /* ── Activate tab from URL hash on load ── */
+    var hash  = window.location.hash;
+    var found = TAB_HASHES.indexOf(hash);
+    if (found !== -1) { activateTab(found); }
   }
 
   /* ── Boot ── */
