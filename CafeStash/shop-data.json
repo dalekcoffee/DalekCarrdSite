@@ -1,0 +1,90 @@
+{
+  "intro": "Items for our lovely cafe community — please check out our merch, Dalek's coffee gear, and Dalek's setup!",
+  "merch": {
+    "heading": "Dalek Shop",
+    "tag": "Fourthwall",
+    "items": [
+      { "name": "Tall Tumblr",  "sub": "Drinkware",    "desc": "Keep your brew hot all stream long.",   "url": "https://justdalek-shop.fourthwall.com/products/tall-tumblr", "img": "" },
+      { "name": "Tall Tumblr",  "sub": "Drinkware",    "desc": "Keep your brew hot all stream long.",   "url": "https://justdalek-shop.fourthwall.com/products/tall-tumblr", "img": "" },
+      { "name": "Hoodie",       "sub": "Apparel",       "desc": "Cozy cafe vibes, wear the community.", "url": "https://justdalek-shop.fourthwall.com/products/hood-3",      "img": "" },
+      { "name": "Desk Pad",     "sub": "Accessories",   "desc": "Protect the setup in style.",          "url": "https://justdalek-shop.fourthwall.com/products/desk-pad-3",  "img": "" }
+    ]
+  },
+  "coffee": {
+    "heading": "What I Brew",
+    "tag": "Amazon",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best — look around and see what you like! Amazon links are Amazon affiliate links.",
+    "left": {
+      "label": "Beans",
+      "icon": "☕",
+      "items": [
+        { "label": "01 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" },
+        { "label": "02 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" },
+        { "label": "03 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" },
+        { "label": "04 · Whole Bean", "name": "Lavazza Crema e Aroma", "desc": "Rich, full-bodied Italian espresso blend.",  "url": "https://amzn.to/47JKTDH", "img": "" }
+      ]
+    },
+    "right": {
+      "label": "Gear",
+      "icon": "⚙️",
+      "items": [
+        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" },
+        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" },
+        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" },
+        { "label": "Placeholder", "name": "Coffee Gear Item", "desc": "A great addition to any brew setup.", "url": "https://amzn.to/47JKTDH", "img": "" }
+      ]
+    }
+  },
+  "setup": {
+    "heading": "My Setup",
+    "tag": "Amazon · Steam",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best — look around and see what you like! Amazon links are Amazon affiliate links.",
+    "left": [
+      {
+        "group": "Main PC",
+        "icon": "🖥",
+        "items": [
+          { "label": "CPU",         "name": "Ryzen 9 9950X3D",      "desc": "AMD flagship for gaming & streaming.",          "url": "https://amzn.to/3Z9mNNH", "img": "" },
+          { "label": "RAM",         "name": "G.SKILL Flare X5 32GB", "desc": "Fast DDR5 tuned for Ryzen performance.",        "url": "https://amzn.to/4aPTB5J", "img": "" },
+          { "label": "MOBO",        "name": "X870E Aorus Elite",      "desc": "Feature-rich AM5 board with solid VRMs.",      "url": "https://amzn.to/3L9Xacy", "img": "" },
+          { "label": "GPU",         "name": "RTX 3090 FTW3",          "desc": "Beefy card that handles anything thrown at it.","url": "https://amzn.to/4aQGocQ", "img": "" },
+          { "label": "SSD · Win",   "name": "WD_BLACK SN850X 1TB",    "desc": "Fast NVMe boot drive.",                        "url": "https://amzn.to/4jtRWF2", "img": "" },
+          { "label": "SSD · Linux", "name": "T-Force Vulcan Z 1TB",   "desc": "Reliable drive for the Linux side.",           "url": "https://amzn.to/4jtyg4a", "img": "" }
+        ]
+      },
+      {
+        "group": "Stream PC",
+        "icon": "📡",
+        "items": [
+          { "label": "CPU",           "name": "Ryzen 7 2700",        "desc": "Solid 8-core workhorse for encoding.",               "url": "https://amzn.to/49eqGXQ", "img": "" },
+          { "label": "MOBO",          "name": "ASUS Prime B550M-A",   "desc": "Compact and dependable AM4 board.",                  "url": "https://amzn.to/452Usw8", "img": "" },
+          { "label": "GPU",           "name": "RTX 3060 Ti XC",       "desc": "Handles stream output without breaking a sweat.",    "url": "https://amzn.to/3NkDR0B", "img": "" },
+          { "label": "SSD · Win",     "name": "PNY CS900 1TB",         "desc": "Budget-friendly and reliable OS drive.",            "url": "https://amzn.to/45KBjiF", "img": "" },
+          { "label": "SSD · Rec",     "name": "Kingston A400 120GB",   "desc": "Small, fast scratch drive for recordings.",         "url": "https://amzn.to/4bkLUEI", "img": "" },
+          { "label": "HDD · RAID ×4", "name": "BarraCuda 2TB",         "desc": "Reliable bulk storage across the RAID array.",      "url": "https://amzn.to/451ywBB", "img": "" }
+        ]
+      }
+    ],
+    "right": [
+      {
+        "group": "VR · Wireless",
+        "icon": "🥽",
+        "items": [
+          { "label": "HMD",          "name": "Meta Quest Pro",       "desc": "Standalone wireless headset.",                          "url": "",                                                                    "img": "" },
+          { "label": "Controllers",  "name": "Index Controllers",    "desc": "Precise finger-tracking SteamVR controllers.",          "url": "https://store.steampowered.com/app/1059550/Valve_Index_Controllers/", "img": "" },
+          { "label": "Trackers ×4",  "name": "Vive Tracker 3.0",     "desc": "Full-body tracking pucks.",                             "url": "https://amzn.to/49QHqDF",                                            "img": "" },
+          { "label": "Base Sta. ×3", "name": "Index Base Station",   "desc": "Lighthouse tracking stations for SteamVR.",            "url": "https://store.steampowered.com/app/1059570/Valve_Index_Base_Station/","img": "" }
+        ]
+      },
+      {
+        "group": "Audio",
+        "icon": "🎙",
+        "items": [
+          { "label": "Microphone", "name": "Hollyland Lark M2", "desc": "Compact wireless lav for clear voice pickup.",          "url": "https://amzn.to/4syimtl",                                                           "img": "" },
+          { "label": "IEMs",       "name": "GK KUNTEN",         "desc": "Budget in-ears with solid staging.",                    "url": "https://www.aliexpress.us/w/wholesale-GK-KUNTEN.html?spm=a2g0o.detail.search.0",    "img": "" },
+          { "label": "IEM TX",     "name": "Melonare PM-2",     "desc": "Wireless IEM transmitter for cable-free monitoring.",   "url": "https://amzn.to/3NZZKD2",                                                           "img": "" }
+        ]
+      }
+    ]
+  }
+}
