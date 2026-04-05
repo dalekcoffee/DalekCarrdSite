@@ -13,7 +13,7 @@
   "coffee": {
     "heading": "What I Brew",
     "tag": "Amazon",
-    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like! Amazon links are Amazon affiliate links. Items marked Alt Pick are alternatives Dalek found after his original item was discontinued - compatibility between parts has not been verified.",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like! Amazon links are Amazon affiliate links. Alt Picks are alternatives Dalek found after his original item if his current items are no longer available for purchase. These are the items he would probably buy next. - Compatibility between items has not been verified.",
     "left": {
       "label": "Beans I Like",
       "icon": "☕",
@@ -55,7 +55,7 @@
   "setup": {
     "heading": "My Setup",
     "tag": "Amazon · Steam · AliExpress",
-    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like! Amazon links are Amazon affiliate links. Items marked Alt Pick are alternatives Dalek found after his original item was discontinued - compatibility between parts has not been verified.",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like! Amazon links are Amazon affiliate links. Alt Picks are alternatives Dalek found after his original item if his current items are no longer available for purchase. These are the items he would probably buy next. - Compatibility between items has not been verified.",
     "left": [
       {
         "group": "Main PC",
