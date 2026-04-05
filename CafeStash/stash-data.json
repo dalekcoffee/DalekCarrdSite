@@ -20,7 +20,7 @@
       "items": [
         { "label": "★ Favorite", "name": "Lavazza Crema E Aroma",    "desc": "Most ordered — rich, smooth Italian espresso blend.", "url": "https://amzn.to/41byfJY", "img": "Images/Coffee/Lavazza Crema E Aroma.jpg" },
         { "label": "Whole Bean", "name": "Stumptown Holler Mountain", "desc": "Bright, fruity medium roast with citrus notes.",      "url": "https://amzn.to/3NIs1OI", "img": "Images/Coffee/Stumptown Coffee - Holler Mountain.jpg" },
-        { "label": "Whole Bean", "name": "Stumptown Hair Bender",     "desc": "Complex blend with dark fruit and chocolate.",        "url": "https://amzn.to/4bXzZeA", "img": "" },
+        { "label": "Whole Bean", "name": "Stumptown Hair Bender",     "desc": "Complex blend with dark fruit and chocolate.",        "url": "https://amzn.to/4bXzZeA", "img": "Images/Coffee/Stumptown Hair Bender.jpg" },
         { "label": "Whole Bean", "name": "Lavazza Espresso",          "desc": "Classic Italian espresso — bold and aromatic.",       "url": "https://amzn.to/4cr1S08", "img": "Images/Coffee/Lavazza Espresso Whole Bean Coffee.jpg" }
       ]
     },
@@ -45,7 +45,8 @@
         { "label": "Kettle",           "name": "Ulcreigo Gooseneck Kettle",   "desc": "Electric gooseneck for slow, controlled pours.",       "url": "https://amzn.to/4txLFw0", "img": "Images/Coffee/Ulcreigo Gooseneck Electric Kettle.jpg" },
         { "label": "Pour Over Caddy",  "name": "HEXNUB Pour Over Caddy",      "desc": "Keeps your pour over kit tidy on the counter.",        "url": "https://amzn.to/4t4kjgU", "img": "Images/Coffee/HEXNUB – Pour Over Caddy.jpg" },
         { "label": "Grinder Brush",    "name": "VSGO Magnetic Grinder Brush", "desc": "Alt pick — magnetic handle for easy grinder cleanup.", "url": "https://amzn.to/4crNvbS", "img": "Images/Coffee/VSGO Magnetic Handle Coffee Grinder Brush.jpg" },
-        { "label": "Descaler",         "name": "De'Longhi EcoDecalk",         "desc": "Keep the machine running clean and healthy.",          "url": "https://amzn.to/4e3vYrK", "img": "Images/Coffee/De'Longhi EcoDecalk Descaler.jpg" }
+        { "label": "Descaler",         "name": "De'Longhi EcoDecalk",         "desc": "Keep the machine running clean and healthy.",          "url": "https://amzn.to/4e3vYrK", "img": "Images/Coffee/De'Longhi EcoDecalk Descaler.jpg" },
+        { "label": "Ultrasonic Cleaner", "name": "Miorcols Ultrasonic Cleaner", "desc": "Alt pick — essential for cleaning puck screens; works great for other small parts too.", "url": "https://amzn.to/4toM2bZ", "img": "Images/Coffee/Miorcols Ultrasonic Cleaner.jpg" }
       ]
     }
   },
