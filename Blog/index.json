@@ -3,7 +3,7 @@
     "id": "001",
     "slug": "001-get-oauth-case-study",
     "title": "GET-OAUTH — A Case Study in OAuth Token Exposure & Tenant Scoping",
-    "date": "2026-02-03",
+    "date": "2026-02-05",
     "tags": ["security", "disclosure"],
     "color": "#FFEEA0",
     "platform": "getlate.dev (now zernio.com)",
