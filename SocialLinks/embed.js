@@ -11,7 +11,7 @@
     '.lk-section:last-child{border-bottom:none}' +
     '.lk-section-label{font-size:14px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:#fff;margin-bottom:16px}' +
     '.lk-links{display:flex;flex-direction:column;gap:8px}' +
-    '.lk-link{position:relative;display:flex;align-items:center;gap:16px;padding:17px 20px;background:var(--bg2);border:1px solid var(--b1);color:rgba(255,255,255,.65);text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;overflow:hidden;transition:background var(--t),color var(--t),border-color var(--t),box-shadow var(--t)}' +
+    '.lk-link{position:relative;display:flex;align-items:center;gap:16px;padding:17px 20px;background:var(--bg2);border:1px solid var(--b1);color:rgba(255,255,255,.65);text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.15em;word-spacing:-.1em;text-transform:uppercase;overflow:hidden;transition:background var(--t),color var(--t),border-color var(--t),box-shadow var(--t)}' +
     '.lk-link::before{content:\'\';position:absolute;top:0;bottom:0;left:0;width:2px;background:#222;transition:background var(--t)}' +
     '.lk-link:hover,.lk-link:active{background:var(--bg3);color:#fff;border-color:var(--brand,#333);box-shadow:0 0 10px rgba(255,255,255,.08);box-shadow:0 0 10px color-mix(in srgb,var(--brand,#333) 20%,transparent)}' +
     '.lk-link:hover::before,.lk-link:active::before{background:var(--brand,#fff)}' +
@@ -33,6 +33,8 @@
     '.lk-icon-mask.failed{display:none}' +
     '.lk-icon-mask.failed+.lk-icon-fb{display:block}' +
     '.lk-link:hover .lk-icon-fb,.lk-link:active .lk-icon-fb{color:var(--brand,#fff)}' +
+    '.lk-icon-svg{flex-shrink:0;color:rgba(255,255,255,.4);transition:color var(--t)}' +
+    '.lk-link:hover .lk-icon-svg,.lk-link:active .lk-icon-svg{color:var(--brand,#fff)}' +
     '.lk-icon-inline{flex-shrink:0}' +
     '.lk-icon-inline .fedi-rest{opacity:.4;transition:opacity var(--t)}' +
     '.lk-icon-inline .fedi-color{opacity:0;transition:opacity var(--t)}' +
@@ -110,6 +112,15 @@
     '<span class="lk-icon-mask" style="--mi:url(\'https://cdn.simpleicons.org/discord\')" data-fb="DC" aria-hidden="true"></span>' +
     '<span class="lk-icon-fb" aria-hidden="true">DC</span>' +
     '<span class="lk-link-text">Discord</span><span class="lk-arrow" aria-hidden="true">↗</span></a>' +
+
+    '<a class="lk-link" href="https://go.resonite.com/record/U-JustDalek-/R-019d5193-d1b1-73e1-8bbd-7dc32a2e6a6f" target="_blank" rel="noopener noreferrer" style="--brand:#c8956c">' +
+    '<svg class="lk-icon-svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M5 8h11v8a2.5 2.5 0 0 1-2.5 2.5h-6A2.5 2.5 0 0 1 5 16V8z"/>' +
+    '<path d="M16 10.5h1.5a2 2 0 0 1 0 4H16"/>' +
+    '<path d="M8.5 5c0 .7-.8 1-.8 1.8"/>' +
+    '<path d="M12 5c0 .7-.8 1-.8 1.8"/>' +
+    '</svg>' +
+    '<span class="lk-link-text">Visit my cafe :3</span><span class="lk-arrow" aria-hidden="true">↗</span></a>' +
 
     '<a class="lk-link" href="https://cults3d.com/en/users/DalekCoffee/3d-models" target="_blank" rel="noopener noreferrer" style="--brand:#7b3fe4">' +
     '<img class="lk-icon-img" src="https://cults3d.com/favicon.ico" alt="" aria-hidden="true" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
