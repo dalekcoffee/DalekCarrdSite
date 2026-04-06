@@ -187,9 +187,9 @@
 
   /* ── RENDER INDEX ── */
   function renderIndex(posts) {
+    renderFilter(posts);
     var countEl = document.getElementById('bl-count');
     if (countEl) countEl.textContent = posts.length + (posts.length === 1 ? ' entry' : ' entries');
-    renderFilter(posts);
     posts.forEach(function (meta) {
       card.appendChild(buildStrip(meta));
     });
