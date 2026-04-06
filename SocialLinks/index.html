@@ -65,6 +65,7 @@ body {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: .15em;
+  word-spacing: -.1em;
   text-transform: uppercase;
   overflow: hidden;
   transition: background var(--t), color var(--t), border-color var(--t), box-shadow var(--t);
@@ -182,6 +183,15 @@ body {
 .lk-icon-mask.failed + .lk-icon-fb { display: block; }
 .lk-link:hover .lk-icon-fb,
 .lk-link:active .lk-icon-fb { color: var(--brand, #fff); }
+
+/* ── ICON: INLINE SVG (currentColor) ── */
+.lk-icon-svg {
+  flex-shrink: 0;
+  color: rgba(255,255,255,.4);
+  transition: color var(--t);
+}
+.lk-link:hover .lk-icon-svg,
+.lk-link:active .lk-icon-svg { color: var(--brand, #fff); }
 
 /* ── ICON: FEDIVERSE pentagram ── */
 .lk-icon-inline { flex-shrink: 0; }
@@ -304,6 +314,18 @@ body {
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/discord')" data-fb="DC" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">DC</span>
         <span class="lk-link-text">Discord</span>
+        <span class="lk-arrow" aria-hidden="true">↗</span>
+      </a>
+
+      <!-- Resonite Cafe -->
+      <a class="lk-link" href="https://go.resonite.com/record/U-JustDalek-/R-019d5193-d1b1-73e1-8bbd-7dc32a2e6a6f" target="_blank" rel="noopener noreferrer" style="--brand:#c8956c">
+        <svg class="lk-icon-svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M5 8h11v8a2.5 2.5 0 0 1-2.5 2.5h-6A2.5 2.5 0 0 1 5 16V8z"/>
+          <path d="M16 10.5h1.5a2 2 0 0 1 0 4H16"/>
+          <path d="M8.5 5c0 .7-.8 1-.8 1.8"/>
+          <path d="M12 5c0 .7-.8 1-.8 1.8"/>
+        </svg>
+        <span class="lk-link-text">Visit my cafe :3</span>
         <span class="lk-arrow" aria-hidden="true">↗</span>
       </a>
 
