@@ -53,9 +53,10 @@
     '.bl-tags{display:flex;gap:5px;flex-wrap:wrap}',
     '.bl-tag{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.1);padding:1px 5px;transition:color var(--t),border-color var(--t)}',
     '.bl-strip:hover .bl-tag,.bl-strip:active .bl-tag,.bl-post.open>.bl-strip .bl-tag{color:#fff;border-color:rgba(255,255,255,.3)}',
-    /* title + summary */
-    '.bl-title{font-family:\'Bebas Neue\',sans-serif;font-size:21px;letter-spacing:0.07em;color:rgba(255,255,255,.85);margin-bottom:6px;line-height:1.25;transition:color var(--t)}',
+    /* title, platform, summary */
+    '.bl-title{font-family:\'Bebas Neue\',sans-serif;font-size:21px;letter-spacing:0.07em;color:rgba(255,255,255,.85);margin-bottom:5px;line-height:1.25;transition:color var(--t)}',
     '.bl-strip:hover .bl-title,.bl-strip:active .bl-title,.bl-post.open>.bl-strip .bl-title{color:#fff}',
+    '.bl-strip-platform{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blog);margin-bottom:6px}',
     '.bl-summary{font-size:13px;line-height:1.65;color:rgba(255,255,255,.35)}',
     /* chevron */
     '.bl-toggle{flex-shrink:0;margin-left:16px;padding-top:4px;color:#333;transition:color var(--t),transform 0.35s ease}',
@@ -259,6 +260,7 @@
             '<span class="bl-tags">' + tagsHtml + '</span>' +
           '</div>' +
           '<div class="bl-title">' + esc(meta.title) + '</div>' +
+          (meta.platform ? '<div class="bl-strip-platform">' + esc(meta.platform) + '</div>' : '') +
           '<div class="bl-summary">' + esc(meta.summary) + '</div>' +
         '</div>' +
         '<div class="bl-toggle" aria-hidden="true">' +
