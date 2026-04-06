@@ -1,8 +1,8 @@
 {
   "title": "GET-OAUTH — A Case Study in OAuth Token Exposure & Tenant Scoping",
   "date": "2026-02-03",
-  "platform": "getlate.dev",
-  "platform_url": "https://getlate.dev/",
+  "platform": "Zernio.com (formerly getlate.dev at time of disclosure)",
+  "platform_url": "https://zernio.com/",
   "tags": ["security", "oauth", "disclosure"],
   "summary": "Under certain tenant configurations, authenticated users received responses containing OAuth access_token and refresh_token values for all profiles in a tenant — including those outside their access scope.",
   "disclosure": "The following vulnerability was disclosed responsibly with the GETLATE organization. GETLATE acknowledged and promptly patched the issue and provided public vulnerability disclosure approval. This write-up is a technical case study and learning resource.",
