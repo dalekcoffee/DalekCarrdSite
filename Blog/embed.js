@@ -274,11 +274,11 @@
     var strip = post.querySelector('.bl-strip');
     var body  = post.querySelector('.bl-body');
 
-    strip.addEventListener('click', function () { toggle(post, strip, body, meta.slug); });
+    strip.addEventListener('click', function () { toggle(post, strip, body, meta); });
     strip.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        toggle(post, strip, body, meta.slug);
+        toggle(post, strip, body, meta);
       }
     });
 
@@ -286,7 +286,7 @@
   }
 
   /* ── TOGGLE OPEN/CLOSE ── */
-  function toggle(post, strip, body, slug) {
+  function toggle(post, strip, body, meta) {
     var isOpen = post.classList.contains('open');
     if (isOpen) {
       post.classList.remove('open');
@@ -300,17 +300,17 @@
 
     body.innerHTML = shimmerHTML();
 
-    if (cache[slug]) {
-      body.innerHTML = renderEntry(cache[slug], slug);
+    if (cache[meta.slug]) {
+      body.innerHTML = renderEntry(cache[meta.slug], meta);
       body.dataset.loaded = '1';
       return;
     }
 
-    fetch(BASE + '/posts/' + slug + '/post.json')
+    fetch(BASE + '/posts/' + meta.slug + '/post.json')
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        cache[slug] = data;
-        body.innerHTML = renderEntry(data, slug);
+        cache[meta.slug] = data;
+        body.innerHTML = renderEntry(data, meta);
         body.dataset.loaded = '1';
       })
       .catch(function () {
@@ -319,8 +319,8 @@
   }
 
   /* ── RENDER ENTRY ── */
-  function renderEntry(d, slug) {
-    var postBase = BASE + '/posts/' + slug;
+  function renderEntry(d, meta) {
+    var postBase = BASE + '/posts/' + meta.slug;
     var images = {};
     Object.keys(d.images || {}).forEach(function (k) {
       var v = d.images[k];
@@ -332,10 +332,10 @@
       html += '<div class="bl-disclosure">' + mi(d.disclosure) + '</div>';
     }
 
-    if (d.platform && d.platform_url) {
+    if (meta.platform && meta.platform_url) {
       html += '<div class="bl-platform-note">Platform: ' +
-        '<a class="bl-link" href="' + esc(d.platform_url) + '" target="_blank" rel="noopener noreferrer">' +
-        esc(d.platform) + '</a></div>';
+        '<a class="bl-link" href="' + esc(meta.platform_url) + '" target="_blank" rel="noopener noreferrer">' +
+        esc(meta.platform) + '</a></div>';
     }
 
     (d.sections || []).forEach(function (sec) {

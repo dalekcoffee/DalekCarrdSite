@@ -1,11 +1,4 @@
 {
-  "id": "001",
-  "title": "GET-OAUTH — A Case Study in OAuth Token Exposure & Tenant Scoping",
-  "date": "2026-02-03",
-  "platform": "Zernio.com",
-  "platform_url": "https://zernio.com/",
-  "tags": ["security", "oauth", "disclosure"],
-  "summary": "Under certain tenant configurations, authenticated users received responses containing OAuth access_token and refresh_token values for all profiles in a tenant — including those outside their access scope.",
   "disclosure": "The following vulnerability was disclosed responsibly with the GETLATE organization. GETLATE acknowledged and promptly patched the issue and provided public vulnerability disclosure approval. This write-up is a technical case study and learning resource.",
   "sections": [
     {
@@ -39,11 +32,11 @@
     {
       "heading": "Timeline & Context",
       "timeline": [
-        { "date": "Feb 3, 2026",    "text": "Vulnerability discovered; safe-haven request made." },
-        { "date": "Feb 4, 2026",    "text": "Reported a related visual bug within the tenant where profiles a user was not scoped for were listed (but not accessible) in the new Inbox feature." },
-        { "date": "Feb 4, 2026",    "text": "Visual bug patched; non-scoped profile OAuth vulnerability was partially mitigated through this as well." },
-        { "date": "Feb 5, 2026",    "text": "Safe-haven granted; remaining vulnerability fully patched." },
-        { "date": "Mar 17, 2026",   "text": "Getlate.dev rebrands to zernio.com." }
+        { "date": "Feb 3, 2026",  "text": "Vulnerability discovered; safe-haven request made." },
+        { "date": "Feb 4, 2026",  "text": "Reported a related visual bug within the tenant where profiles a user was not scoped for were listed (but not accessible) in the new Inbox feature." },
+        { "date": "Feb 4, 2026",  "text": "Visual bug patched; non-scoped profile OAuth vulnerability was partially mitigated through this as well." },
+        { "date": "Feb 5, 2026",  "text": "Safe-haven granted; remaining vulnerability fully patched." },
+        { "date": "Mar 17, 2026", "text": "Getlate.dev rebrands to zernio.com." }
       ]
     },
     {

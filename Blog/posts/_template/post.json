@@ -1,11 +1,4 @@
 {
-  "id": "000",
-  "title": "Post Title Here",
-  "date": "YYYY-MM-DD",
-  "platform": "platform.name",
-  "platform_url": "https://platform.name/",
-  "tags": ["tag1", "tag2"],
-  "summary": "One-sentence summary shown in the post list.",
   "disclosure": "Optional responsible disclosure notice. Remove this field entirely if not applicable.",
   "sections": [
     {
