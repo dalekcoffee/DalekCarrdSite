@@ -2,6 +2,20 @@
 
 var LB_USER = 'Dalek.coffee';
 
+/*
+ * ─── n8n webhook URL ─────────────────────────────────────────────────────────
+ * Set this to your n8n webhook endpoint once deployed.
+ * The embed sends: GET N8N_STATS_WEBHOOK + '?range=' + range
+ *   range values: 'recent' | 'this_month' | 'this_year' | 'all_time'
+ *
+ * n8n should return the same JSON shape ListenBrainz does so the embed
+ * can process it identically. See the n8n workflow notes at the bottom
+ * of this file for the expected workflow structure.
+ *
+ * Leave as empty string to fall back to direct LB calls (useful during testing).
+ */
+var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
+
 var BRANDS = [
   {id:'yt', name:'YouTube',   short:'YT', color:'#FF0000', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/youtube/black',    url:'https://www.youtube.com/results?search_query='},
   {id:'sp', name:'Spotify',   short:'SP', color:'#1DB954', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/spotify/black',    url:'https://open.spotify.com/search/'},
@@ -12,9 +26,7 @@ var BRANDS = [
 /* ─── Strip feat. artists + brackets so iTunes queries are clean ─── */
 function cleanStr(s) {
   if (!s) return '';
-  /* Split on " feat." / " ft." / " featuring" — drop everything after */
   s = s.replace(/\s+(feat\.|ft\.|featuring)\s+.*/i, '');
-  /* Strip parenthetical / bracket content (often has remix/feat info) */
   s = s.split('(')[0].split('[')[0];
   return s.replace(/\s+/g, ' ').trim();
 }
@@ -35,7 +47,6 @@ function makeBtn(brand, q) {
     a.style.background = '#fff';
     a.style.color = '#000';
   });
-  /* Mirror hover on touchstart/touchend for mobile tap feedback */
   a.addEventListener('touchstart', function() { a.style.background = brand.color; a.style.color = brand.textOnHover; }, {passive:true});
   a.addEventListener('touchend', function()   { a.style.background = '#fff'; a.style.color = '#000'; }, {passive:true});
   var icon = document.createElement('img');
@@ -54,23 +65,16 @@ function getCoverInfo(t) {
   var meta = t.track_metadata || t;
   var map  = meta.mbid_mapping || {};
   var add  = meta.additional_info || {};
-  /*
-   * 1. Direct CAA URL — fastest, most accurate.
-   *    Listens endpoint puts these inside mbid_mapping.
-   *    Stats/recordings endpoint puts them at the top level.
-   */
   var caaId  = map.caa_id           || t.caa_id           || null;
   var caaRel = map.caa_release_mbid  || t.caa_release_mbid  || null;
   if (caaId && caaRel) {
     return {type:'direct', url:'https://archive.org/download/mbid-' + caaRel + '/mbid-' + caaRel + '-' + caaId + '_thumb250.jpg'};
   }
-  /* 2. Release MBID → CAA lookup */
   var mbid = map.release_mbid || add.release_mbid || t.release_mbid || null;
   if (mbid) return {type:'caa', mbid:mbid, isGroup:false};
-  /* 3. Release-group MBID → CAA lookup */
   var rgmbid = add.release_group_mbid || t.release_group_mbid || null;
   if (rgmbid) return {type:'caa', mbid:rgmbid, isGroup:true};
-  return null; /* 4. No MBIDs — fall through to iTunes */
+  return null;
 }
 
 /* ─── CAA: resolve MBID → cover URL ─── */
@@ -102,21 +106,18 @@ function fetchItunesUrl(artist, track) {
       var tl = cleanStr(track).toLowerCase();
       var al = cleanStr(artist).toLowerCase();
       var result = null;
-      /* First pass: match both track name AND artist name */
       for (var i = 0; i < data.results.length; i++) {
         var tn = data.results[i].trackName;
         var an = data.results[i].artistName;
         if (tn && tn.toLowerCase().indexOf(tl) !== -1 &&
             an && an.toLowerCase().indexOf(al) !== -1) { result = data.results[i]; break; }
       }
-      /* Second pass: track name only */
       if (!result) {
         for (var i = 0; i < data.results.length; i++) {
           var tn = data.results[i].trackName;
           if (tn && tn.toLowerCase().indexOf(tl) !== -1) { result = data.results[i]; break; }
         }
       }
-      /* No confident match — return null so artist art can be tried instead */
       if (!result || !result.artworkUrl100) return null;
       return result.artworkUrl100.replace('100x100bb', '250x250bb');
     })
@@ -144,15 +145,12 @@ function fetchItunesArtistUrl(artist) {
     .catch(function() { if (timer) clearTimeout(timer); return null; });
 }
 
-/*
- * ─── loadCoverArt ───────────────────────────────────────────────────────────
- * Cascade: direct CAA → CAA release → CAA release-group → iTunes track → iTunes artist → placeholder
- * imgEl / wipeEl are the specific DOM elements to update.
- */
+/* ─── loadCoverArt ─── */
+var artCache = {};
+
 function loadCoverArt(imgEl, wipeEl, info, artist, track) {
   var cacheKey = (artist + '||' + track).toLowerCase();
   if (artCache[cacheKey]) {
-    /* Resolved before — skip all API calls */
     var cached = artCache[cacheKey];
     if (cached !== 'none') {
       imgEl.onload = function() {
@@ -174,7 +172,6 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
       if (imgEl.parentNode) imgEl.parentNode.classList.add('dkt-loaded');
     };
     imgEl.onerror = function() {
-      /* If a URL loads but the image 404s, try the next fallback once */
       if (!imgEl.dataset.fallbackTried) {
         imgEl.dataset.fallbackTried = '1';
         tryItunes();
@@ -199,7 +196,6 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
   }
   if (!info) { tryItunes(); return; }
   if (info.type === 'direct') { showUrl(info.url); return; }
-  /* CAA lookup — if release fails, retry as release-group, then iTunes */
   fetchCaaUrl(info.mbid, info.isGroup).then(function(url) {
     if (url) { showUrl(url); return; }
     if (!info.isGroup) {
@@ -212,44 +208,17 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
   });
 }
 
-/* ─── Artwork URL cache — keyed by "artist||track", avoids duplicate API calls ─── */
-var artCache = {};
-
 /*
- * ─── Tab data cache — in-memory + sessionStorage ────────────────────────────
- * sessionStorage survives page refreshes within the same browser session,
- * cutting repeat LB stats fetches for users who reload the page.
- * TTL: recent listens = 5 min (changes as you listen);
- *      monthly/yearly/all-time stats = 30 min (updated daily by LB).
+ * ─── Tab data cache ───────────────────────────────────────────────────────────
+ * In-memory only — no sessionStorage needed since n8n owns the hour-level cache.
+ * This just prevents re-hitting n8n on tab switches within the same page load.
  */
 var dataCache = {};
-var SC_NS  = 'dkt1_';
-var SC_TTL = {recent: 5 * 60 * 1000, this_month: 30 * 60 * 1000, this_year: 30 * 60 * 1000, all_time: 30 * 60 * 1000};
-
-function scGet(range) {
-  try {
-    var raw = sessionStorage.getItem(SC_NS + range);
-    if (!raw) return null;
-    var entry = JSON.parse(raw);
-    if (Date.now() - entry.ts > (SC_TTL[range] || 30 * 60 * 1000)) {
-      sessionStorage.removeItem(SC_NS + range);
-      return null;
-    }
-    return entry.data;
-  } catch(e) { return null; }
-}
-
-function scSet(range, data) {
-  try { sessionStorage.setItem(SC_NS + range, JSON.stringify({ts: Date.now(), data: data})); } catch(e) {}
-}
 
 /*
- * ─── Now Playing polling ─────────────────────────────────────────────────────
- * Uses setTimeout instead of setInterval so the interval is dynamic:
- *   - Normal cadence: 3.5 min
- *   - On 429: back off by the Retry-After / X-RateLimit-Reset-In value
- *   - Tab hidden: skip the poll, reschedule at normal cadence
- *   - Tab becomes visible: cancel pending timer, poll immediately
+ * ─── Now Playing polling ──────────────────────────────────────────────────────
+ * Still hits ListenBrainz directly — NP data is ephemeral and doesn't benefit
+ * from an hourly cache. Interval: 3.5 min with 429 back-off.
  */
 var npTrackKey  = null;
 var npTimer     = null;
@@ -261,26 +230,27 @@ function scheduleNextPoll(delay) {
     if (!document.hidden) {
       pollNowPlaying();
     } else {
-      scheduleNextPoll(NP_INTERVAL); /* hidden — skip and try again later */
+      scheduleNextPoll(NP_INTERVAL);
     }
   }, delay !== undefined ? delay : NP_INTERVAL);
 }
 
 function pollNowPlaying() {
-  fetch('https://api.listenbrainz.org/1/user/' + LB_USER + '/playing-now')
+  /*
+   * Polls n8n instead of ListenBrainz directly.
+   * n8n caches the playing-now response for 30 seconds server-side,
+   * so concurrent visitors share one LB call and no CORS issues reach the browser.
+   * Response shape: { playing: bool, track: listen_object | null }
+   */
+  fetch(N8N_STATS_WEBHOOK + '?range=now_playing&t=' + Date.now())
     .then(function(r) {
-      if (r.status === 429) {
-        /* Respect rate-limit: honour Retry-After header, fall back to 2 min */
-        var after = parseInt(r.headers.get('Retry-After') || r.headers.get('X-RateLimit-Reset-In') || '120', 10);
-        scheduleNextPoll(after * 1000);
-        return null;
-      }
-      scheduleNextPoll(); /* success — resume normal cadence */
+      if (!r.ok) { scheduleNextPoll(); return null; }
+      scheduleNextPoll();
       return r.json();
     })
     .then(function(d) {
       if (!d) return;
-      var track = d.payload && d.payload.listens && d.payload.listens[0];
+      var track = d.playing ? d.track : null;
       var dot   = document.getElementById('dkt-np-dot');
       var label = document.getElementById('dkt-np-label');
       var body  = document.getElementById('dkt-np-body');
@@ -291,7 +261,6 @@ function pollNowPlaying() {
         body.classList.add('open');
         document.getElementById('dkt-np-title').textContent  = track.track_metadata.track_name;
         document.getElementById('dkt-np-artist').textContent = track.track_metadata.artist_name;
-        /* Only rebuild art + buttons when the track actually changes */
         if (key !== npTrackKey) {
           npTrackKey = key;
           var btns = document.getElementById('dkt-np-btns');
@@ -314,7 +283,6 @@ function pollNowPlaying() {
     .catch(function() { scheduleNextPoll(); });
 }
 
-/* Resume immediately when the user switches back to this tab */
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden) {
     clearTimeout(npTimer);
@@ -331,18 +299,15 @@ function buildRow(t, idx, isRecent) {
 
   var row = document.createElement('div'); row.className = 'dkt-row';
 
-  /* Rank */
   var rankCol  = document.createElement('div'); rankCol.className = 'dkt-rank-col';
   var rankSpan = document.createElement('span'); rankSpan.className = 'dkt-rank'; rankSpan.textContent = idx + 1;
   rankCol.appendChild(rankSpan);
 
-  /* Art */
   var artDiv  = document.createElement('div'); artDiv.className = 'dkt-art';
   var wipeDiv = document.createElement('div'); wipeDiv.className = 'dkt-wipe';
   var mainImg = document.createElement('img'); mainImg.className = 'dkt-main-img'; mainImg.alt = '';
   artDiv.appendChild(wipeDiv); artDiv.appendChild(mainImg);
 
-  /* Info */
   var infoDiv   = document.createElement('div'); infoDiv.className = 'dkt-info';
   var titleDiv  = document.createElement('div'); titleDiv.className = 'dkt-title';  titleDiv.textContent = name;
   var artistDiv = document.createElement('div'); artistDiv.className = 'dkt-artist'; artistDiv.textContent = artist;
@@ -350,7 +315,6 @@ function buildRow(t, idx, isRecent) {
   for (var b = 0; b < BRANDS.length; b++) btnsDiv.appendChild(makeBtn(BRANDS[b], q));
   infoDiv.appendChild(titleDiv); infoDiv.appendChild(artistDiv); infoDiv.appendChild(btnsDiv);
 
-  /* Plays / Recent */
   var countCol = document.createElement('div'); countCol.className = 'dkt-count-col';
   if (isRecent) {
     var ws = document.createElement('span'); ws.className = 'dkt-rel-time'; ws.textContent = 'RECENT';
@@ -362,7 +326,6 @@ function buildRow(t, idx, isRecent) {
 
   row.appendChild(rankCol); row.appendChild(artDiv); row.appendChild(infoDiv); row.appendChild(countCol);
 
-  /* Stagger art loads to avoid hammering CAA */
   var coverInfo = getCoverInfo(t);
   setTimeout(function() { loadCoverArt(mainImg, wipeDiv, coverInfo, artist, name); }, idx * 300);
 
@@ -376,18 +339,49 @@ function render(tracks, isRecent) {
   for (var i = 0; i < tracks.length; i++) list.appendChild(buildRow(tracks[i], i, isRecent));
 }
 
+/*
+ * ─── loadData ─────────────────────────────────────────────────────────────────
+ * If N8N_STATS_WEBHOOK is set, all tab data goes through n8n.
+ * n8n is responsible for the hourly LB cache — the embed just asks for data.
+ * In-memory dataCache prevents re-requests on tab switches within the same load.
+ *
+ * Falls back to direct LB calls if N8N_STATS_WEBHOOK is empty (dev/test mode).
+ */
 function loadData(range) {
-  /* Check in-memory cache first, then sessionStorage */
-  var cached = dataCache[range] || scGet(range);
-  if (cached) { dataCache[range] = cached; render(cached, range === 'recent'); return; }
-  var url = range === 'recent'
-    ? 'https://api.listenbrainz.org/1/user/' + LB_USER + '/listens?count=10'
-    : 'https://api.listenbrainz.org/1/stats/user/' + LB_USER + '/recordings?range=' + range + '&count=10';
+  if (dataCache[range]) { render(dataCache[range], range === 'recent'); return; }
+
+  var url;
+  if (N8N_STATS_WEBHOOK) {
+    url = N8N_STATS_WEBHOOK + '?range=' + encodeURIComponent(range) + '&t=' + Date.now();
+  } else {
+    /* Fallback: direct LB (same as original embed) */
+    url = range === 'recent'
+      ? 'https://api.listenbrainz.org/1/user/' + LB_USER + '/listens?count=10'
+      : 'https://api.listenbrainz.org/1/stats/user/' + LB_USER + '/recordings?range=' + range + '&count=10';
+  }
+
   fetch(url)
-    .then(function(r) { return r.json(); })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
     .then(function(d) {
-      var tracks = range === 'recent' ? d.payload.listens : d.payload.recordings;
-      if (tracks && tracks.length) { dataCache[range] = tracks; scSet(range, tracks); render(tracks, range === 'recent'); }
+      /*
+       * n8n returns { tracks: [...] } — a normalised wrapper.
+       * Direct LB returns the full payload; unwrap the same way as before.
+       */
+      var tracks;
+      if (d.tracks) {
+        /* n8n normalised format */
+        tracks = d.tracks;
+      } else {
+        /* Direct LB format (fallback path) */
+        tracks = range === 'recent' ? d.payload.listens : d.payload.recordings;
+      }
+      if (tracks && tracks.length) {
+        dataCache[range] = tracks;
+        render(tracks, range === 'recent');
+      }
     })
     .catch(function() {});
 }
@@ -401,10 +395,42 @@ document.getElementById('dkt-tab-container').addEventListener('click', function(
   loadData(r);
 });
 
-/* Small startup delay avoids NS_BINDING_ABORTED in Carrd page load */
 setTimeout(function() {
   pollNowPlaying();
   loadData('this_month');
 }, 800);
 
 })();
+
+/*
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * n8n WORKFLOW NOTES
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *
+ * Webhook node (GET, path: /webhook/music-cache)
+ *   → receives ?range= (recent | this_month | this_year | all_time)
+ *
+ * Static Data node (or n8n Variables)
+ *   → stores { [range]: { tracks: [...], fetched_at: ISO timestamp } }
+ *
+ * Logic (Function / IF node):
+ *   1. Read cached entry for this range from static data.
+ *   2. If cache is empty OR fetched_at is more than 1 hour ago → fetch from LB.
+ *   3. LB URL for 'recent':
+ *        https://api.listenbrainz.org/1/user/Dalek.coffee/listens?count=10
+ *      LB URL for stats ranges:
+ *        https://api.listenbrainz.org/1/stats/user/Dalek.coffee/recordings?range={{range}}&count=10
+ *   4. Extract tracks array:
+ *        recent  → body.payload.listens
+ *        stats   → body.payload.recordings
+ *   5. Store { tracks, fetched_at: new Date().toISOString() } in static data.
+ *   6. Return cached or freshly-fetched tracks.
+ *
+ * Response node:
+ *   → { "tracks": [ ...same shape as LB returns... ] }
+ *   → Set header:  Access-Control-Allow-Origin: *   (required for browser fetch)
+ *   → Set header:  Cache-Control: public, max-age=1800
+ *
+ * Result: visitors poll n8n; n8n hits LB at most once per hour per range.
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
