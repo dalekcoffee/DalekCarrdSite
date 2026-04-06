@@ -244,6 +244,7 @@
     var post = document.createElement('div');
     post.className = 'bl-post';
     post.dataset.tags = (meta.tags || []).join(',');
+    if (meta.color) post.style.setProperty('--blog', meta.color);
 
     var tagsHtml = (meta.tags || []).map(function (t) {
       return '<span class="bl-tag">' + esc(t) + '</span>';
