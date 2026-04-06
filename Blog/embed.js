@@ -111,6 +111,8 @@
     '.bl-shimmer{height:9px;background:linear-gradient(90deg,var(--b1),rgba(255,255,255,.04),var(--b1));background-size:200% 100%;animation:bl-shim 1.6s infinite linear}',
     '.bl-s-wide{width:85%}.bl-s-mid{width:62%}.bl-s-short{width:40%}',
     '@keyframes bl-shim{0%{background-position:200% 0}100%{background-position:-200% 0}}',
+    /* info banner */
+    '.bl-info{padding:12px 20px;border-bottom:1px solid var(--b2);font-size:11px;color:rgba(255,255,255,.35);line-height:1.6}',
     /* error */
     '.bl-error{padding:24px 20px;font-size:13px;color:rgba(255,255,255,.3);text-align:center;letter-spacing:0.1em;text-transform:uppercase}',
     /* mobile */
@@ -170,7 +172,8 @@
     '<div class="bl-header">' +
       '<span class="bl-header-label">Blog</span>' +
       '<span class="bl-count" id="bl-count"></span>' +
-    '</div>';
+    '</div>' +
+    '<div class="bl-info">I don\'t really do these often, but wanted a place to document if needed&nbsp;&nbsp;:3</div>';
   (mount || document.body).appendChild(card);
 
   /* delegated image click → lightbox */
