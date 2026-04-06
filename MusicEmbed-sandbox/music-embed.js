@@ -277,7 +277,7 @@ function pollNowPlaying() {
         npTrackKey = null;
         dot.classList.remove('active');
         label.textContent = 'Nothing Playing'; label.classList.remove('active');
-        /* body stays open — last track info lingers, dot + label communicate the idle state */
+        body.classList.remove('open');
       }
     })
     .catch(function() { scheduleNextPoll(); });
