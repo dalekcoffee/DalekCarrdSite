@@ -18,13 +18,13 @@
 }
 .pj-section { padding: 19px 23px; border-bottom: 1px solid var(--b2); }
 .pj-section:last-child { border-bottom: none; }
-.pj-section-label {
-  font-size: 14px;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: #fff;
+.pj-subhead {
+  font-size: 11px;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.4);
+  font-weight: 400;
   margin-bottom: 16px;
+  text-align: center;
 }
 .pj-grid {
   display: grid;
