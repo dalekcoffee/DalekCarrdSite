@@ -203,26 +203,13 @@
     if (found !== -1) { activateTab(found); }
   }
 
-  /* ── Alt badge scroll (mobile) ── */
-  function initAltBadgeScroll() {
+  /* ── Alt badge: block product link on mobile so tooltip can show ── */
+  function initAltBadgeBlock() {
     document.querySelectorAll('.alt-badge').forEach(function (badge) {
-      if (badge.closest('.tab-footer-alt')) return; // footer badge — skip
       badge.addEventListener('click', function (e) {
         if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
         e.stopPropagation();
         e.preventDefault();
-        var panel = badge.closest('.tab-panel');
-        if (!panel) return;
-        var target = panel.querySelector('.tab-footer-alt');
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          target.classList.remove('alt-highlight');
-          void target.offsetWidth; // force reflow so animation restarts on repeat taps
-          target.classList.add('alt-highlight');
-          target.addEventListener('animationend', function () {
-            target.classList.remove('alt-highlight');
-          }, { once: true });
-        }
       });
     });
   }
@@ -242,7 +229,7 @@
     var panelsHTML = renderMerch(data) + renderCoffee(data) + renderSetup(data) + renderFooter();
     card.insertAdjacentHTML('beforeend', panelsHTML);
     initTabs();
-    initAltBadgeScroll();
+    initAltBadgeBlock();
   }
 
   /* ── Fetch data and go ── */
