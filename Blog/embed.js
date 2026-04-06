@@ -195,16 +195,16 @@
     body.innerHTML = shimmerHTML();
 
     if (cache[slug]) {
-      body.innerHTML = renderEntry(cache[slug]);
+      body.innerHTML = renderEntry(cache[slug], slug);
       body.dataset.loaded = '1';
       return;
     }
 
-    fetch(BASE + '/entries/' + slug + '.json')
+    fetch(BASE + '/posts/' + slug + '/post.json')
       .then(function (r) { return r.json(); })
       .then(function (data) {
         cache[slug] = data;
-        body.innerHTML = renderEntry(data);
+        body.innerHTML = renderEntry(data, slug);
         body.dataset.loaded = '1';
       })
       .catch(function () {
@@ -213,8 +213,13 @@
   }
 
   /* ── RENDER ENTRY ── */
-  function renderEntry(d) {
-    var images = d.images || {};
+  function renderEntry(d, slug) {
+    var postBase = BASE + '/posts/' + slug;
+    var images = {};
+    Object.keys(d.images || {}).forEach(function (k) {
+      var v = d.images[k];
+      images[k] = v ? postBase + '/' + v : null;
+    });
     var html = '<div class="bl-body-inner">';
 
     if (d.disclosure) {

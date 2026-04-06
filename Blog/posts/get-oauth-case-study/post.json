@@ -61,7 +61,7 @@
     }
   ],
   "images": {
-    "repro": null,
-    "impact": null
+    "repro": "GET-OAUTH - Reproduction.jpg",
+    "impact": "GET-OAUTH-impact.jpg"
   }
 }
