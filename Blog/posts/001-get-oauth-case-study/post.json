@@ -1,4 +1,5 @@
 {
+  "id": "001",
   "title": "GET-OAUTH — A Case Study in OAuth Token Exposure & Tenant Scoping",
   "date": "2026-02-03",
   "platform": "Zernio.com (formerly getlate.dev at time of disclosure)",

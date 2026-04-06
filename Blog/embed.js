@@ -4,6 +4,7 @@
   var BASE  = 'https://dalekcoffee.github.io/DalekCarrdSite/Blog';
   var mount = document.getElementById('bl-root');
   var cache = {}; /* slug -> parsed entry data */
+  var activeTag = null;
 
   /* ── FONTS ── */
   if (!document.querySelector('link[href*="Bebas+Neue"]')) {
@@ -28,9 +29,16 @@
     '.bl-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--b2)}',
     '.bl-header-label{font-family:\'Bebas Neue\',sans-serif;font-size:25px;letter-spacing:0.15em;color:#fff}',
     '.bl-count{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,.3)}',
+    /* tag filter bar */
+    '.bl-filter{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--b2)}',
+    '.bl-filter-btn{font-family:\'Space Mono\',monospace;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.3);background:none;border:1px solid rgba(255,255,255,.1);padding:4px 9px;cursor:pointer;transition:color var(--t),border-color var(--t),background var(--t)}',
+    '.bl-filter-btn:hover{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.3)}',
+    '.bl-filter-btn:focus-visible{outline:2px solid #fff;outline-offset:-2px}',
+    '.bl-filter-btn.active{color:#fff;border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.06)}',
     /* post row */
     '.bl-post{border-bottom:1px solid var(--b2)}',
     '.bl-post:last-child{border-bottom:none}',
+    '.bl-post.bl-hidden{display:none}',
     /* strip */
     '.bl-strip{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 20px;cursor:pointer;user-select:none;transition:background var(--t);position:relative}',
     '.bl-strip::before{content:\'\';position:absolute;top:0;bottom:0;left:0;width:2px;background:var(--b1);transition:background var(--t)}',
@@ -40,6 +48,7 @@
     '.bl-strip-left{flex:1;min-width:0}',
     /* meta row */
     '.bl-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}',
+    '.bl-postid{font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,.2);font-family:\'Bebas Neue\',sans-serif}',
     '.bl-date{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,.3)}',
     '.bl-tags{display:flex;gap:5px;flex-wrap:wrap}',
     '.bl-tag{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.1);padding:1px 5px;transition:color var(--t),border-color var(--t)}',
@@ -93,10 +102,11 @@
     '.bl-shimmer{height:9px;background:linear-gradient(90deg,var(--b1),rgba(255,255,255,.04),var(--b1));background-size:200% 100%;animation:bl-shim 1.6s infinite linear}',
     '.bl-s-wide{width:85%}.bl-s-mid{width:62%}.bl-s-short{width:40%}',
     '@keyframes bl-shim{0%{background-position:200% 0}100%{background-position:-200% 0}}',
-    /* error */
+    /* error / empty */
     '.bl-error{padding:24px 20px;font-size:13px;color:rgba(255,255,255,.3);text-align:center;letter-spacing:0.1em;text-transform:uppercase}',
     /* mobile */
     '@media(max-width:640px){',
+    '.bl-filter{padding:10px 16px}',
     '.bl-strip{padding:14px 16px}',
     '.bl-title{font-size:17px}',
     '.bl-summary{font-size:10px}',
@@ -133,8 +143,54 @@
   function renderIndex(posts) {
     var countEl = document.getElementById('bl-count');
     if (countEl) countEl.textContent = posts.length + (posts.length === 1 ? ' entry' : ' entries');
+
+    renderFilter(posts);
+
     posts.forEach(function (meta) {
       card.appendChild(buildStrip(meta));
+    });
+  }
+
+  /* ── TAG FILTER BAR ── */
+  function renderFilter(posts) {
+    var seen = {};
+    var tags = [];
+    posts.forEach(function (p) {
+      (p.tags || []).forEach(function (t) {
+        if (!seen[t]) { seen[t] = true; tags.push(t); }
+      });
+    });
+    if (tags.length === 0) return;
+
+    var bar = document.createElement('div');
+    bar.className = 'bl-filter';
+    bar.setAttribute('role', 'group');
+    bar.setAttribute('aria-label', 'Filter by tag');
+
+    bar.innerHTML = '<button class="bl-filter-btn active" data-tag="">ALL</button>' +
+      tags.map(function (t) {
+        return '<button class="bl-filter-btn" data-tag="' + esc(t) + '">' + esc(t) + '</button>';
+      }).join('');
+
+    bar.addEventListener('click', function (e) {
+      var btn = e.target.closest
+        ? e.target.closest('.bl-filter-btn')
+        : (e.target.className.indexOf('bl-filter-btn') !== -1 ? e.target : null);
+      if (!btn) return;
+      bar.querySelectorAll('.bl-filter-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      applyFilter(btn.dataset.tag || null);
+    });
+
+    card.appendChild(bar);
+  }
+
+  function applyFilter(tag) {
+    activeTag = tag;
+    card.querySelectorAll('.bl-post').forEach(function (post) {
+      var postTags = (post.dataset.tags || '').split(',');
+      var match = !tag || postTags.indexOf(tag) !== -1;
+      post.classList.toggle('bl-hidden', !match);
     });
   }
 
@@ -142,15 +198,19 @@
   function buildStrip(meta) {
     var post = document.createElement('div');
     post.className = 'bl-post';
+    post.dataset.tags = (meta.tags || []).join(',');
 
     var tagsHtml = (meta.tags || []).map(function (t) {
       return '<span class="bl-tag">' + esc(t) + '</span>';
     }).join('');
 
+    var idHtml = meta.id ? '<span class="bl-postid">#' + esc(meta.id) + '</span>' : '';
+
     post.innerHTML =
       '<div class="bl-strip" role="button" tabindex="0" aria-expanded="false">' +
         '<div class="bl-strip-left">' +
           '<div class="bl-meta">' +
+            idHtml +
             '<span class="bl-date">' + fmtDate(meta.date) + '</span>' +
             '<span class="bl-tags">' + tagsHtml + '</span>' +
           '</div>' +

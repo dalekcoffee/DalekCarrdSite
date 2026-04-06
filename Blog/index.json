@@ -1,6 +1,7 @@
 [
   {
-    "slug": "get-oauth-case-study",
+    "id": "001",
+    "slug": "001-get-oauth-case-study",
     "title": "GET-OAUTH — A Case Study in OAuth Token Exposure & Tenant Scoping",
     "date": "2026-02-03",
     "tags": ["security", "oauth", "disclosure"],
