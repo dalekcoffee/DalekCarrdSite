@@ -37,6 +37,7 @@
 .dkt-h-plays{width:70px;text-align:center;padding:8px 0;border-left:1px solid var(--dkt-border)}
 
 /* ── Rows ── */
+#dkt-list{min-height:calc(var(--dkt-row-h) * 10)}
 .dkt-row{display:flex;height:var(--dkt-row-h);border-bottom:1px solid #111;transition:background .15s;overflow:hidden}
 .dkt-rank-col{width:46px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--dkt-border);flex-shrink:0}
 .dkt-rank{font-family:"Bebas Neue",sans-serif;font-size:24px;color:#222}
