@@ -1,0 +1,46 @@
+{
+  "title": "Post Title Here",
+  "date": "YYYY-MM-DD",
+  "platform": "platform.name",
+  "platform_url": "https://platform.name/",
+  "tags": ["tag1", "tag2"],
+  "summary": "One-sentence summary shown in the post list.",
+  "disclosure": "Optional responsible disclosure notice. Remove this field entirely if not applicable.",
+  "sections": [
+    {
+      "heading": "Paragraph Section",
+      "body": "Body text here. Use `backticks` for inline code and **double asterisks** for bold.\n\nSeparate paragraphs with \\n\\n in the JSON string value."
+    },
+    {
+      "heading": "Numbered Steps",
+      "items": [
+        "First step.",
+        "Second step with `code` inline.",
+        "Third step."
+      ],
+      "numbered": true
+    },
+    {
+      "heading": "Bullet List",
+      "items": [
+        "First bullet.",
+        "Second bullet."
+      ]
+    },
+    {
+      "heading": "Timeline",
+      "timeline": [
+        { "date": "Month DD, YYYY", "text": "Event description." },
+        { "date": "Month DD, YYYY", "text": "Another event." }
+      ]
+    },
+    {
+      "heading": "Section With Image",
+      "body": "Text above the image.",
+      "image_after": "my-image-id"
+    }
+  ],
+  "images": {
+    "my-image-id": null
+  }
+}

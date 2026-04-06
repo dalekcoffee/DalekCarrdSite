@@ -1,0 +1,67 @@
+{
+  "title": "GET-OAUTH — A Case Study in OAuth Token Exposure & Tenant Scoping",
+  "date": "2026-02-03",
+  "platform": "getlate.dev",
+  "platform_url": "https://getlate.dev/",
+  "tags": ["security", "oauth", "disclosure"],
+  "summary": "Under certain tenant configurations, authenticated users received responses containing OAuth access_token and refresh_token values for all profiles in a tenant — including those outside their access scope.",
+  "disclosure": "The following vulnerability was disclosed responsibly with the GETLATE organization. GETLATE acknowledged and promptly patched the issue and provided public vulnerability disclosure approval. This write-up is a technical case study and learning resource.",
+  "sections": [
+    {
+      "heading": "Summary",
+      "body": "Under certain tenant configurations, authenticated users received web request responses containing data about all profiles within a tenant, even those outside their access scope.\n\nThese responses included OAuth `access_token` and `refresh_token` values in plaintext for connected social media accounts, allowing unauthorized third-party actions outside the platform's intended permission model."
+    },
+    {
+      "heading": "Reproduction Steps",
+      "items": [
+        "Login as Tenant Admin.",
+        "Create a new profile — connect a social account and do NOT scope any users to this profile. (Tested with Twitter/X.)",
+        "Log off from the tenant admin account.",
+        "Login as an end-user who is not scoped to the new profile.",
+        "In the main dashboard: open Dev Tools → navigate to the Network tab and refresh the dashboard.",
+        "Locate responses — find JSON files named `accounts`.",
+        "Inspect response — all tenant profiles appear, including those outside the user's scope.",
+        "Check metadata section — OAuth `access_token` and `refresh_token` are exposed in plaintext."
+      ],
+      "numbered": true,
+      "image_after": "repro"
+    },
+    {
+      "heading": "Impact",
+      "items": [
+        "OAuth tokens exposed → direct third-party API access.",
+        "Users could post, delete, or modify content outside permissions even if access was revoked from the GETLATE platform.",
+        "Tokens remained valid until rotated or revoked."
+      ],
+      "image_after": "impact"
+    },
+    {
+      "heading": "Timeline & Context",
+      "timeline": [
+        { "date": "Feb 3, 2026",    "text": "Vulnerability discovered; safe-haven request made." },
+        { "date": "Feb 4, 2026",    "text": "Reported a related visual bug within the tenant where profiles a user was not scoped for were listed (but not accessible) in the new Inbox feature." },
+        { "date": "Feb 4, 2026",    "text": "Visual bug patched; non-scoped profile OAuth vulnerability was partially mitigated through this as well." },
+        { "date": "Feb 5, 2026",    "text": "Safe-haven granted; remaining vulnerability fully patched." },
+        { "date": "Mar 17, 2026",   "text": "Getlate.dev rebrands to zernio.com." }
+      ]
+    },
+    {
+      "heading": "Remediation",
+      "items": [
+        "Remove or protect OAuth tokens from frontend responses.",
+        "Rotate all exposed tokens.",
+        "Enforce profile-level authorization server-side.",
+        "Only return resources scoped to the authenticated user.",
+        "Securely store OAuth credentials — never expose to clients."
+      ]
+    },
+    {
+      "heading": "Closing Thoughts",
+      "body": "Small authorization gaps combined with exposed credentials can be critical. Cooperative disclosure and timely remediation are key to secure multi-tenant design.\n\nThank you to Miki and the GETLATE team for safe-haven for disclosure, prompt communication, prompt patching, and overall addressing this in a professional, responsible manner."
+    }
+  ],
+  "images": {
+    "repro": null,
+    "impact": null
+  }
+}
