@@ -210,6 +210,7 @@
       badge.addEventListener('click', function (e) {
         if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
         e.stopPropagation();
+        e.preventDefault();
         var panel = badge.closest('.tab-panel');
         if (!panel) return;
         var target = panel.querySelector('.tab-footer-alt');
