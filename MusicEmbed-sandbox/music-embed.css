@@ -1,0 +1,99 @@
+:root{--dkt-bg:#0e0e0e;--dkt-border:#1a1a1a;--dkt-accent:#fff;--dkt-row-h:100px;--dkt-text-dim:#666}
+
+#dkt-card{width:100%;max-width:100%;margin:0 auto;background:var(--dkt-bg);font-family:"Space Mono",monospace;color:#fff;border:1px solid var(--dkt-border);border-top:2px solid var(--dkt-accent);overflow:hidden}
+
+/* ── Header strip ── */
+#dkt-card .dkt-strip{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--dkt-border);background:#0a0a0a}
+#dkt-card .dkt-heading{font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:700}
+
+/* ── Now Playing ── */
+.dkt-np-strip{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--dkt-border);background:#0c0c0c}
+.dkt-np-dot{width:8px;height:8px;border-radius:50%;background:#2a2a2a;flex-shrink:0;transition:background .3s}
+.dkt-np-dot.active{background:#fff;animation:dktPulse 1.5s infinite}
+@keyframes dktPulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{transform:scale(1);box-shadow:0 0 0 7px rgba(255,255,255,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+.dkt-np-label{font-size:8px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;color:#333;font-family:"Space Mono",monospace;transition:color .3s}
+.dkt-np-label.active{color:#fff}
+.dkt-np-body{max-height:0;opacity:0;overflow:hidden;transition:max-height .6s cubic-bezier(.4,0,.2,1),opacity .4s ease}
+.dkt-np-body.open{max-height:140px;opacity:1}
+.dkt-np-inner{display:flex;height:100px;border-bottom:1px solid var(--dkt-border);background:#0a0a0a}
+.dkt-np-info{flex:1;padding:0 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.dkt-np-title{font-family:"Bebas Neue",sans-serif;font-size:18px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.dkt-np-artist{font-size:8px;color:var(--dkt-text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px;margin-bottom:8px}
+/* NP buttons always visible at rest */
+.dkt-np-btns{display:flex;flex-wrap:wrap;gap:4px}
+.dkt-np-btns .dkt-btn{opacity:.45;pointer-events:auto;transform:none}
+.dkt-np-btns .dkt-btn:hover,.dkt-np-btns .dkt-btn:active{opacity:1 !important}
+
+/* ── Tabs ── */
+#dkt-card .dkt-tabs{display:flex;border-bottom:1px solid var(--dkt-border);background:#0c0c0c}
+#dkt-card .dkt-tab{flex:1;padding:14px 5px;text-align:center;font-size:8px;text-transform:uppercase;font-weight:700;color:#333;cursor:pointer;background:none;border:none;border-right:1px solid var(--dkt-border);font-family:inherit;transition:.2s}
+#dkt-card .dkt-tab.active{color:#fff;background:#141414;border-bottom:2px solid var(--dkt-accent)}
+#dkt-card .dkt-tab:focus-visible{outline:2px solid #fff;outline-offset:-2px}
+
+/* ── Table header ── */
+.dkt-table-head{display:flex;background:#080808;border-bottom:1px solid var(--dkt-border);font-size:7px;font-weight:700;letter-spacing:.1em;color:#444;text-transform:uppercase}
+.dkt-h-rank{width:46px;text-align:center;padding:8px 0;border-right:1px solid var(--dkt-border)}
+.dkt-h-track{flex:1;padding:8px 0;text-align:center}
+.dkt-h-plays{width:70px;text-align:center;padding:8px 0;border-left:1px solid var(--dkt-border)}
+
+/* ── Rows ── */
+.dkt-row{display:flex;height:var(--dkt-row-h);border-bottom:1px solid #111;transition:background .15s;overflow:hidden}
+.dkt-rank-col{width:46px;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--dkt-border);flex-shrink:0}
+.dkt-rank{font-family:"Bebas Neue",sans-serif;font-size:24px;color:#222}
+.dkt-row:first-child .dkt-rank{color:var(--dkt-accent)}
+
+/* ── Art cell — shared by rows and NP section ── */
+.dkt-art{width:100px;height:100px;background:#050505;border-right:1px solid var(--dkt-border);flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.dkt-art img.dkt-main-img{width:100%;height:100%;object-fit:cover;display:none;position:absolute;top:0;left:0;z-index:3}
+/* Music note placeholder via CSS — avoids long base64 strings that Carrd line-wraps */
+.dkt-art::after{content:'♫';font-size:22px;color:#222;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;font-family:serif}
+.dkt-art.dkt-loaded::after{display:none}
+.dkt-wipe{position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);z-index:2;animation:dktWipe 1.5s infinite linear}
+@keyframes dktWipe{0%{left:-100%}100%{left:100%}}
+
+/* ── Track info ── */
+.dkt-info{flex:1;padding:0 12px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.dkt-title{font-family:"Bebas Neue",sans-serif;font-size:18px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.dkt-artist{font-size:8px;color:var(--dkt-text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px;margin-bottom:8px}
+
+/* ── Buttons — slide up on row hover ── */
+.dkt-btns{display:flex;flex-wrap:wrap;gap:4px;opacity:0;transition:.3s ease;transform:translateY(5px)}
+.dkt-row:hover .dkt-btns,.dkt-row:active .dkt-btns{opacity:1;transform:translateY(0)}
+.dkt-btn{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:2px;text-decoration:none !important;transition:all .2s ease;background:#fff;color:#000;opacity:.45;font-family:inherit;border:none}
+.dkt-btn span{font-size:7px;font-weight:800;text-transform:uppercase;font-family:inherit;line-height:1}
+.dkt-btn em{font-style:normal;font-family:inherit}
+.dkt-btn img{width:10px;height:10px;filter:grayscale(1) brightness(0)}
+.dkt-btn:hover,.dkt-btn:active{opacity:1 !important;transform:translateY(-1px)}
+/* img filter on hover: invert to white; Genius exception keeps original black icon on yellow */
+.dkt-btn:hover img,.dkt-btn:active img{filter:invert(1)}
+.dkt-btn-ge:hover img,.dkt-btn-ge:active img{filter:none !important}
+.dkt-btn:focus-visible{outline:2px solid #fff;outline-offset:1px}
+/* Full label on desktop, short on mobile */
+.dkt-btn .full-label{display:inline}
+.dkt-btn .short-label{display:none}
+@media(max-width:480px){.dkt-btn .full-label{display:none}.dkt-btn .short-label{display:inline}}
+
+/* ── Plays / Recent column ── */
+.dkt-count-col{width:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--dkt-border)}
+.dkt-count-num{font-family:"Bebas Neue",sans-serif;font-size:20px;color:#444}
+.dkt-rel-time{font-size:7px;color:#333;text-transform:uppercase;letter-spacing:.05em}
+
+/* ── Footer ── */
+#dkt-footer{background:#0a0a0a;padding:16px;border-top:1px solid var(--dkt-border);text-align:center}
+.dkt-foot-link{color:#fff;font-size:9px;text-transform:uppercase;text-decoration:none;letter-spacing:.12em;font-weight:700;transition:.2s;font-family:inherit}
+.dkt-foot-link:hover,.dkt-foot-link:active{opacity:.7}
+
+/* ── Desktop scaling ── */
+@media(min-width:481px){
+  #dkt-card .dkt-heading{font-size:14px}
+  #dkt-card .dkt-tab{font-size:10px}
+  .dkt-table-head{font-size:9px}
+  .dkt-title,.dkt-np-title{font-size:22px}
+  .dkt-artist,.dkt-np-artist{font-size:10px}
+  .dkt-rank{font-size:30px}
+  .dkt-count-num{font-size:25px}
+  .dkt-btn span{font-size:9px}
+  .dkt-rel-time{font-size:9px}
+  .dkt-foot-link{font-size:11px}
+  .dkt-np-label{font-size:10px}
+}
