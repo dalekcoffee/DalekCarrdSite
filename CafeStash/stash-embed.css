@@ -393,6 +393,16 @@ body {
 }
 .alt-badge:hover::after { opacity: 1; }
 
+/* ── Alt footer blink (mobile scroll target) ── */
+@keyframes alt-desc-blink {
+  0%,  33%, 100% { background: transparent; }
+  16%            { background: rgba(255,153,0,0.1); }
+  50%            { background: rgba(255,153,0,0.1); }
+}
+.tab-footer-alt.alt-highlight {
+  animation: alt-desc-blink 1.4s ease forwards;
+}
+
 /* ── PER-TAB DISCLAIMER ── */
 .tab-footer {
   display: flex; flex-direction: column; gap: 10px;

@@ -214,7 +214,15 @@
         var panel = badge.closest('.tab-panel');
         if (!panel) return;
         var target = panel.querySelector('.tab-footer-alt');
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          target.classList.remove('alt-highlight');
+          void target.offsetWidth; // force reflow so animation restarts on repeat taps
+          target.classList.add('alt-highlight');
+          target.addEventListener('animationend', function () {
+            target.classList.remove('alt-highlight');
+          }, { once: true });
+        }
       });
     });
   }
