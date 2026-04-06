@@ -28,9 +28,9 @@
     /* header */
     '.bl-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--b2)}',
     '.bl-header-label{font-family:\'Bebas Neue\',sans-serif;font-size:25px;letter-spacing:0.15em;color:#fff}',
-    '.bl-count{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,.3)}',
+    '.bl-count{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-left:auto;flex-shrink:0}',
     /* tag filter bar */
-    '.bl-filter{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--b2)}',
+    '.bl-filter{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--b2)}',
     '.bl-filter-btn{font-family:\'Space Mono\',monospace;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.3);background:none;border:1px solid rgba(255,255,255,.1);padding:4px 9px;cursor:pointer;transition:color var(--t),border-color var(--t),background var(--t)}',
     '.bl-filter-btn:hover{color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.3)}',
     '.bl-filter-btn:focus-visible{outline:2px solid #fff;outline-offset:-2px}',
@@ -169,10 +169,6 @@
   var card = document.createElement('div');
   card.id = 'bl-card';
   card.innerHTML =
-    '<div class="bl-header">' +
-      '<span class="bl-header-label">Blog</span>' +
-      '<span class="bl-count" id="bl-count"></span>' +
-    '</div>' +
     '<div class="bl-info">I don\'t really do these often, but wanted a place to document if needed&nbsp;&nbsp;:3</div>';
   (mount || document.body).appendChild(card);
 
@@ -218,7 +214,8 @@
     bar.innerHTML = '<button class="bl-filter-btn active" data-tag="">ALL</button>' +
       tags.map(function (t) {
         return '<button class="bl-filter-btn" data-tag="' + esc(t) + '">' + esc(t) + '</button>';
-      }).join('');
+      }).join('') +
+      '<span class="bl-count" id="bl-count"></span>';
 
     bar.addEventListener('click', function (e) {
       var btn = e.target.closest
