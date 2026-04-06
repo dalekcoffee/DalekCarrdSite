@@ -236,19 +236,21 @@ function scheduleNextPoll(delay) {
 }
 
 function pollNowPlaying() {
-  fetch('https://api.listenbrainz.org/1/user/' + LB_USER + '/playing-now')
+  /*
+   * Polls n8n instead of ListenBrainz directly.
+   * n8n caches the playing-now response for 30 seconds server-side,
+   * so concurrent visitors share one LB call and no CORS issues reach the browser.
+   * Response shape: { playing: bool, track: listen_object | null }
+   */
+  fetch(N8N_STATS_WEBHOOK + '?range=now_playing&t=' + Date.now())
     .then(function(r) {
-      if (r.status === 429) {
-        var after = parseInt(r.headers.get('Retry-After') || r.headers.get('X-RateLimit-Reset-In') || '120', 10);
-        scheduleNextPoll(after * 1000);
-        return null;
-      }
+      if (!r.ok) { scheduleNextPoll(); return null; }
       scheduleNextPoll();
       return r.json();
     })
     .then(function(d) {
       if (!d) return;
-      var track = d.payload && d.payload.listens && d.payload.listens[0];
+      var track = d.playing ? d.track : null;
       var dot   = document.getElementById('dkt-np-dot');
       var label = document.getElementById('dkt-np-label');
       var body  = document.getElementById('dkt-np-body');
