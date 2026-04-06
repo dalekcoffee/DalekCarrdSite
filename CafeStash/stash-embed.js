@@ -203,6 +203,21 @@
     if (found !== -1) { activateTab(found); }
   }
 
+  /* ── Alt badge scroll (mobile) ── */
+  function initAltBadgeScroll() {
+    document.querySelectorAll('.alt-badge').forEach(function (badge) {
+      if (badge.closest('.tab-footer-alt')) return; // footer badge — skip
+      badge.addEventListener('click', function (e) {
+        if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
+        e.stopPropagation();
+        var panel = badge.closest('.tab-panel');
+        if (!panel) return;
+        var target = panel.querySelector('.tab-footer-alt');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    });
+  }
+
   /* ── Boot ── */
   function boot(data) {
     var card = document.querySelector('.card');
@@ -218,6 +233,7 @@
     var panelsHTML = renderMerch(data) + renderCoffee(data) + renderSetup(data) + renderFooter();
     card.insertAdjacentHTML('beforeend', panelsHTML);
     initTabs();
+    initAltBadgeScroll();
   }
 
   /* ── Fetch data and go ── */

@@ -488,6 +488,13 @@ body {
   /* ── Tooltip: keep readable but constrain width ── */
   .alt-badge::after { width: 260px; font-size: 11px; left: 0; transform: none; }
 
+  /* ── Alt badge: expanded tap target (8px halo around the badge) ── */
+  .alt-badge::before {
+    content: '';
+    position: absolute;
+    top: -8px; right: -8px; bottom: -8px; left: -8px;
+  }
+
   /* ── Footer ── */
   .footer-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
   .tab-footer { flex-direction: column; }
