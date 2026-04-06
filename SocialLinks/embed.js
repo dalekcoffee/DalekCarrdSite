@@ -1,5 +1,5 @@
 (function () {
-  var s = document.currentScript;
+  var mount = document.getElementById('lk-root');
 
   /* ── STYLES ── */
   var st = document.createElement('style');
@@ -161,7 +161,7 @@
     '</div></div>' +
     '</div>';
 
-  s.parentNode.insertBefore(wrap, s);
+  (mount || document.body).appendChild(wrap);
 
   /* ── ICON PROBE ── */
   var masks = wrap.querySelectorAll('.lk-icon-mask[data-fb]');
