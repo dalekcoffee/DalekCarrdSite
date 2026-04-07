@@ -21,23 +21,24 @@
     '.lk-link-text{flex:1}' +
     '.lk-arrow{color:#333;font-size:19px;flex-shrink:0;transition:color var(--t),transform var(--t)}' +
     '.lk-link:hover .lk-arrow,.lk-link:active .lk-arrow{color:rgba(255,255,255,.5);transform:translate(2px,-2px)}' +
-    '.lk-icon-mask{display:block;flex-shrink:0;width:21px;height:21px;background-color:rgba(255,255,255,.4);-webkit-mask:var(--mi) no-repeat center/contain;mask:var(--mi) no-repeat center/contain;transition:background-color var(--t)}' +
-    '.lk-link:hover .lk-icon-mask,.lk-link:active .lk-icon-mask{background-color:var(--brand,#fff)}' +
+    '.lk-icon-mask{display:block;flex-shrink:0;width:21px;height:21px;background-color:rgba(255,255,255,.4);-webkit-mask:var(--mi) no-repeat center/contain;mask:var(--mi) no-repeat center/contain;transition:background-color var(--t),transform var(--t)}' +
+    '.lk-link:hover .lk-icon-mask,.lk-link:active .lk-icon-mask{background-color:var(--brand,#fff);transform:scale(1.05)}' +
     '.lk-icon-abbr{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:26px;height:26px;font-family:\'Bebas Neue\',sans-serif;font-size:19px;color:rgba(255,255,255,.65);transition:color var(--t)}' +
     '.lk-social:hover .lk-icon-abbr,.lk-social:active .lk-icon-abbr,.lk-link:hover .lk-icon-abbr,.lk-link:active .lk-icon-abbr{color:var(--brand,#fff)}' +
-    '.lk-icon-img{display:block;flex-shrink:0;width:21px;height:21px;object-fit:contain;filter:brightness(0) invert(1);opacity:.4;transition:filter var(--t),opacity var(--t)}' +
-    '.lk-link:hover .lk-icon-img,.lk-link:active .lk-icon-img{filter:none;opacity:1}' +
+    '.lk-icon-img{display:block;flex-shrink:0;width:21px;height:21px;object-fit:contain;filter:brightness(0) invert(1);opacity:.4;transition:filter var(--t),opacity var(--t),transform var(--t)}' +
+    '.lk-link:hover .lk-icon-img,.lk-link:active .lk-icon-img{filter:none;opacity:1;transform:scale(1.05)}' +
     '.lk-social .lk-icon-img{width:23px;height:23px;opacity:.65}' +
-    '.lk-social:hover .lk-icon-img,.lk-social:active .lk-icon-img{filter:none;opacity:1}' +
+    '.lk-social:hover .lk-icon-img,.lk-social:active .lk-icon-img{filter:none;opacity:1;transform:scale(1.05)}' +
     '.lk-icon-fb{display:none;flex-shrink:0;width:16px;font-family:\'Bebas Neue\',sans-serif;font-size:14px;color:rgba(255,255,255,.4);text-align:center;transition:color var(--t)}' +
     '.lk-icon-mask.failed{display:none}' +
     '.lk-icon-mask.failed+.lk-icon-fb{display:block}' +
     '.lk-link:hover .lk-icon-fb,.lk-link:active .lk-icon-fb{color:var(--brand,#fff)}' +
-    '.lk-icon-svg{flex-shrink:0;color:rgba(255,255,255,.4);transition:color var(--t)}' +
-    '.lk-link:hover .lk-icon-svg,.lk-link:active .lk-icon-svg{color:var(--brand,#fff)}' +
-    '.lk-icon-inline{flex-shrink:0}' +
+    '.lk-icon-svg{flex-shrink:0;color:rgba(255,255,255,.4);transition:color var(--t),transform var(--t)}' +
+    '.lk-link:hover .lk-icon-svg,.lk-link:active .lk-icon-svg{color:var(--brand,#fff);transform:scale(1.05)}' +
+    '.lk-icon-inline{flex-shrink:0;transition:transform var(--t)}' +
     '.lk-icon-inline .fedi-rest{opacity:.4;transition:opacity var(--t)}' +
     '.lk-icon-inline .fedi-color{opacity:0;transition:opacity var(--t)}' +
+    '.lk-link:hover .lk-icon-inline,.lk-link:active .lk-icon-inline{transform:scale(1.05)}' +
     '.lk-link.rainbow:hover .lk-icon-inline .fedi-rest,.lk-link.rainbow:active .lk-icon-inline .fedi-rest{opacity:0}' +
     '.lk-link.rainbow:hover .lk-icon-inline .fedi-color,.lk-link.rainbow:active .lk-icon-inline .fedi-color{opacity:1}' +
     '.lk-socials{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}' +
@@ -45,7 +46,7 @@
     '.lk-social:hover,.lk-social:active{background:var(--bg3);border-color:var(--brand,#333);box-shadow:0 0 10px rgba(255,255,255,.08);box-shadow:0 0 10px color-mix(in srgb,var(--brand,#333) 25%,transparent)}' +
     '.lk-social:focus-visible{outline:2px solid var(--brand,#fff);outline-offset:-2px}' +
     '.lk-social .lk-icon-mask{width:23px;height:23px;background-color:rgba(255,255,255,.65)}' +
-    '.lk-social:hover .lk-icon-mask,.lk-social:active .lk-icon-mask{background-color:var(--brand,#fff)}' +
+    '.lk-social:hover .lk-icon-mask,.lk-social:active .lk-icon-mask{background-color:var(--brand,#fff);transform:scale(1.05)}' +
     '.lk-social .lk-icon-fb{width:23px;font-size:19px;color:rgba(255,255,255,.65)}' +
     '.lk-social:hover .lk-icon-fb,.lk-social:active .lk-icon-fb{color:var(--brand,#fff)}' +
     '.lk-tiktok:hover,.lk-tiktok:active{border-color:#69c9d0;box-shadow:-2px 0 6px rgba(238,29,82,.5),2px 0 6px rgba(105,201,208,.5)}' +
