@@ -279,7 +279,7 @@ body {
 /* thumbnail */
 .c-thumb {
   position: relative;
-  width: 117px; height: 117px;
+  width: 135px; height: 135px;
   flex-shrink: 0;
   background: #111;
   overflow: hidden;
