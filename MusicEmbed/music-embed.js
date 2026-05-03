@@ -15,7 +15,7 @@ var LB_USER = 'Dalek.coffee';
  * Leave as empty string to fall back to direct LB calls (useful during testing).
  */
 var N8N_NP_WEBHOOK    = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
-var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/760ee94f-0f92-41b3-b833-a39793f50d3e';
+var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
 
 var BRANDS = [
   {id:'yt', name:'YouTube',   short:'YT', color:'#FF0000', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/youtube/black',    url:'https://www.youtube.com/results?search_query='},
