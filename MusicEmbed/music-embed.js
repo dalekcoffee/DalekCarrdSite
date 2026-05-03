@@ -14,7 +14,8 @@ var LB_USER = 'Dalek.coffee';
  *
  * Leave as empty string to fall back to direct LB calls (useful during testing).
  */
-var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
+var N8N_NP_WEBHOOK    = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
+var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/760ee94f-0f92-41b3-b833-a39793f50d3e';
 
 var BRANDS = [
   {id:'yt', name:'YouTube',   short:'YT', color:'#FF0000', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/youtube/black',    url:'https://www.youtube.com/results?search_query='},
@@ -242,7 +243,7 @@ function pollNowPlaying() {
    * so concurrent visitors share one LB call and no CORS issues reach the browser.
    * Response shape: { playing: bool, track: listen_object | null }
    */
-  fetch(N8N_STATS_WEBHOOK + '?range=now_playing&t=' + Date.now())
+  fetch(N8N_NP_WEBHOOK + '?range=now_playing&t=' + Date.now())
     .then(function(r) {
       if (!r.ok) { scheduleNextPoll(); return null; }
       scheduleNextPoll();
@@ -336,6 +337,13 @@ function render(tracks, isRecent) {
   var list = document.getElementById('dkt-list');
   document.getElementById('dkt-h-plays-label').textContent = isRecent ? 'When' : 'Plays';
   list.innerHTML = '';
+  if (!tracks || !tracks.length) {
+    var empty = document.createElement('div');
+    empty.className = 'dkt-empty';
+    empty.textContent = 'No listens for this range yet.';
+    list.appendChild(empty);
+    return;
+  }
   for (var i = 0; i < tracks.length; i++) list.appendChild(buildRow(tracks[i], i, isRecent));
 }
 
@@ -378,10 +386,9 @@ function loadData(range) {
         /* Direct LB format (fallback path) */
         tracks = range === 'recent' ? d.payload.listens : d.payload.recordings;
       }
-      if (tracks && tracks.length) {
-        dataCache[range] = tracks;
-        render(tracks, range === 'recent');
-      }
+      tracks = tracks || [];
+      dataCache[range] = tracks;
+      render(tracks, range === 'recent');
     })
     .catch(function() {});
 }

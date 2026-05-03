@@ -74,6 +74,9 @@
 .dkt-btn .short-label{display:none}
 @media(max-width:480px){.dkt-btn .full-label{display:none}.dkt-btn .short-label{display:inline}}
 
+/* ── Empty state ── */
+.dkt-empty{padding:24px 20px;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center}
+
 /* ── Plays / Recent column ── */
 .dkt-count-col{width:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--dkt-border)}
 .dkt-count-num{font-family:"Bebas Neue",sans-serif;font-size:20px;color:#444}
