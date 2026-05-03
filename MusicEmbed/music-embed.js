@@ -333,14 +333,16 @@ function buildRow(t, idx, isRecent) {
   return row;
 }
 
-function render(tracks, isRecent) {
+function render(tracks, isRecent, range) {
   var list = document.getElementById('dkt-list');
   document.getElementById('dkt-h-plays-label').textContent = isRecent ? 'When' : 'Plays';
   list.innerHTML = '';
   if (!tracks || !tracks.length) {
     var empty = document.createElement('div');
     empty.className = 'dkt-empty';
-    empty.textContent = 'No listens for this range yet.';
+    empty.textContent = range === 'this_month'
+      ? 'Monthly stats are still processing — check back in a few days.'
+      : 'No listens for this range yet.';
     list.appendChild(empty);
     return;
   }
@@ -356,7 +358,7 @@ function render(tracks, isRecent) {
  * Falls back to direct LB calls if N8N_STATS_WEBHOOK is empty (dev/test mode).
  */
 function loadData(range) {
-  if (dataCache[range]) { render(dataCache[range], range === 'recent'); return; }
+  if (dataCache[range]) { render(dataCache[range], range === 'recent', range); return; }
 
   var url;
   if (N8N_STATS_WEBHOOK) {
@@ -388,7 +390,7 @@ function loadData(range) {
       }
       tracks = tracks || [];
       dataCache[range] = tracks;
-      render(tracks, range === 'recent');
+      render(tracks, range === 'recent', range);
     })
     .catch(function() {});
 }
@@ -404,7 +406,11 @@ document.getElementById('dkt-tab-container').addEventListener('click', function(
 
 setTimeout(function() {
   pollNowPlaying();
-  loadData('this_month');
+  var tabs = document.querySelectorAll('.dkt-tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  var yearTab = document.querySelector('.dkt-tab[data-r="this_year"]');
+  if (yearTab) yearTab.classList.add('active');
+  loadData('this_year');
 }, 800);
 
 })();
