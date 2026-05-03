@@ -328,7 +328,7 @@ function buildRow(t, idx, isRecent) {
   row.appendChild(rankCol); row.appendChild(artDiv); row.appendChild(infoDiv); row.appendChild(countCol);
 
   var coverInfo = getCoverInfo(t);
-  setTimeout(function() { loadCoverArt(mainImg, wipeDiv, coverInfo, artist, name); }, idx * 300);
+  setTimeout(function() { loadCoverArt(mainImg, wipeDiv, coverInfo, artist, name); }, idx * 80);
 
   return row;
 }
@@ -411,7 +411,7 @@ setTimeout(function() {
   var yearTab = document.querySelector('.dkt-tab[data-r="this_year"]');
   if (yearTab) yearTab.classList.add('active');
   loadData('this_year');
-}, 800);
+}, 100);
 
 })();
 
