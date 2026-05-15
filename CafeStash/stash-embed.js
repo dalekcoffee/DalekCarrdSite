@@ -171,7 +171,7 @@
   function renderFooter() {
     return '<div class="footer-bar">' +
       '<span class="footer-note"><a href="https://dalek.coffee" target="_blank" rel="noopener noreferrer">dalek.coffee</a>&nbsp;·&nbsp;affiliate links used</span>' +
-      '<div class="footer-badges"><span class="badge badge-fw">Fourthwall</span><span class="badge badge-amz">Amazon</span></div>' +
+      '<div class="footer-badges"><span class="badge badge-pf">Printify</span><span class="badge badge-amz">Amazon</span></div>' +
       '</div>';
   }
 

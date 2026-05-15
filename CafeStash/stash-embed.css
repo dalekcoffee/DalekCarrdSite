@@ -6,7 +6,6 @@
   --bg3: #191919;
   --b1:  #1a1a1a;
   --b2:  #111;
-  --fw:  #f5a623;
   --amz: #ff9900;
   --cof: #c8956c;
   --pur: #7c83ff;
@@ -61,10 +60,10 @@ body {
 .tab:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
 
 /* per-tab accent colours */
-.tab:nth-child(1).active        { color: var(--fw);  border-bottom-color: var(--fw); }
+.tab:nth-child(1).active        { color: var(--cof);  border-bottom-color: var(--cof); }
 .tab:nth-child(2).active        { color: var(--cof); border-bottom-color: var(--cof); }
 .tab:nth-child(3).active        { color: var(--pur); border-bottom-color: var(--pur); }
-.tab:nth-child(1):focus-visible { outline-color: var(--fw); }
+.tab:nth-child(1):focus-visible { outline-color: var(--cof); }
 .tab:nth-child(2):focus-visible { outline-color: var(--cof); }
 .tab:nth-child(3):focus-visible { outline-color: var(--pur); }
 
@@ -114,10 +113,10 @@ body {
 .merch-item:nth-child(3n) { border-right: none; }
 .merch-item:nth-last-child(-n+3) { border-bottom: none; }
 .merch-item:hover, .merch-item:active { background: var(--bg3); }
-.merch-item:focus-visible { outline: 2px solid var(--fw); outline-offset: -2px; }
+.merch-item:focus-visible { outline: 2px solid var(--cof); outline-offset: -2px; }
 .merch-item::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--fw); opacity: 0; transition: opacity var(--t);
+  background: var(--cof); opacity: 0; transition: opacity var(--t);
 }
 .merch-item:hover::before, .merch-item:active::before { opacity: 1; }
 
@@ -155,7 +154,7 @@ body {
   text-transform: uppercase; color: #fff; transition: color var(--t);
 }
 .merch-item:hover .merch-sub,
-.merch-item:active .merch-sub { color: var(--fw); }
+.merch-item:active .merch-sub { color: var(--cof); }
 .merch-item:hover .merch-cta,
 .merch-item:active .merch-cta { color: #fff; }
 
@@ -336,7 +335,7 @@ body {
   font-family: 'Space Mono', monospace;
   font-size: 13px; font-weight: 700;
   letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--fw);
+  color: var(--cof);
   pointer-events: none;
 }
 .coffee-fav-star { font-size: 17px; line-height: 1; }
@@ -434,7 +433,7 @@ body {
   opacity: 0.4; transition: opacity var(--t);
 }
 .badge:hover { opacity: 1; }
-.badge-fw  { color: var(--fw);  border-color: var(--fw); }
+.badge-pf  { color: var(--cof); border-color: var(--cof); }
 .badge-amz { color: var(--amz); border-color: var(--amz); }
 
 /* ════════════════════════════
