@@ -2,11 +2,9 @@
 # One message per line. Blank lines and lines starting with # are ignored.
 # Add as many as you like — a random one is picked on every page load.
 
-Welcome to the cafe.
-Brewing something new today.
-Streaming gremlin energy, please stand by.
-Probably refilling my coffee.
-Building something weird on purpose.
-Example line 1
-Hello world!
-Where am I?
+Good morning!
+Mao mao :3
+Is it nap time? 😩
+Let's get some cofe ☕🫰
+Idk man, I just work here 😒
+Walkies? :3
