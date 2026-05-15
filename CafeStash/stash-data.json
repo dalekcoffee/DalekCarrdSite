@@ -19,6 +19,7 @@
       "icon": "☕",
       "items": [
         { "label": "Whole Bean", "name": "Lavazza Crema E Aroma",    "desc": "Most ordered - rich, smooth Italian espresso blend.", "url": "https://amzn.to/41byfJY", "img": "Images/Coffee/Lavazza Crema E Aroma.png", "favorite": true },
+        { "label": "Whole Bean", "name": "Good Vibes Brazil",        "desc": "Easy-drinking Brazilian roast — smooth and mellow.", "url": "https://amzn.to/4tH6HYK", "img": "Images/Coffee/Good Vibes - Brazil.png", "favorite": true },
         { "label": "Whole Bean", "name": "Stumptown Holler Mountain", "desc": "Bright, fruity medium roast with citrus notes.",      "url": "https://amzn.to/3NIs1OI", "img": "Images/Coffee/Stumptown Coffee - Holler Mountain.png" },
         { "label": "Whole Bean", "name": "Stumptown Hair Bender",     "desc": "Complex blend with dark fruit and chocolate.",        "url": "https://amzn.to/4bXzZeA", "img": "Images/Coffee/Stumptown Hair Bender.png" },
         { "label": "Whole Bean", "name": "Lavazza Espresso",          "desc": "Classic Italian espresso - bold and aromatic.",       "url": "https://amzn.to/4cr1S08", "img": "Images/Coffee/Lavazza Espresso Whole Bean Coffee.png" }
