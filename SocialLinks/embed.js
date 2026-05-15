@@ -123,6 +123,11 @@
     '</svg>' +
     '<span class="lk-link-text">Visit my cafe :3</span><span class="lk-arrow" aria-hidden="true">↗</span></a>' +
 
+    '<a class="lk-link" href="https://ko-fi.com/dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#FF5E5B">' +
+    '<span class="lk-icon-mask" style="--mi:url(\'https://cdn.simpleicons.org/kofi\')" data-fb="KO" aria-hidden="true"></span>' +
+    '<span class="lk-icon-fb" aria-hidden="true">KO</span>' +
+    '<span class="lk-link-text">Ko-fi</span><span class="lk-arrow" aria-hidden="true">↗</span></a>' +
+
     '<a class="lk-link" href="https://cults3d.com/en/users/DalekCoffee/3d-models" target="_blank" rel="noopener noreferrer" style="--brand:#7b3fe4">' +
     '<img class="lk-icon-img" src="https://cults3d.com/favicon.ico" alt="" aria-hidden="true" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
     '<span class="lk-icon-abbr" style="display:none" aria-hidden="true">C3</span>' +
