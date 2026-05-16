@@ -167,7 +167,7 @@
     '<span class="lk-icon-mask" style="--mi:url(\'https://cdn.simpleicons.org/threads\')" data-fb="TH" aria-hidden="true"></span>' +
     '<span class="lk-icon-fb" aria-hidden="true">TH</span><span>Threads</span></a>' +
 
-    '<a class="lk-social" href="https://beamstream.gg/dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#285680">' +
+    '<a class="lk-social" href="https://beamstream.gg/dalek" target="_blank" rel="noopener noreferrer" style="--brand:#285680">' +
     '<img class="lk-icon-img" src="https://beamstream.gg/favicon.ico" alt="" aria-hidden="true" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
     '<span class="lk-icon-abbr" style="display:none" aria-hidden="true">BE</span><span>Beam</span></a>' +
 
