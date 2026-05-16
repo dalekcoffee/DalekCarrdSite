@@ -30,6 +30,9 @@
       '#hs-status[data-status="idle"]{color:#faa81a}',
       '#hs-status[data-status="dnd"]{color:#f04747}',
       '#hs-status[data-status="offline"]{color:#bbb}',
+      '#hs-status[data-status="live"]{color:#9146FF}',
+      '#hs-status[data-status="live"] .hs-icon{color:#ff0033;animation:hs-live-dot 1.2s ease-in-out infinite}',
+      '@keyframes hs-live-dot{0%,100%{opacity:1}50%{opacity:0.35}}',
       '#hs-activity{color:#fff;border-color:#fff}',
       '#hs-motd-text{display:inline-block}',
       '.hs-blink{animation:hs-pulse 1s step-end infinite}',
@@ -76,6 +79,7 @@
 
   /* ── CLOCK ── */
   var STATUS_MAP = {
+    live:    { icon: '●',  label: 'LIVE NOW' },
     online:  { icon: '●',  label: 'ONLINE' },
     idle:    { icon: '🌙', label: 'IDLE' },
     dnd:     { icon: '⛔', label: 'BUSY' },
@@ -132,6 +136,14 @@
     return '🎮';
   }
 
+  function findStream(activities) {
+    if (!activities) return null;
+    for (var i = 0; i < activities.length; i++) {
+      if (activities[i].type === 1) return activities[i];
+    }
+    return null;
+  }
+
   function showActivity(name, icon) {
     actText.textContent = name;
     actIcon.textContent = icon;
@@ -162,6 +174,13 @@
     Promise.all([fetchLanyard(WORK_ID), fetchLanyard(MAIN_ID)]).then(function (results) {
       var workData = results[0];
       var mainData = results[1];
+      var stream   = findStream(mainData.activities);
+
+      if (stream) {
+        applyStatus('live');
+        applyActivity(mainData.activities || []);
+        return;
+      }
       if (workData.discord_status === 'online') {
         applyStatus('dnd');
         showActivity('At Work', '💼');
