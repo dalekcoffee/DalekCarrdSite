@@ -117,7 +117,7 @@
   }
 
   var APP_MAP = [
-    { match: ['plex'],                                    icon: '🍿' },
+    { match: ['plex'],                                    icon: '🍿', color: '#e5a00d' },
     { match: ['blender'],                                 icon: '🎨' },
     { match: ['davinci', 'resolve'],                      icon: '🎬' },
     { match: ['figma'],                                   icon: '✏️' },
@@ -126,15 +126,17 @@
     { match: ['discord'],                                 icon: '💬' }
   ];
 
-  function appIcon(name) {
+  function appStyle(name) {
     var lower = name.toLowerCase();
     for (var i = 0; i < APP_MAP.length; i++) {
       var entry = APP_MAP[i];
       for (var j = 0; j < entry.match.length; j++) {
-        if (lower.indexOf(entry.match[j]) !== -1) return entry.icon;
+        if (lower.indexOf(entry.match[j]) !== -1) {
+          return { icon: entry.icon, color: entry.color || null };
+        }
       }
     }
-    return '🎮';
+    return { icon: '🎮', color: null };
   }
 
   function findStream(activities) {
@@ -145,9 +147,10 @@
     return null;
   }
 
-  function showActivity(name, icon) {
+  function showActivity(name, style) {
     actText.textContent = name;
-    actIcon.textContent = icon;
+    actIcon.textContent = style.icon;
+    actEl.style.color = style.color || '';
     actEl.classList.remove('hs-hidden');
   }
   function hideActivity() {
@@ -158,7 +161,7 @@
     for (var i = 0; i < activities.length; i++) {
       var a = activities[i];
       if (a.type === 0 || a.type === 3) {
-        showActivity(a.name, appIcon(a.name));
+        showActivity(a.name, appStyle(a.name));
         return;
       }
     }
@@ -184,7 +187,7 @@
       }
       if (workData.discord_status === 'online') {
         applyStatus('dnd');
-        showActivity('At Work', '💼');
+        showActivity('At Work', { icon: '💼', color: null });
         return;
       }
       applyStatus(mainData.discord_status);
