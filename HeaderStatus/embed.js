@@ -151,6 +151,7 @@
     actText.textContent = name;
     actIcon.textContent = style.icon;
     actEl.style.color = style.color || '';
+    actEl.style.borderColor = style.color || '';
     actEl.classList.remove('hs-hidden');
   }
   function hideActivity() {
