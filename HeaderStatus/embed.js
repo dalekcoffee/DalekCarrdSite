@@ -34,7 +34,7 @@
       '#hs-status[data-status="live"] .hs-icon{font-size:0;width:10px;height:10px;background:#ff3333;border-radius:50%;align-self:center;animation:hs-live-pulse 1.5s infinite}',
       '@keyframes hs-live-pulse{0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(255,51,51,0.7)}70%{transform:scale(1);box-shadow:0 0 0 8px rgba(255,51,51,0)}100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(255,51,51,0)}}',
       '#hs-activity{color:#fff;border-color:#fff}',
-      '#hs-activity.rainbow [data-role=activity-text]{background:linear-gradient(90deg,#f00,#f80,#ff0,#0c0,#08f,#80f);-webkit-background-clip:text;background-clip:text;color:transparent}',
+      '#hs-activity.rainbow [data-role=activity-text]{background:linear-gradient(90deg,#ff6666,#f80,#ff0,#0c0,#08f,#cc88ff);-webkit-background-clip:text;background-clip:text;color:transparent}',
       '#hs-motd-text{display:inline-block}',
       '.hs-blink{animation:hs-pulse 1s step-end infinite}',
       '@keyframes hs-pulse{0%,100%{opacity:1}50%{opacity:0}}',
@@ -155,7 +155,7 @@
     if (style.rainbow) {
       actEl.style.color = '';
       actEl.style.borderColor = 'transparent';
-      actEl.style.background = 'linear-gradient(#2B2B2B,#2B2B2B) padding-box,linear-gradient(135deg,#f00,#f80,#ff0,#0c0,#08f,#80f) border-box';
+      actEl.style.background = 'linear-gradient(#2B2B2B,#2B2B2B) padding-box,linear-gradient(135deg,#ff6666,#f80,#ff0,#0c0,#08f,#cc88ff) border-box';
       actEl.classList.add('rainbow');
     } else {
       actEl.classList.remove('rainbow');
