@@ -155,7 +155,7 @@
     if (style.rainbow) {
       actEl.style.color = '';
       actEl.style.borderColor = 'transparent';
-      actEl.style.background = 'linear-gradient(rgba(0,0,0,0.75),rgba(0,0,0,0.75)) padding-box,linear-gradient(135deg,#f00,#f80,#ff0,#0c0,#08f,#80f) border-box';
+      actEl.style.background = 'linear-gradient(#2B2B2B,#2B2B2B) padding-box,linear-gradient(135deg,#f00,#f80,#ff0,#0c0,#08f,#80f) border-box';
       actEl.classList.add('rainbow');
     } else {
       actEl.classList.remove('rainbow');
