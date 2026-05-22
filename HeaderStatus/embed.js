@@ -27,7 +27,7 @@
       '#hs-status,#hs-activity{display:inline-flex;align-items:center;gap:6px;padding:3px 14px;border-radius:999px;border:2px solid currentColor;box-shadow:0 0 0 2px #000;font-size:0.8em;font-weight:800;background:rgba(0,0,0,0.75);-webkit-text-stroke:0 transparent !important;text-shadow:none !important}',
       '.hs-icon{font-style:normal !important;display:inline-block;line-height:1}',
       '.hs-emoji{display:inline-block;-webkit-text-stroke:0 transparent;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,-2px 0 0 #000,2px 0 0 #000,0 -2px 0 #000,0 2px 0 #000}',
-      '.hs-cemoji{height:1.4em;width:auto;vertical-align:-0.3em;display:inline-block;filter:drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000)}',
+      '.hs-cemoji{height:1.47em;width:auto;vertical-align:-0.3em;display:inline-block;filter:drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000)}',
       '#hs-status[data-status="online"]{color:#43b581}',
       '#hs-status[data-status="idle"]{color:#faa81a}',
       '#hs-status[data-status="dnd"]{color:#f04747}',
@@ -46,7 +46,7 @@
         '#hs-status,#hs-activity{padding:2px 10px;border-width:1.5px;box-shadow:0 0 0 1.5px #000}',
         '#hs-status[data-status="live"] .hs-icon{width:8px;height:8px}',
         '.hs-emoji{text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,-1.5px 0 0 #000,1.5px 0 0 #000,0 -1.5px 0 #000,0 1.5px 0 #000}',
-        '.hs-cemoji{height:1.2em;filter:drop-shadow(1.5px 0 0 #000) drop-shadow(-1.5px 0 0 #000) drop-shadow(0 1.5px 0 #000) drop-shadow(0 -1.5px 0 #000)}',
+        '.hs-cemoji{height:1.32em;filter:drop-shadow(1.5px 0 0 #000) drop-shadow(-1.5px 0 0 #000) drop-shadow(0 1.5px 0 #000) drop-shadow(0 -1.5px 0 #000)}',
       '}'
     ].join('');
     document.head.appendChild(st);
