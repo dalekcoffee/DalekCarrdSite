@@ -3,7 +3,7 @@
 # Add as many as you like — a random one is picked on every page load.
 # Custom Sharkey emoji: use :shortcode: (e.g. :blobcat:) — pulled live from oshi.social.
 
-Good morning!
+Good morning! :nkoHappy:
 Mao mao :catPlay:
 Is it nap time? :nkoSleep:
 Let's get some cofe :nkoCoffee:
