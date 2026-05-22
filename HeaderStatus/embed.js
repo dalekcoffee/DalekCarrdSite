@@ -3,6 +3,7 @@
 
   var BASE = 'https://dalekcoffee.github.io/DalekCarrdSite/HeaderStatus';
   var MOTD_URL = BASE + '/MOTD.txt';
+  var INSTANCE = 'https://oshi.social';
   var MAIN_ID = '252367431274725377';
   var WORK_ID = '1476219861289144394';
 
@@ -26,6 +27,7 @@
       '#hs-status,#hs-activity{display:inline-flex;align-items:center;gap:6px;padding:3px 14px;border-radius:999px;border:2px solid currentColor;box-shadow:0 0 0 2px #000;font-size:0.8em;font-weight:800;background:rgba(0,0,0,0.75);-webkit-text-stroke:0 transparent !important;text-shadow:none !important}',
       '.hs-icon{font-style:normal !important;display:inline-block;line-height:1}',
       '.hs-emoji{display:inline-block;-webkit-text-stroke:0 transparent;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,-2px 0 0 #000,2px 0 0 #000,0 -2px 0 #000,0 2px 0 #000}',
+      '.hs-cemoji{height:1.4em;width:auto;vertical-align:-0.3em;display:inline-block;filter:drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000)}',
       '#hs-status[data-status="online"]{color:#43b581}',
       '#hs-status[data-status="idle"]{color:#faa81a}',
       '#hs-status[data-status="dnd"]{color:#f04747}',
@@ -44,6 +46,7 @@
         '#hs-status,#hs-activity{padding:2px 10px;border-width:1.5px;box-shadow:0 0 0 1.5px #000}',
         '#hs-status[data-status="live"] .hs-icon{width:8px;height:8px}',
         '.hs-emoji{text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,-1.5px 0 0 #000,1.5px 0 0 #000,0 -1.5px 0 #000,0 1.5px 0 #000}',
+        '.hs-cemoji{height:1.2em;filter:drop-shadow(1.5px 0 0 #000) drop-shadow(-1.5px 0 0 #000) drop-shadow(0 1.5px 0 #000) drop-shadow(0 -1.5px 0 #000)}',
       '}'
     ].join('');
     document.head.appendChild(st);
@@ -216,12 +219,40 @@
   setInterval(refresh, 60000);
 
   /* ── MOTD ── */
-  function wrapEmoji(str) {
+  var SHORTCODE_RE = /:([a-zA-Z0-9_.@-]+):/g;
+
+  function nk(n) { return n.replace(/@[^@]*$/, '').toLowerCase(); }
+
+  function loadEmojis() {
+    return fetch(INSTANCE + '/api/emojis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}'
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var map = {};
+        (j.emojis || []).forEach(function (e) { if (e.name && e.url) map[nk(e.name)] = e.url; });
+        return map;
+      })
+      .catch(function () { return {}; });
+  }
+
+  function renderMotd(str, map) {
     var div = document.createElement('div');
     div.textContent = str;
-    var escaped = div.innerHTML;
-    return escaped.replace(/(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)/gu,
+    var html = div.innerHTML; // HTML-escaped
+    // Custom Sharkey shortcodes → <img>. Unknown shortcode → hide (render nothing),
+    // never show the raw :name:. If the image 404s at load time, remove it.
+    html = html.replace(SHORTCODE_RE, function (m, name) {
+      var url = map[nk(name)];
+      if (!url) return '';
+      return '<img class="hs-cemoji" src="' + url + '" alt="' + name + '" onerror="this.remove()">';
+    });
+    // Unicode emoji → outlined span.
+    html = html.replace(/(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)/gu,
       '<span class="hs-emoji">$1</span>');
+    return html;
   }
 
   fetch(MOTD_URL, { cache: 'no-store' })
@@ -231,8 +262,19 @@
       var lines = text.split('\n').map(function (l) { return l.trim(); })
         .filter(function (l) { return l && l.charAt(0) !== '#'; });
       if (!lines.length) return;
-      motdText.innerHTML = wrapEmoji(lines[Math.floor(Math.random() * lines.length)]);
-      motdRow.classList.remove('hs-hidden');
+      var line = lines[Math.floor(Math.random() * lines.length)];
+
+      function show(map) {
+        motdText.innerHTML = renderMotd(line, map || {});
+        motdRow.classList.remove('hs-hidden');
+      }
+
+      // Only hit the emoji API when this line actually uses a shortcode.
+      if (/:[a-zA-Z0-9_.@-]+:/.test(line)) {
+        loadEmojis().then(show);
+      } else {
+        show({});
+      }
     })
     .catch(function () { /* leave hidden on failure */ });
 })();

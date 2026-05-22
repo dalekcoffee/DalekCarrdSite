@@ -1,6 +1,7 @@
 # MOTD source for the dalek.coffee header embed.
 # One message per line. Blank lines and lines starting with # are ignored.
 # Add as many as you like — a random one is picked on every page load.
+# Custom Sharkey emoji: use :shortcode: (e.g. :blobcat:) — pulled live from oshi.social.
 
 Good morning!
 Mao mao :3
