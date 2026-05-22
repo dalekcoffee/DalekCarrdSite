@@ -46,7 +46,7 @@
         '#hs-status,#hs-activity{padding:2px 10px;border-width:1.5px;box-shadow:0 0 0 1.5px #000}',
         '#hs-status[data-status="live"] .hs-icon{width:8px;height:8px}',
         '.hs-emoji{text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,-1.5px 0 0 #000,1.5px 0 0 #000,0 -1.5px 0 #000,0 1.5px 0 #000}',
-        '.hs-cemoji{height:1.32em;filter:drop-shadow(1.5px 0 0 #000) drop-shadow(-1.5px 0 0 #000) drop-shadow(0 1.5px 0 #000) drop-shadow(0 -1.5px 0 #000)}',
+        '.hs-cemoji{height:1.39em;filter:drop-shadow(1.5px 0 0 #000) drop-shadow(-1.5px 0 0 #000) drop-shadow(0 1.5px 0 #000) drop-shadow(0 -1.5px 0 #000)}',
       '}'
     ].join('');
     document.head.appendChild(st);
