@@ -69,13 +69,15 @@
     return str.replace(/:([a-zA-Z0-9_.@-]+):/g, function (match, name) {
       var url = emojiCache[normalizeEmojiName(name)];
       return url
-        ? '<img style="height:' + size + ';vertical-align:middle;margin:0 1px;" src="' + url + '">'
+        ? '<img style="height:' + size + ';vertical-align:middle;margin:0 1px;" src="' + escapeHtml(url) + '">'
         : match;
     });
   }
 
   function escapeHtml(str) {
-    return str.replace(/[<>]/g, function (c) { return c === '<' ? '&lt;' : '&gt;'; });
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
   }
 
   /* ───────────────────────── Text rendering ──────────────────────── */
@@ -188,7 +190,7 @@
     });
     out = out.replace(/\x00(\d+)\x00/g, function (m, n) {
       var link = links[+n];
-      return '<a href="' + link[1] + '" target="_blank">' + renderEmojis(escapeHtml(link[0]), '1.3em') + '</a>';
+      return '<a href="' + escapeHtml(link[1]) + '" target="_blank">' + renderEmojis(escapeHtml(link[0]), '1.3em') + '</a>';
     });
     out = out.replace(/\x03(\d+)\x03/g, function (m, n) { return '<code>' + escapeHtml(inlineCodes[+n]) + '</code>'; });
     return out.replace(/\x02(\d+)\x02/g, function (m, n) { return '<pre><code>' + escapeHtml(codeBlocks[+n]) + '</code></pre>'; });
@@ -226,7 +228,7 @@
       var icon;
 
       if (url) {
-        icon = '<img style="height:1.875em;vertical-align:middle" src="' + url + '">';
+        icon = '<img style="height:1.875em;vertical-align:middle" src="' + escapeHtml(url) + '">';
       } else if (HEART_KEYS.indexOf(label) !== -1 || label.indexOf('heart') !== -1) {
         icon = '<span style="color:#e0334c">❤</span>';
       } else {
@@ -243,10 +245,10 @@
   function mediaTile(f) {
     var media;
     if (f.type.indexOf('image') !== -1) {
-      media = '<img src="' + f.url + '" loading="lazy" draggable="false"' +
+      media = '<img src="' + escapeHtml(f.url) + '" loading="lazy" draggable="false"' +
         (f.comment ? ' alt="' + escapeHtml(f.comment) + '"' : '') + '>';
     } else {
-      media = '<video src="' + f.url + '" controls draggable="false"></video>';
+      media = '<video src="' + escapeHtml(f.url) + '" controls draggable="false"></video>';
     }
     if (f.isSensitive) {
       media = '<div class="_sens">' + media + '</div>' +
@@ -316,9 +318,9 @@
 
     var quote = quoted
       ? '<div class="_qt">' +
-          '<a href="' + BASE + '/notes/' + quoted.id + '" target="_blank" class="_qh">' +
+          '<a href="' + BASE + '/notes/' + escapeHtml(quoted.id) + '" target="_blank" class="_qh">' +
             renderInline(quoted.user.name || quoted.user.username, quoted.user.emojis) +
-            ' @' + quoted.user.username +
+            ' @' + escapeHtml(quoted.user.username) +
           '</a>' +
           '<div class="_nx">' + renderText(quoted.text || '', quoted.emojis) + '</div>' +
           buildMedia(quoted) +
@@ -338,11 +340,11 @@
 
     var author = note.user;
     return '<div class="_no">' + boostBanner +
-      '<div class="_nr"><img src="' + author.avatarUrl + '" class="_na" loading="lazy">' +
+      '<div class="_nr"><img src="' + escapeHtml(author.avatarUrl) + '" class="_na" loading="lazy">' +
       '<div class="_nb">' +
         '<div class="_nt">' +
           '<span class="_nn">' + renderInline(author.name || author.username, author.emojis) + '</span>' +
-          '<span class="_nh">@' + author.username + '</span>' +
+          '<span class="_nh">@' + escapeHtml(author.username) + '</span>' +
           '<span class="_ts">' + timeAgo(note.createdAt) + '</span>' +
         '</div>' +
         cwBlock + body +
@@ -351,7 +353,7 @@
             '<span>↩ ' + (note.repliesCount || 0) + '</span>' +
             '<span>↺ ' + (note.renoteCount || 0) + '</span>' +
           '</div>' +
-          '<a href="' + BASE + '/notes/' + note.id + '" target="_blank" class="_op">View ↗</a>' +
+          '<a href="' + BASE + '/notes/' + escapeHtml(note.id) + '" target="_blank" class="_op">View ↗</a>' +
         '</div>' +
       '</div></div></div>';
   }
@@ -479,14 +481,15 @@
     cacheEmojis(user.emojis);
 
     var header = document.getElementById('_hdr');
-    if (user.bannerUrl) header.style.backgroundImage = 'url(' + user.bannerUrl + ')';
+    if (user.bannerUrl && /^https?:\/\//.test(user.bannerUrl))
+      header.style.backgroundImage = 'url("' + user.bannerUrl.replace(/["'()\\]/g, '') + '")';
     header.innerHTML =
       '<div class="_hc"><div class="_hl">' +
-        '<img src="' + user.avatarUrl + '" class="_av">' +
+        '<img src="' + escapeHtml(user.avatarUrl) + '" class="_av">' +
         '<div class="_on">' + renderInline(user.name || user.username, user.emojis) + '</div>' +
-        '<div class="_oh">@' + user.username + '@oshi.social</div>' +
+        '<div class="_oh">@' + escapeHtml(user.username) + '@oshi.social</div>' +
       '</div>' +
-      '<a href="' + BASE + '/@' + user.username + '" target="_blank" class="_bt">View on Oshi.Social ↗</a>' +
+      '<a href="' + BASE + '/@' + escapeHtml(user.username) + '" target="_blank" class="_bt">View on Oshi.Social ↗</a>' +
       '</div>';
 
     load(true);
