@@ -197,22 +197,27 @@
       if (stream) {
         applyStatus('live');
         applyActivity(mainData.activities || []);
+        setMotdCategory('online');
         return;
       }
       if (workData.discord_status === 'online') {
         applyStatus('dnd');
         showActivity('At Work', { icon: '💼', color: null });
+        setMotdCategory('working');
         return;
       }
-      applyStatus(mainData.discord_status);
-      if (mainData.discord_status === 'idle') {
+      var s = mainData.discord_status;
+      applyStatus(s);
+      if (s === 'idle') {
         hideActivity();
       } else {
         applyActivity(mainData.activities || []);
       }
+      setMotdCategory(s === 'online' || s === 'dnd' ? 'online' : 'away');
     }).catch(function () {
       applyStatus('offline');
       hideActivity();
+      setMotdCategory('away');
     });
   }
   refresh();
@@ -255,26 +260,64 @@
     return html;
   }
 
+  function parseMotd(text) {
+    var pools = { global: [], working: [], online: [], away: [], rare: [] };
+    var current = 'global';
+    text.split('\n').forEach(function (raw) {
+      var l = raw.trim();
+      if (!l || l.charAt(0) === '#') return;
+      var m = l.match(/^\[([a-z]+)\]$/i);
+      if (m && pools[m[1].toLowerCase()]) { current = m[1].toLowerCase(); return; }
+      pools[current].push(l);
+    });
+    return pools;
+  }
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function pickMotd(pools, category) {
+    if (pools.rare.length && Math.random() < 0.01) return pick(pools.rare);
+    var bucket = pools.global.concat(pools[category] || []);
+    return bucket.length ? pick(bucket) : null;
+  }
+
+  function showMotd(line) {
+    if (!line) return;
+    function show(map) {
+      motdText.innerHTML = renderMotd(line, map || {});
+      motdRow.classList.remove('hs-hidden');
+    }
+    // Only hit the emoji API when this line actually uses a shortcode.
+    if (/:[a-zA-Z0-9_.@-]+:/.test(line)) {
+      loadEmojis().then(show);
+    } else {
+      show({});
+    }
+  }
+
+  // Fetch + parse once; selection waits until the first status resolves so the
+  // right pool is used. The Lanyard failure path sets category 'away' as fallback.
+  var motdPools = null;
+  var motdShown = false;
+  var motdCategory = null;
+
+  function maybeShowMotd() {
+    if (motdShown || !motdPools || motdCategory === null) return;
+    motdShown = true;
+    showMotd(pickMotd(motdPools, motdCategory));
+  }
+
+  function setMotdCategory(category) {
+    if (motdCategory === null) motdCategory = category;
+    maybeShowMotd();
+  }
+
   fetch(MOTD_URL, { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.text() : ''; })
     .then(function (text) {
       if (!text) return;
-      var lines = text.split('\n').map(function (l) { return l.trim(); })
-        .filter(function (l) { return l && l.charAt(0) !== '#'; });
-      if (!lines.length) return;
-      var line = lines[Math.floor(Math.random() * lines.length)];
-
-      function show(map) {
-        motdText.innerHTML = renderMotd(line, map || {});
-        motdRow.classList.remove('hs-hidden');
-      }
-
-      // Only hit the emoji API when this line actually uses a shortcode.
-      if (/:[a-zA-Z0-9_.@-]+:/.test(line)) {
-        loadEmojis().then(show);
-      } else {
-        show({});
-      }
+      motdPools = parseMotd(text);
+      maybeShowMotd();
     })
     .catch(function () { /* leave hidden on failure */ });
 })();

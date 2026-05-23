@@ -1,8 +1,17 @@
 # MOTD source for the dalek.coffee header embed.
 # One message per line. Blank lines and lines starting with # are ignored.
-# Add as many as you like — a random one is picked on every page load.
 # Custom Sharkey emoji: use :shortcode: (e.g. :blobcat:) — pulled live from oshi.social.
+#
+# Sections: a line that is exactly [name] starts a pool. Lines before any section
+# are treated as [global]. A random line is picked on every page load from
+# [global] PLUS the pool matching my current status:
+#   [working] — shown when I'm at work
+#   [online]  — shown when I'm online, busy/DND, or live
+#   [away]    — shown when I'm idle, offline, or status can't be read
+# [rare] is a status-independent easter-egg pool: 1% chance per load to override
+# the normal pick. Leave a section empty until you have lines for it.
 
+[global]
 Good morning! :nkoHappy:
 Mao mao :catPlay:
 Is it nap time? :nkoSleep:
@@ -19,3 +28,11 @@ I 💖 :protoflux:
 Here ya go :tylenol: :PeepoLove:
 Welcome in! :nkoPat:
 Plotting things :nkoEvil:
+
+[working]
+
+[online]
+
+[away]
+
+[rare]
