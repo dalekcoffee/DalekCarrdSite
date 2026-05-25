@@ -310,11 +310,23 @@
     if (!isBoost && !quoted && n.text && n.text.trim()[0] === '@') return '';
 
     var cwText  = note.cw || (isBoost && n.cw) || null;
-    var cwBlock = cwText
-      ? '<div class="_cw"><span class="_cwl">CW</span><span class="_cwt">' +
-          renderInline(cwText, note.emojis) +
-        '</span><button class="_cwb">Show ▼</button></div>'
-      : '';
+    var cwBlock = '';
+    if (cwText) {
+      // Tally what sits behind the warning so the button reads like Misskey's
+      // native "Show content (N characters, M files)".
+      var hiddenChars = (note.text || '').length;
+      var hiddenFiles = (note.files || []).length;
+      var parts = [];
+      if (hiddenChars) parts.push(hiddenChars + ' character' + (hiddenChars === 1 ? '' : 's'));
+      if (hiddenFiles) parts.push(hiddenFiles + ' file' + (hiddenFiles === 1 ? '' : 's'));
+      var cwMeta = parts.length ? '(' + parts.join(', ') + ')' : '';
+
+      cwBlock =
+        '<div class="_cwt">' + renderInline(cwText, note.emojis) + '</div>' +
+        '<button class="_cwb" type="button" data-meta="' + cwMeta + '">Show content' +
+          (cwMeta ? '<span class="_cwn"> ' + cwMeta + '</span>' : '') +
+        '</button>';
+    }
 
     var quote = quoted
       ? '<div class="_qt">' +
@@ -392,11 +404,18 @@
 
   // Delegated click / tap — covers notes added by pagination.
   timeline.addEventListener('click', function (e) {
-    // CW reveal: toggle the matching ._cwx body.
+    // CW reveal: toggle the matching ._cwx body; the char/file meta only shows
+    // in the collapsed "Show content" state.
     var cwBtn = e.target.closest('._cwb');
     if (cwBtn) {
       var body = cwBtn.closest('._nb').querySelector('._cwx');
-      if (body) cwBtn.textContent = body.classList.toggle('_cwv') ? 'Hide ▲' : 'Show ▼';
+      if (body) {
+        var shown = body.classList.toggle('_cwv');
+        var meta = cwBtn.getAttribute('data-meta') || '';
+        cwBtn.innerHTML = shown
+          ? 'Hide content'
+          : 'Show content' + (meta ? '<span class="_cwn"> ' + meta + '</span>' : '');
+      }
       return;
     }
 

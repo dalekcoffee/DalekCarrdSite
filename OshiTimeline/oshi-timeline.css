@@ -263,44 +263,42 @@
 }
 
 /* ──────────────────────── Content warning ──────────────────────── */
-#ofs ._cw {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-#ofs ._cwl {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #f0a030;
-  background: rgba(240, 160, 48, .12);
-  border: 1px solid rgba(240, 160, 48, .3);
-  border-radius: 5px;
-  padding: 2px 7px;
-}
+/* Summary shows as plain post text; a full-width bar reveals the body —
+   matching the native Misskey/Sharkey "Show content (N characters)" style. */
 #ofs ._cwt {
-  font-size: 15px;
-  color: rgba(255, 255, 255, .6);
-  flex: 1;
+  font-size: 18px;
+  color: #ddd;
+  line-height: 1.7;
   word-break: break-word;
 }
 #ofs ._cwb {
-  padding: 4px 12px;
-  background: rgba(103, 107, 247, .15);
-  border: 1px solid rgba(103, 107, 247, .4);
-  color: #9a9ef9;
-  font-size: 12px;
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, .07);
+  border: none;
+  border-radius: 8px;
+  color: #d4d4d4;
+  font-size: 15px;
   font-weight: 700;
-  border-radius: 6px;
+  text-align: center;
   cursor: pointer;
+  transition: background .15s;
+}
+#ofs ._cwb:hover {
+  background: rgba(255, 255, 255, .12);
+}
+#ofs ._cwn {
+  font-weight: 400;
+  color: rgba(255, 255, 255, .4);
 }
 #ofs ._cwx {
   display: none;
 }
 #ofs ._cwx._cwv {
   display: block;
+  margin-top: 12px;
 }
 
 /* ────────────────────────────── Quote ──────────────────────────── */
