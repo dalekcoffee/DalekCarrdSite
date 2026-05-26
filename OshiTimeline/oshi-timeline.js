@@ -90,7 +90,9 @@
   // forbids brackets, so the caller runs this a few times to unwind nesting from
   // the inside out. Unknown tags degrade to their bare content.
   function applyMfmFns(s) {
-    return s.replace(/\$\[([a-z0-9]+)((?:\.[^\s\]]+)*)\s([^\[\]]*)\]/gi, function (m, name, params, inner) {
+    // params is a flat run (not a nested quantifier) to avoid catastrophic
+    // backtracking; each handler still parses it with its own .match/.indexOf.
+    return s.replace(/\$\[([a-z0-9]+)([^\s\]]*)\s([^\[\]]*)\]/gi, function (m, name, params, inner) {
       name = name.toLowerCase();
 
       var scale = name.match(/^x([2-4])$/);
@@ -185,17 +187,17 @@
     var _prev;
     do { _prev = out; out = out.replace(_tagRe, _restoreTag); } while (out !== _prev);
 
-    out = out.replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank">$1</a>');
+    out = out.replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
     out = renderEmojis(out, '1.3em');
 
     // Reinsert placeholders: mentions, links, then code (escaped raw).
     out = out.replace(/\x01(\d+)\x01/g, function (m, n) {
       var mu = mentions[+n], handle = '@' + mu[0] + (mu[1] ? '@' + mu[1] : '');
-      return '<a href="' + BASE + '/' + handle + '" target="_blank">' + handle + '</a>';
+      return '<a href="' + BASE + '/' + handle + '" target="_blank" rel="noopener noreferrer">' + handle + '</a>';
     });
     out = out.replace(/\x00(\d+)\x00/g, function (m, n) {
       var link = links[+n];
-      return '<a href="' + escapeHtml(link[1]) + '" target="_blank">' + renderEmojis(escapeHtml(link[0]), '1.3em') + '</a>';
+      return '<a href="' + escapeHtml(link[1]) + '" target="_blank" rel="noopener noreferrer">' + renderEmojis(escapeHtml(link[0]), '1.3em') + '</a>';
     });
     out = out.replace(/\x03(\d+)\x03/g, function (m, n) { return '<code>' + escapeHtml(inlineCodes[+n]) + '</code>'; });
     return out.replace(/\x02(\d+)\x02/g, function (m, n) { return '<pre><code>' + escapeHtml(codeBlocks[+n]) + '</code></pre>'; });
@@ -335,7 +337,7 @@
 
     var quote = quoted
       ? '<div class="_qt">' +
-          '<a href="' + BASE + '/notes/' + escapeHtml(quoted.id) + '" target="_blank" class="_qh">' +
+          '<a href="' + BASE + '/notes/' + escapeHtml(quoted.id) + '" target="_blank" rel="noopener noreferrer" class="_qh">' +
             renderInline(quoted.user.name || quoted.user.username, quoted.user.emojis) +
             ' @' + escapeHtml(quoted.user.username) +
           '</a>' +
@@ -377,7 +379,7 @@
             '<span>↩ ' + (note.repliesCount || 0) + '</span>' +
             '<span>↺ ' + (note.renoteCount || 0) + '</span>' +
           '</div>' +
-          '<a href="' + BASE + '/notes/' + escapeHtml(note.id) + '" target="_blank" class="_op">View ↗</a>' +
+          '<a href="' + BASE + '/notes/' + escapeHtml(note.id) + '" target="_blank" rel="noopener noreferrer" class="_op">View ↗</a>' +
         '</div>' +
       '</div></div></div>';
   }
@@ -520,7 +522,7 @@
         '<div class="_on">' + renderInline(user.name || user.username, user.emojis) + '</div>' +
         '<div class="_oh">@' + escapeHtml(user.username) + '@oshi.social</div>' +
       '</div>' +
-      '<a href="' + BASE + '/@' + escapeHtml(user.username) + '" target="_blank" class="_bt">View on Oshi.Social ↗</a>' +
+      '<a href="' + BASE + '/@' + escapeHtml(user.username) + '" target="_blank" rel="noopener noreferrer" class="_bt">View on Oshi.Social ↗</a>' +
       '</div>';
 
     load(true);
