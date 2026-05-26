@@ -173,12 +173,17 @@
     out = out.replace(/\*([^*\n]+)\*/g, '<i>$1</i>')
              .replace(/(^|\W)_([^_\n]+)_(?=\W|$)/g, '$1<i>$2</i>');
 
-    // MFM function tags ($[…]); a few passes unwind light nesting.
-    out = applyMfmFns(applyMfmFns(applyMfmFns(out)));
+    // MFM function tags ($[…]); loop unwinds nesting from the inside out.
+    // 6 passes handles up to 6 levels deep, covering all real-world MFM posts.
+    for (var pass = 0; pass < 6; pass++) out = applyMfmFns(out);
 
     // Re-enable a small allow-list of inline tags that were escaped above.
-    out = out.replace(/&lt;(small|center|i|b|s)&gt;(.*?)&lt;\/(small|center|i|b|s)&gt;/g,
-      function (m, tag, inner) { return '<' + tag + '>' + inner + '</' + tag + '>'; });
+    // Backreference \1 prevents &lt;center&gt; being closed by the first &lt;/small&gt;.
+    // Loop until stable so nested pairs (e.g. <small><small>) fully resolve.
+    var _tagRe = /&lt;(small|center|i|b|s)&gt;(.*?)&lt;\/\1&gt;/g;
+    var _restoreTag = function (m, tag, inner) { return '<' + tag + '>' + inner + '</' + tag + '>'; };
+    var _prev;
+    do { _prev = out; out = out.replace(_tagRe, _restoreTag); } while (out !== _prev);
 
     out = out.replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank">$1</a>');
     out = renderEmojis(out, '1.3em');
