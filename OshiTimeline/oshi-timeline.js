@@ -344,8 +344,15 @@
         '</div>'
       : '';
 
-    var content = '<div class="_nx">' + renderText(note.text || '', note.emojis) + '</div>' +
-      quote + buildMedia(note) + renderReactions(note.reactions);
+    var bodyText = renderText(note.text || '', note.emojis);
+    var bodyHtml = bodyText.indexOf('$[') !== -1
+      ? '<div class="_nx">' +
+          '<span class="_mfm-msg">Preview unavailable</span>' +
+          '<a href="' + BASE + '/notes/' + escapeHtml(note.id) + '" target="_blank" rel="noopener noreferrer" class="_cwb">View on Oshi.Social ↗</a>' +
+        '</div>'
+      : '<div class="_nx">' + bodyText + '</div>';
+
+    var content = bodyHtml + quote + buildMedia(note) + renderReactions(note.reactions);
 
     // Collapse the body inside ._cwx when a CW is present (toggle reveals it).
     var body = cwText ? '<div class="_cwx">' + content + '</div>' : content;

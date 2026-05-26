@@ -464,6 +464,14 @@
   opacity: .7;
 }
 
+/* ─────────────────── Complex MFM fallback ──────────────────────── */
+/* Shown when MFM nesting is too deep for the parser to resolve. */
+#ofs ._mfm-msg {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, .35);
+}
+
 /* ──────────────────────── Load more / empty ────────────────────── */
 #ofs ._lw {
   padding: 10px 20px 20px;
