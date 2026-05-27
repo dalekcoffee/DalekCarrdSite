@@ -64,6 +64,13 @@
     '<div class="pj-desc">Free Services for<br>fellow VR Creators</div>' +
     '</a>' +
 
+    '<a class="pj-item" href="#" target="_blank" rel="noopener noreferrer" style="--brand:#1F2322">' +
+    '<span class="pj-arrow" aria-hidden="true">↗</span>' +
+    '<img class="pj-logo" src="' + BASE + 'CarrdPlaceholderLogo.png" alt="Project logo">' +
+    '<div class="pj-name">????</div>' +
+    '<div class="pj-desc">????<br>????</div>' +
+    '</a>' +
+
     '</div>' +
     '</div>' +
     '</div>';
