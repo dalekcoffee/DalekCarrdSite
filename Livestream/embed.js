@@ -91,6 +91,10 @@
       '.ls-points:hover,.ls-points:active{background:#141414;box-shadow:inset 0 -2px 0 var(--brand)}',
       '.ls-points:hover .pts-main,.ls-points:active .pts-main{color:var(--brand)}',
       '.ls-points:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}',
+      '.ls-points.ls-pulse{animation:ls-pts-pulse 1.4s ease-out}',
+      '.ls-points.ls-pulse .pts-main{animation:ls-pts-text 1.4s ease-out}',
+      '@keyframes ls-pts-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5)}35%{background:#171029}70%{box-shadow:0 0 0 12px rgba(169,112,255,0)}100%{background:#0c0c0c;box-shadow:0 0 0 0 rgba(169,112,255,0)}}',
+      '@keyframes ls-pts-text{0%,100%{color:#fff}30%{color:var(--brand)}}',
       '.ls-chat-frame{position:relative;flex:1;min-height:0;background:#18181b}',
       '#ls-card iframe{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block;border:none;background:transparent}',
 
@@ -140,7 +144,7 @@
           '<div class="ls-main">' +
             '<div class="ls-vtabs" id="ls-vtabs">' +
               '<button class="ls-vtab active" type="button" data-tab="beam" aria-pressed="true" style="--brand:#5b9bd5">' +
-                '<span class="vt-name">Beam</span><span class="vt-tip">Ad-free!</span>' +
+                '<span class="vt-name">Beam</span><span class="vt-tip">Ad-free player!</span>' +
               '</button>' +
               '<button class="ls-vtab" type="button" data-tab="twitch" aria-pressed="false" style="--brand:#a970ff">' +
                 '<span class="vt-name">Twitch</span><span class="vt-tip">Native player</span>' +
@@ -153,7 +157,7 @@
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
             '<a class="ls-chat-head ls-points" href="https://www.twitch.tv/dalekcoffee" target="_blank" rel="noopener noreferrer" title="Channel points are only earned on Twitch itself — open this tab and keep it open (you can mute it) while you watch here.">' +
-              '<span class="pts-main">Earn channel points</span>' +
+              '<span class="pts-main">Want to earn channel points?</span>' +
               '<span class="pts-sub">(keep a muted twitch tab open in the background)</span>' +
             '</a>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
@@ -286,6 +290,14 @@
     var btn = e.target.closest && e.target.closest('.ls-vtab');
     if (btn) selectTab(btn.getAttribute('data-tab'));
   });
+
+  /* ── POINTS CTA PULSE ── */
+  var ptsBtn = mount.querySelector('.ls-points');
+  var PTS_PULSE_MS = 10000;  /* build mode: every 10s — bump to 300000 (5 min) later */
+  if (ptsBtn) setInterval(function () {
+    ptsBtn.classList.add('ls-pulse');
+    setTimeout(function () { ptsBtn.classList.remove('ls-pulse'); }, 1400);
+  }, PTS_PULSE_MS);
 
   /* ── COLLAPSE / LIVE STATE ── */
   function applyOpenState(open) {
