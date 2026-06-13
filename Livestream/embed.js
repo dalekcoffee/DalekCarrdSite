@@ -88,6 +88,7 @@
       '.ls-points{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:#fff;cursor:pointer;--brand:#a970ff;transition:background .2s,color .2s,box-shadow .2s}',
       '.ls-points .pts-main{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1.1}',
       '.ls-points .pts-sub{font-size:8px;letter-spacing:.03em;opacity:.65;line-height:1.1}',
+      '.ls-points .pts-launch{vertical-align:-2px;flex-shrink:0}',
       '.ls-points:hover,.ls-points:active{background:#141414;box-shadow:inset 0 -2px 0 var(--brand)}',
       '.ls-points:hover .pts-main,.ls-points:active .pts-main{color:var(--brand)}',
       '.ls-points:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}',
@@ -157,8 +158,12 @@
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
             '<a class="ls-chat-head ls-points" href="https://www.twitch.tv/dalekcoffee" target="_blank" rel="noopener noreferrer" title="Channel points are only earned on Twitch itself — open this tab and keep it open (you can mute it) while you watch here.">' +
-              '<span class="pts-main">Want to earn channel points?</span>' +
-              '<span class="pts-sub">(keep a muted twitch tab open in the background)</span>' +
+              '<span class="pts-main">Want to earn channel points? ' +
+                '<svg class="pts-launch" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+                  '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>' +
+                '</svg>' +
+              '</span>' +
+              '<span class="pts-sub">Keep a muted twitch tab in the background!</span>' +
             '</a>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
           '</div>' +
@@ -294,10 +299,17 @@
   /* ── POINTS CTA PULSE ── */
   var ptsBtn = mount.querySelector('.ls-points');
   var PTS_PULSE_MS = 10000;  /* build mode: every 10s — bump to 300000 (5 min) later */
-  if (ptsBtn) setInterval(function () {
-    ptsBtn.classList.add('ls-pulse');
-    setTimeout(function () { ptsBtn.classList.remove('ls-pulse'); }, 1400);
-  }, PTS_PULSE_MS);
+  if (ptsBtn) {
+    var ptsPulse = setInterval(function () {
+      ptsBtn.classList.add('ls-pulse');
+      setTimeout(function () { ptsBtn.classList.remove('ls-pulse'); }, 1400);
+    }, PTS_PULSE_MS);
+    /* Once they click through, stop nagging for this page load (no persistence — resets on reload/close). */
+    ptsBtn.addEventListener('click', function () {
+      clearInterval(ptsPulse);
+      ptsBtn.classList.remove('ls-pulse');
+    });
+  }
 
   /* ── COLLAPSE / LIVE STATE ── */
   function applyOpenState(open) {
