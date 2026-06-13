@@ -92,8 +92,8 @@
       '.ls-points:hover,.ls-points:active{background:#141414;box-shadow:inset 0 -2px 0 var(--brand)}',
       '.ls-points:hover .pts-main,.ls-points:active .pts-main{color:var(--brand)}',
       '.ls-points:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}',
-      '.ls-points.ls-pulse{animation:ls-pts-pulse 1.4s ease-out}',
-      '.ls-points.ls-pulse .pts-main{animation:ls-pts-text 1.4s ease-out}',
+      '.ls-points.ls-pulse{animation:ls-pts-pulse 2.8s ease-out}',
+      '.ls-points.ls-pulse .pts-main{animation:ls-pts-text 2.8s ease-out}',
       '@keyframes ls-pts-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5)}35%{background:#171029}70%{box-shadow:0 0 0 12px rgba(169,112,255,0)}100%{background:#0c0c0c;box-shadow:0 0 0 0 rgba(169,112,255,0)}}',
       '@keyframes ls-pts-text{0%,100%{color:#fff}30%{color:var(--brand)}}',
       '.ls-chat-frame{position:relative;flex:1;min-height:0;background:#18181b}',
@@ -298,11 +298,11 @@
 
   /* ── POINTS CTA PULSE ── */
   var ptsBtn = mount.querySelector('.ls-points');
-  var PTS_PULSE_MS = 60000;  /* pulse the points CTA once a minute */
+  var PTS_PULSE_MS = 30000;  /* pulse the points CTA every 30 seconds */
   if (ptsBtn) {
     var ptsPulse = setInterval(function () {
       ptsBtn.classList.add('ls-pulse');
-      setTimeout(function () { ptsBtn.classList.remove('ls-pulse'); }, 1400);
+      setTimeout(function () { ptsBtn.classList.remove('ls-pulse'); }, 2800);
     }, PTS_PULSE_MS);
     /* Once they click through, stop nagging for this page load (no persistence — resets on reload/close). */
     ptsBtn.addEventListener('click', function () {
