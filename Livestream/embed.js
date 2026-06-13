@@ -298,7 +298,7 @@
 
   /* ── POINTS CTA PULSE ── */
   var ptsBtn = mount.querySelector('.ls-points');
-  var PTS_PULSE_MS = 10000;  /* build mode: every 10s — bump to 300000 (5 min) later */
+  var PTS_PULSE_MS = 60000;  /* pulse the points CTA once a minute */
   if (ptsBtn) {
     var ptsPulse = setInterval(function () {
       ptsBtn.classList.add('ls-pulse');
