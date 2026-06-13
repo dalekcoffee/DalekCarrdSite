@@ -85,6 +85,12 @@
       '#ls-video.ls-show-beam #ls-twitch,#ls-video.ls-show-twitch #ls-beam{z-index:1}',
       '.ls-chat{flex:1;min-width:350px;display:flex;flex-direction:column;background:#18181b;border-left:1px solid var(--bg2)}',
       '.ls-chat-head{flex-shrink:0;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
+      '.ls-points{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:#fff;cursor:pointer;--brand:#a970ff;transition:background .2s,color .2s,box-shadow .2s}',
+      '.ls-points .pts-main{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1.1}',
+      '.ls-points .pts-sub{font-size:8px;letter-spacing:.03em;opacity:.65;line-height:1.1}',
+      '.ls-points:hover,.ls-points:active{background:#141414;box-shadow:inset 0 -2px 0 var(--brand)}',
+      '.ls-points:hover .pts-main,.ls-points:active .pts-main{color:var(--brand)}',
+      '.ls-points:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}',
       '.ls-chat-frame{position:relative;flex:1;min-height:0;background:#18181b}',
       '#ls-card iframe{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block;border:none;background:transparent}',
 
@@ -108,7 +114,6 @@
       '@media (max-width:1024px){',
         '.ls-embeds{flex-direction:column}',
         '.ls-chat{flex:none;width:100%;min-width:0;border-left:none;border-top:1px solid var(--bg2)}',
-        '.ls-chat-head{display:none}',
         '.ls-chat-frame{height:522px}',
       '}'
     ].join('');
@@ -138,7 +143,7 @@
                 '<span class="vt-name">Beam</span><span class="vt-tip">Ad-free!</span>' +
               '</button>' +
               '<button class="ls-vtab" type="button" data-tab="twitch" aria-pressed="false" style="--brand:#a970ff">' +
-                '<span class="vt-name">Twitch</span><span class="vt-tip">Earns channel points</span>' +
+                '<span class="vt-name">Twitch</span><span class="vt-tip">Native player</span>' +
               '</button>' +
             '</div>' +
             '<div class="ls-video" id="ls-video">' +
@@ -147,7 +152,10 @@
             '</div>' +
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
-            '<div class="ls-chat-head" aria-hidden="true"></div>' +
+            '<a class="ls-chat-head ls-points" href="https://www.twitch.tv/dalekcoffee" target="_blank" rel="noopener noreferrer" title="Channel points are only earned on Twitch itself — open this tab and keep it open (you can mute it) while you watch here.">' +
+              '<span class="pts-main">Earn channel points</span>' +
+              '<span class="pts-sub">open twitch in a tab →</span>' +
+            '</a>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
           '</div>' +
         '</div>' +
