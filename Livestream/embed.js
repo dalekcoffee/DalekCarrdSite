@@ -154,7 +154,7 @@
           '<div class="ls-chat" id="ls-chat">' +
             '<a class="ls-chat-head ls-points" href="https://www.twitch.tv/dalekcoffee" target="_blank" rel="noopener noreferrer" title="Channel points are only earned on Twitch itself — open this tab and keep it open (you can mute it) while you watch here.">' +
               '<span class="pts-main">Earn channel points</span>' +
-              '<span class="pts-sub">open twitch in a tab →</span>' +
+              '<span class="pts-sub">(keep a muted twitch tab open in the background)</span>' +
             '</a>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
           '</div>' +
