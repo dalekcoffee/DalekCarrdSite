@@ -102,6 +102,7 @@
       '@keyframes ls-pulse-red{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,51,51,.7)}70%{transform:scale(1);box-shadow:0 0 0 8px rgba(255,51,51,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,51,51,0)}}',
 
       /* mobile */
+      '@media (min-width:481px){.ls-status{font-size:14px}}',
       '@media (max-width:1024px){',
         '.ls-embeds{flex-direction:column}',
         '.ls-chat{flex:none;width:100%;min-width:0;border-left:none;border-top:1px solid var(--bg2)}',
