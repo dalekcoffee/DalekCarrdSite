@@ -243,6 +243,12 @@
       .catch(function () { return {}; });
   }
 
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
   function renderMotd(str, map) {
     var div = document.createElement('div');
     div.textContent = str;
@@ -252,7 +258,7 @@
     html = html.replace(SHORTCODE_RE, function (m, name) {
       var url = map[nk(name)];
       if (!url) return '';
-      return '<img class="hs-cemoji" src="' + url + '" alt="' + name + '" onerror="this.remove()">';
+      return '<img class="hs-cemoji" src="' + escapeHtml(url) + '" alt="' + name + '" onerror="this.remove()">';
     });
     // Unicode emoji → outlined span.
     html = html.replace(/(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)/gu,
