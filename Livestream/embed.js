@@ -46,7 +46,7 @@
     st.id = 'ls-style';
     st.textContent = [
       '#ls-card{--t:.2s;--bg:#0d0d0d;--bg2:#111;--bg3:#191919;--b1:#1a1a1a;--tabH:48px;width:100%;max-width:53.5rem;margin:0 auto;background:var(--bg);color:#fff;border-top:2px solid #fff;border-bottom:1px solid var(--bg2);font-family:"Space Mono",monospace;-webkit-font-smoothing:antialiased}',
-      '#ls-card *,#ls-card *::before,#ls-card *::after{box-sizing:border-box;margin:0;padding:0}',
+      '#ls-card *,#ls-card *::before,#ls-card *::after{box-sizing:border-box;margin:0}',
 
       /* strip */
       '.ls-strip{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--bg2);cursor:pointer;user-select:none}',
