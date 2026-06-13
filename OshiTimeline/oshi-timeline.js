@@ -239,10 +239,10 @@
       } else if (HEART_KEYS.indexOf(label) !== -1 || label.indexOf('heart') !== -1) {
         icon = '<span style="color:#e0334c">❤</span>';
       } else {
-        icon = '<span>' + label + '</span>';
+        icon = '<span>' + escapeHtml(label) + '</span>';
       }
 
-      html += '<span class="_rc">' + icon + ' ' + count + '</span>';
+      html += '<span class="_rc">' + icon + ' ' + (parseInt(count, 10) || 0) + '</span>';
     }
     return html ? '<div class="_rs">' + html + '</div>' : '';
   }
