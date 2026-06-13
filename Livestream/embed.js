@@ -16,11 +16,10 @@
     return PARENTS.map(function (p) { return 'parent=' + p; }).join('&');
   }
 
-  /* Video sources behind the two tabs. Beam = ad-free relay; Twitch = native player. */
-  var VIDEO_SRC = {
-    beam:   'https://beamstream.gg/dalek/embed',
-    twitch: 'https://player.twitch.tv/?channel=dalekcoffee&' + parentQS()
-  };
+  /* Beam = ad-free relay (raw iframe). Twitch = native JS player so we can mute/unmute
+     it and drop its quality while it runs muted in the background. */
+  var BEAM_SRC = 'https://beamstream.gg/dalek/embed';
+  var TWITCH_CHANNEL = 'dalekcoffee';
   var CHAT_SRC = 'https://www.twitch.tv/embed/dalekcoffee/chat?' + parentQS() + '&darkpopout';
 
   var PLATFORMS = [
@@ -81,6 +80,9 @@
 
       /* embeds */
       '.ls-video{position:relative;aspect-ratio:16/9;min-height:0;background:var(--bg)}',
+      '.ls-vlayer{position:absolute;top:0;right:0;bottom:0;left:0}',
+      '#ls-video.ls-show-beam #ls-beam,#ls-video.ls-show-twitch #ls-twitch{z-index:2}',
+      '#ls-video.ls-show-beam #ls-twitch,#ls-video.ls-show-twitch #ls-beam{z-index:1}',
       '.ls-chat{flex:1;min-width:350px;display:flex;flex-direction:column;background:#18181b;border-left:1px solid var(--bg2)}',
       '.ls-chat-head{flex-shrink:0;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
       '.ls-chat-frame{position:relative;flex:1;min-height:0;background:#18181b}',
@@ -139,7 +141,10 @@
                 '<span class="vt-name">Twitch</span><span class="vt-tip">Earns channel points</span>' +
               '</button>' +
             '</div>' +
-            '<div class="ls-video" id="ls-video"><div class="ls-skeleton">Loading stream</div></div>' +
+            '<div class="ls-video" id="ls-video">' +
+              '<div class="ls-vlayer" id="ls-twitch"></div>' +
+              '<div class="ls-vlayer" id="ls-beam"><div class="ls-skeleton">Loading stream</div></div>' +
+            '</div>' +
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
             '<div class="ls-chat-head" aria-hidden="true"></div>' +
@@ -173,7 +178,7 @@
            ' style="--b-hover:' + p.hover + ';--b-text:' + p.text + '">' + p.name + '</a>';
   }).join('');
 
-  /* ── IFRAMES ── */
+  /* ── PLAYERS — Option B: Twitch stays loaded + muted behind Beam ── */
   function makeIframe(src) {
     var f = document.createElement('iframe');
     f.setAttribute('allowfullscreen', '');
@@ -182,20 +187,69 @@
     return f;
   }
 
-  function setVideo(which) {
-    videoSlot.innerHTML = '<div class="ls-skeleton">Loading stream</div>';
-    var f = makeIframe(VIDEO_SRC[which]);
-    f.addEventListener('load', function () {
-      var sk = videoSlot.querySelector('.ls-skeleton');
-      if (sk) sk.remove();
+  /* Twitch via its JS API so we can mute/unmute and drop quality in the background. */
+  var twitchPlayer = null;
+  function loadTwitchAPI(cb) {
+    if (window.Twitch && window.Twitch.Player) { cb(); return; }
+    var s = document.getElementById('ls-twitch-api');
+    if (s) { s.addEventListener('load', cb); return; }
+    s = document.createElement('script');
+    s.id = 'ls-twitch-api';
+    s.src = 'https://embed.twitch.tv/embed/v1.js';
+    s.onload = cb;
+    document.head.appendChild(s);
+  }
+  function ensureTwitch() {
+    if (twitchPlayer) return;
+    loadTwitchAPI(function () {
+      twitchPlayer = new Twitch.Player('ls-twitch', {
+        channel: TWITCH_CHANNEL, width: '100%', height: '100%',
+        muted: true, autoplay: true, parent: PARENTS
+      });
+      twitchPlayer.addEventListener(Twitch.Player.PLAY, function () {
+        if (activeTab === 'twitch') twitchForeground(); else twitchBackground();
+      });
     });
-    videoSlot.appendChild(f);
+  }
+  /* Background: muted + lowest quality (keeps it streaming cheaply behind Beam). */
+  function twitchBackground() {
+    if (!twitchPlayer) return;
+    try {
+      twitchPlayer.setMuted(true);
+      twitchPlayer.setVolume(0);
+      var qs = twitchPlayer.getQualities ? twitchPlayer.getQualities() : null, low = null, i;
+      if (qs) for (i = 0; i < qs.length; i++) { if (qs[i].group && qs[i].group !== 'auto') low = qs[i].group; }
+      if (low) twitchPlayer.setQuality(low);
+    } catch (e) {}
+  }
+  /* Foreground: audible + auto quality (user swapped over to watch it). */
+  function twitchForeground() {
+    if (!twitchPlayer) return;
+    try { twitchPlayer.setQuality('auto'); twitchPlayer.setMuted(false); twitchPlayer.setVolume(0.5); } catch (e) {}
+  }
+
+  /* Beam has no mute API — load it when shown, unload it when hidden so its audio stops. */
+  function loadBeam() {
+    var el = mount.querySelector('#ls-beam');
+    if (el.querySelector('iframe')) return;
+    el.innerHTML = '<div class="ls-skeleton">Loading stream</div>';
+    var f = makeIframe(BEAM_SRC);
+    f.addEventListener('load', function () { var sk = el.querySelector('.ls-skeleton'); if (sk) sk.remove(); });
+    el.appendChild(f);
+  }
+  function unloadBeam() { mount.querySelector('#ls-beam').innerHTML = ''; }
+
+  function applyVideoStack() {
+    videoSlot.classList.toggle('ls-show-twitch', activeTab === 'twitch');
+    videoSlot.classList.toggle('ls-show-beam', activeTab !== 'twitch');
   }
 
   function loadIframes() {
     if (iframesLoaded) return;
     iframesLoaded = true;
-    setVideo(activeTab);
+    ensureTwitch();                         /* Twitch loads once and stays muted behind Beam */
+    if (activeTab === 'beam') loadBeam();
+    applyVideoStack();
     var cf = makeIframe(CHAT_SRC);
     cf.addEventListener('load', function () {
       var sk = chatSlot.querySelector('.ls-skeleton');
@@ -206,15 +260,18 @@
 
   /* ── TAB SWITCHING ── */
   function selectTab(which) {
-    if (!VIDEO_SRC[which] || which === activeTab) return;
+    if ((which !== 'beam' && which !== 'twitch') || which === activeTab) return;
     activeTab = which;
-    var tabs = vtabs.querySelectorAll('.ls-vtab');
-    for (var i = 0; i < tabs.length; i++) {
-      var on = tabs[i].getAttribute('data-tab') === which;
+    var tabs = vtabs.querySelectorAll('.ls-vtab'), i, on;
+    for (i = 0; i < tabs.length; i++) {
+      on = tabs[i].getAttribute('data-tab') === which;
       tabs[i].classList.toggle('active', on);
       tabs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
     }
-    if (iframesLoaded) setVideo(which);
+    if (!iframesLoaded) return;
+    if (which === 'twitch') { unloadBeam(); twitchForeground(); }
+    else { loadBeam(); twitchBackground(); }
+    applyVideoStack();
   }
 
   vtabs.addEventListener('click', function (e) {
