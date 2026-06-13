@@ -119,15 +119,25 @@
     statusText.textContent = info.label;
   }
 
+  // Activity pill registry — maps a Discord activity name to a pill icon/color.
+  // Entries are tested top-to-bottom and the FIRST whose `match` substring appears
+  // in the (lowercased) activity name wins, so list specific names before generic
+  // ones and avoid short ambiguous tokens (e.g. 'art' would also hit "Smartass").
+  //   match:   [substrings] to look for in the activity name (required)
+  //   icon:    pill emoji (optional, defaults to DEFAULT_ICON)
+  //   color:   pill border color (optional, defaults to white)
+  //   rainbow: gradient border (optional, overrides color)
+  var DEFAULT_ICON = '🎮';
   var APP_MAP = [
-    { match: ['plex'],                                    icon: '🍿', color: '#e5a00d' },
-    { match: ['blender'],                                 icon: '🎨', color: '#EA7600' },
-    { match: ['davinci', 'resolve'],                      icon: '🎬' },
-    { match: ['figma'],                                   icon: '✏️' },
+    { match: ['plex'], icon: '🍿', color: '#e5a00d' },
+    { match: ['blender'], icon: '🎨', color: '#EA7600' },
+    { match: ['davinci', 'resolve'], icon: '🎬' },
+    { match: ['figma'], icon: '✏️' },
     { match: ['vs code', 'vscode', 'visual studio code'], icon: '💻' },
-    { match: ['visual studio'],                           icon: '💻' },
-    { match: ['discord'],                                 icon: '💬' },
-    { match: ['resonite'],                               icon: '🔮', rainbow: true }
+    { match: ['visual studio'], icon: '💻' },
+    { match: ['discord'], icon: '💬' },
+    { match: ['fortnite'], color: '#4799ed' },
+    { match: ['resonite'], icon: '🔮', rainbow: true }
   ];
 
   function appStyle(name) {
@@ -136,11 +146,11 @@
       var entry = APP_MAP[i];
       for (var j = 0; j < entry.match.length; j++) {
         if (lower.indexOf(entry.match[j]) !== -1) {
-          return { icon: entry.icon, color: entry.color || null, rainbow: entry.rainbow || false };
+          return { icon: entry.icon || DEFAULT_ICON, color: entry.color || null, rainbow: entry.rainbow || false };
         }
       }
     }
-    return { icon: '🎮', color: null };
+    return { icon: DEFAULT_ICON, color: null };
   }
 
   function findStream(activities) {
