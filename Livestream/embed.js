@@ -206,6 +206,7 @@
 
   /* Twitch via its JS API so we can mute/unmute and drop quality in the background. */
   var twitchPlayer = null;
+  var twitchRequested = false;   /* guards against double-creation during the async API load */
   function loadTwitchAPI(cb) {
     if (window.Twitch && window.Twitch.Player) { cb(); return; }
     var s = document.getElementById('ls-twitch-api');
@@ -217,16 +218,26 @@
     document.head.appendChild(s);
   }
   function ensureTwitch() {
-    if (twitchPlayer) return;
+    if (twitchPlayer || twitchRequested) return;
+    twitchRequested = true;
     loadTwitchAPI(function () {
       twitchPlayer = new Twitch.Player('ls-twitch', {
         channel: TWITCH_CHANNEL, width: '100%', height: '100%',
         muted: true, autoplay: true, parent: PARENTS
       });
+      /* The autoplay flag alone is unreliable: Safari/iOS ignore muted autoplay, and the widget
+         auto-opens with no user gesture. Nudge it into a playing — and so viewer-counted — state
+         on ready, and again on the first interaction (see the first-gesture unlock below). */
+      twitchPlayer.addEventListener(Twitch.Player.READY, nudgeTwitchPlay);
       twitchPlayer.addEventListener(Twitch.Player.PLAY, function () {
         if (activeTab === 'twitch') twitchForeground(); else twitchBackground();
       });
     });
+  }
+  /* Best-effort play(); no-op if the player isn't ready yet or is already playing. */
+  function nudgeTwitchPlay() {
+    if (!twitchPlayer) return;
+    try { if (twitchPlayer.play) twitchPlayer.play(); } catch (e) {}
   }
   /* Background: muted + lowest quality (keeps it streaming cheaply behind Beam). */
   function twitchBackground() {
@@ -245,7 +256,7 @@
   /* Foreground: audible + auto quality (user swapped over to watch it). */
   function twitchForeground() {
     if (!twitchPlayer) return;
-    try { twitchPlayer.setQuality('auto'); twitchPlayer.setMuted(false); twitchPlayer.setVolume(0.5); } catch (e) {}
+    try { twitchPlayer.play(); twitchPlayer.setQuality('auto'); twitchPlayer.setMuted(false); twitchPlayer.setVolume(0.5); } catch (e) {}
   }
 
   /* Beam has no mute API — load it when shown, unload it when hidden so its audio stops. */
@@ -298,6 +309,16 @@
     var btn = e.target.closest && e.target.closest('.ls-vtab');
     if (btn) selectTab(btn.getAttribute('data-tab'));
   });
+
+  /* ── FIRST-GESTURE UNLOCK ──
+     Permissive browsers (Chrome/Edge/Firefox desktop) start the muted background Twitch player on
+     load, so it counts a viewer while someone watches Beam. Safari/iOS won't autoplay without a
+     user gesture, and the widget auto-opens with none — so on the first press anywhere in the card,
+     make sure Twitch is loaded and playing. */
+  card.addEventListener('pointerdown', function () {
+    ensureTwitch();
+    nudgeTwitchPlay();
+  }, { once: true });
 
   /* ── POINTS CTA PULSE ── */
   var ptsBtn = mount.querySelector('.ls-points');
