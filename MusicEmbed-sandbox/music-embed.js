@@ -94,53 +94,94 @@ function fetchCaaUrl(mbid, isGroup) {
     .catch(function() { if (timer) clearTimeout(timer); return null; });
 }
 
-/* ─── iTunes: fuzzy fallback, cleaned query ─── */
-function fetchItunesUrl(artist, track) {
+/* ─── Normalize a title/name for fuzzy comparison ─── */
+function normTitle(s) {
+  if (!s) return '';
+  s = cleanStr(s).toLowerCase().replace(/&/g, ' and ');
+  s = s.replace(/[^a-z0-9]+/g, ' ');
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+/* ─── Loose match: equal, or either contains the other (post-normalize) ─── */
+function titlesMatch(a, b) {
+  a = normTitle(a); b = normTitle(b);
+  if (!a || !b) return false;
+  return a === b || a.indexOf(b) !== -1 || b.indexOf(a) !== -1;
+}
+
+/*
+ * ─── Score a candidate result against what we know ──────────────────────────
+ * Artist MUST match, and at least one of track / album must agree. Returns 0
+ * to reject. This is what stops "any cover by this artist" and "same title,
+ * wrong artist" from ever being shown — a correct ♫ placeholder beats wrong art.
+ */
+function scoreCandidate(cArtist, cTrack, cAlbum, artist, track, album) {
+  if (!titlesMatch(cArtist, artist)) return 0;
+  var tOk   = titlesMatch(cTrack, track);
+  var albOk = album ? titlesMatch(cAlbum, album) : false;
+  if (!tOk && !albOk) return 0;
+  return 1 + (tOk ? 2 : 0) + (albOk ? 2 : 0);
+}
+
+/* ─── JSONP loader — for sources without CORS (Deezer) ─── */
+var jsonpSeq = 0;
+function jsonp(url, timeoutMs) {
+  return new Promise(function(resolve) {
+    var cb = '__dktJsonp' + (jsonpSeq++);
+    var script = document.createElement('script');
+    var done = false;
+    function finish(data) {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+      if (script.parentNode) script.parentNode.removeChild(script);
+      resolve(data);
+    }
+    var timer = setTimeout(function() { finish(null); }, timeoutMs || 8000);
+    window[cb] = function(data) { finish(data); };
+    script.onerror = function() { finish(null); };
+    script.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'output=jsonp&callback=' + cb;
+    (document.head || document.documentElement).appendChild(script);
+  });
+}
+
+/* ─── Deezer: global coverage, validated match (JSONP, no auth) ─── */
+function fetchDeezerUrl(artist, track, album) {
+  var url = 'https://api.deezer.com/search?q=' + encodeURIComponent(cleanStr(artist) + ' ' + cleanStr(track)) + '&limit=10';
+  return jsonp(url, 8000).then(function(data) {
+    if (!data || !data.data || !data.data.length) return null;
+    var best = null, bestScore = 0;
+    for (var i = 0; i < data.data.length; i++) {
+      var r = data.data[i];
+      var s = scoreCandidate(r.artist && r.artist.name, r.title, r.album && r.album.title, artist, track, album);
+      if (s > bestScore) { bestScore = s; best = r; }
+    }
+    if (!best || !best.album) return null;
+    var u = best.album.cover_medium || best.album.cover_big || best.album.cover || '';
+    /* Deezer returns a placeholder URL with an empty hash when there's no real cover */
+    if (!u || u.indexOf('/cover//') !== -1) return null;
+    return u;
+  });
+}
+
+/* ─── iTunes: validated fallback, cleaned query ─── */
+function fetchItunesUrl(artist, track, album) {
   var q     = encodeURIComponent(cleanStr(artist) + ' ' + cleanStr(track));
   var ctrl  = typeof AbortController !== 'undefined' ? new AbortController() : null;
   var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, 8000) : null;
-  return fetch('https://itunes.apple.com/search?term=' + q + '&entity=song&limit=5&media=music', ctrl ? {signal:ctrl.signal} : {})
+  return fetch('https://itunes.apple.com/search?term=' + q + '&entity=song&limit=10&media=music', ctrl ? {signal:ctrl.signal} : {})
     .then(function(r) { if (timer) clearTimeout(timer); if (!r.ok) return null; return r.json(); })
     .then(function(data) {
       if (!data || !data.results || !data.results.length) return null;
-      var tl = cleanStr(track).toLowerCase();
-      var al = cleanStr(artist).toLowerCase();
-      var result = null;
+      var best = null, bestScore = 0;
       for (var i = 0; i < data.results.length; i++) {
-        var tn = data.results[i].trackName;
-        var an = data.results[i].artistName;
-        if (tn && tn.toLowerCase().indexOf(tl) !== -1 &&
-            an && an.toLowerCase().indexOf(al) !== -1) { result = data.results[i]; break; }
+        var r = data.results[i];
+        var s = scoreCandidate(r.artistName, r.trackName, r.collectionName, artist, track, album);
+        if (s > bestScore) { bestScore = s; best = r; }
       }
-      if (!result) {
-        for (var i = 0; i < data.results.length; i++) {
-          var tn = data.results[i].trackName;
-          if (tn && tn.toLowerCase().indexOf(tl) !== -1) { result = data.results[i]; break; }
-        }
-      }
-      if (!result || !result.artworkUrl100) return null;
-      return result.artworkUrl100.replace('100x100bb', '250x250bb');
-    })
-    .catch(function() { if (timer) clearTimeout(timer); return null; });
-}
-
-/* ─── iTunes: artist album art fallback ─── */
-function fetchItunesArtistUrl(artist) {
-  var q    = encodeURIComponent(cleanStr(artist));
-  var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, 8000) : null;
-  return fetch('https://itunes.apple.com/search?term=' + q + '&entity=album&attribute=artistTerm&limit=5&media=music', ctrl ? {signal:ctrl.signal} : {})
-    .then(function(r) { if (timer) clearTimeout(timer); if (!r.ok) return null; return r.json(); })
-    .then(function(data) {
-      if (!data || !data.results || !data.results.length) return null;
-      var al = cleanStr(artist).toLowerCase();
-      for (var i = 0; i < data.results.length; i++) {
-        var an = data.results[i].artistName;
-        if (an && an.toLowerCase().indexOf(al) !== -1 && data.results[i].artworkUrl100) {
-          return data.results[i].artworkUrl100.replace('100x100bb', '250x250bb');
-        }
-      }
-      return null;
+      if (!best || !best.artworkUrl100) return null;
+      return best.artworkUrl100.replace('100x100bb', '250x250bb');
     })
     .catch(function() { if (timer) clearTimeout(timer); return null; });
 }
@@ -148,7 +189,7 @@ function fetchItunesArtistUrl(artist) {
 /* ─── loadCoverArt ─── */
 var artCache = {};
 
-function loadCoverArt(imgEl, wipeEl, info, artist, track) {
+function loadCoverArt(imgEl, wipeEl, info, artist, track, album) {
   var cacheKey = (artist + '||' + track).toLowerCase();
   if (artCache[cacheKey]) {
     var cached = artCache[cacheKey];
@@ -164,6 +205,21 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
     }
     return;
   }
+
+  /* Fuzzy fallbacks — used when there's no MBID, and if a resolved image 404s.
+     Deezer first (better global coverage), then iTunes; both validate the match. */
+  function resolveFallbacks() {
+    return fetchDeezerUrl(artist, track, album).then(function(url) {
+      return url ? url : fetchItunesUrl(artist, track, album);
+    });
+  }
+
+  function done(url) {
+    if (url) { showUrl(url); return; }
+    artCache[cacheKey] = 'none';
+    if (wipeEl) wipeEl.style.display = 'none';
+  }
+
   function showUrl(url) {
     artCache[cacheKey] = url;
     imgEl.onload = function() {
@@ -172,38 +228,29 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track) {
       if (imgEl.parentNode) imgEl.parentNode.classList.add('dkt-loaded');
     };
     imgEl.onerror = function() {
+      /* A resolved URL failed to load as an image — try the fuzzy sources once, then give up */
       if (!imgEl.dataset.fallbackTried) {
         imgEl.dataset.fallbackTried = '1';
-        tryItunes();
+        resolveFallbacks().then(done);
       } else {
+        artCache[cacheKey] = 'none';
         if (wipeEl) wipeEl.style.display = 'none';
       }
     };
     imgEl.src = url;
   }
-  function tryItunesArtist() {
-    fetchItunesArtistUrl(artist).then(function(url) {
-      if (url) { showUrl(url); return; }
-      artCache[cacheKey] = 'none';
-      if (wipeEl) wipeEl.style.display = 'none';
-    });
-  }
-  function tryItunes() {
-    fetchItunesUrl(artist, track).then(function(url) {
-      if (url) showUrl(url);
-      else tryItunesArtist();
-    });
-  }
-  if (!info) { tryItunes(); return; }
+
+  if (!info)                  { resolveFallbacks().then(done); return; }
   if (info.type === 'direct') { showUrl(info.url); return; }
   fetchCaaUrl(info.mbid, info.isGroup).then(function(url) {
     if (url) { showUrl(url); return; }
     if (!info.isGroup) {
       fetchCaaUrl(info.mbid, true).then(function(url2) {
-        if (url2) showUrl(url2); else tryItunes();
+        if (url2) { showUrl(url2); return; }
+        resolveFallbacks().then(done);
       });
     } else {
-      tryItunes();
+      resolveFallbacks().then(done);
     }
   });
 }
@@ -269,9 +316,9 @@ function pollNowPlaying() {
           for (var b = 0; b < BRANDS.length; b++) btns.appendChild(makeBtn(BRANDS[b], q));
           var npImg  = document.getElementById('dkt-np-img');
           var npWipe = document.getElementById('dkt-np-wipe');
-          npImg.style.display = 'none'; npImg.removeAttribute('src'); delete npImg.dataset.itunesTried;
+          npImg.style.display = 'none'; npImg.removeAttribute('src'); delete npImg.dataset.fallbackTried;
           if (npWipe) { npWipe.style.display = ''; }
-          loadCoverArt(npImg, npWipe, getCoverInfo(track), track.track_metadata.artist_name, track.track_metadata.track_name);
+          loadCoverArt(npImg, npWipe, getCoverInfo(track), track.track_metadata.artist_name, track.track_metadata.track_name, track.track_metadata.release_name);
         }
       } else {
         npTrackKey = null;
@@ -295,6 +342,7 @@ function buildRow(t, idx, isRecent) {
   var meta   = t.track_metadata || t;
   var name   = meta.track_name   || 'Unknown';
   var artist = meta.artist_name  || 'Unknown';
+  var album  = meta.release_name || '';
   var q      = encodeURIComponent(name + ' ' + artist);
 
   var row = document.createElement('div'); row.className = 'dkt-row';
@@ -327,7 +375,7 @@ function buildRow(t, idx, isRecent) {
   row.appendChild(rankCol); row.appendChild(artDiv); row.appendChild(infoDiv); row.appendChild(countCol);
 
   var coverInfo = getCoverInfo(t);
-  setTimeout(function() { loadCoverArt(mainImg, wipeDiv, coverInfo, artist, name); }, idx * 300);
+  setTimeout(function() { loadCoverArt(mainImg, wipeDiv, coverInfo, artist, name, album); }, idx * 300);
 
   return row;
 }
