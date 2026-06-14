@@ -234,6 +234,9 @@
     try {
       twitchPlayer.setMuted(true);
       twitchPlayer.setVolume(0);
+      /* If the viewer paused Twitch while watching it, resume it (muted) when they flip
+         back to Beam — a paused player stops counting toward Twitch's live viewers. */
+      if (twitchPlayer.isPaused && twitchPlayer.isPaused()) twitchPlayer.play();
       var qs = twitchPlayer.getQualities ? twitchPlayer.getQualities() : null, low = null, i;
       if (qs) for (i = 0; i < qs.length; i++) { if (qs[i].group && qs[i].group !== 'auto') low = qs[i].group; }
       if (low) twitchPlayer.setQuality(low);
