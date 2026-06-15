@@ -104,7 +104,7 @@
 
       /* rotating call-to-action — fills the chat-header dead space; slides in from */
       /* the left, out to the right. Icons/links mirror the Links embed. */
-      '.ls-cta-slot{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden}',
+      '.ls-cta-slot{position:absolute;top:0;right:56px;bottom:0;left:56px;overflow:hidden}',
       '.ls-cta{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;gap:9px;padding:0 14px;text-decoration:none;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.03em;white-space:nowrap;pointer-events:none;transform:translateX(-120%);opacity:0;transition:transform .7s cubic-bezier(.33,0,.2,1),opacity .7s ease,background .2s,color .2s}',
       '.ls-cta.is-active{transform:translateX(0);opacity:1;pointer-events:auto}',
       '.ls-cta.is-right{transform:translateX(120%);opacity:0}',
@@ -154,14 +154,16 @@
       '.ls-fs-btn .fs-i-close{display:none}',
       '.ls-theater-btn.is-active .fs-i-expand{display:none}',
       '.ls-theater-btn.is-active .fs-i-close{display:block}',
-      /* chat hide button — embeds at the left of the CTA (mirrors the close on the right) */
-      '.ls-chat-hide-btn{display:none;position:absolute;top:0;left:0;bottom:0;width:56px;z-index:2;--brand:#5b9bd5}',
+      /* chat hide/show — available in every layout. Hide embeds at the left of the CTA */
+      /* (mirrors the close on the right); show floats on the video once chat is gone. */
+      '.ls-chat-hide-btn{position:absolute;top:0;left:0;bottom:0;width:56px;z-index:2;--brand:#5b9bd5}',
       '.ls-chat-hide-btn svg{width:22px;height:22px}',
-      /* chat show button — floats on the video while chat is hidden */
       '.ls-chat-show-btn{display:none;position:absolute;top:8px;right:8px;z-index:3;width:40px;height:40px;align-items:center;justify-content:center;background:rgba(0,0,0,.55);border:none;color:rgba(255,255,255,.85);cursor:pointer;transition:background .2s,color .2s}',
       '.ls-chat-show-btn:hover,.ls-chat-show-btn:active{background:rgba(0,0,0,.82);color:#fff}',
       '.ls-chat-show-btn:focus-visible{outline:2px solid #fff;outline-offset:-2px}',
       '.ls-chat-show-btn svg{width:20px;height:20px;display:block}',
+      '.ls-embeds.ls-chat-hidden .ls-chat{display:none}',
+      '.ls-embeds.ls-chat-hidden .ls-chat-show-btn{display:flex}',
       /* one-shot attention pulse (3 slow cycles ~= 5s); fired on open / enter / exit */
       '.ls-theater-btn.ls-fs-pulse{animation:ls-fs-pulse 1.667s ease-out 3}',
       '@keyframes ls-fs-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5);background:#0c0c0c;color:rgba(255,255,255,.55)}40%{background:#171029;color:#a970ff}70%{box-shadow:0 0 0 10px rgba(169,112,255,0)}100%{box-shadow:0 0 0 0 rgba(169,112,255,0);background:#0c0c0c;color:rgba(255,255,255,.55)}}',
@@ -173,7 +175,7 @@
       '@media (min-width:1025px){.ls-embeds.ls-fs-theater .ls-main{height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}}',
       '@media (max-width:1024px){.ls-embeds.ls-fs-theater{flex-direction:column}.ls-embeds.ls-fs-theater .ls-main{flex:0 0 auto}.ls-embeds.ls-fs-theater .ls-chat{flex:1 1 auto;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}}',
       /* landscape phone: side-by-side (big player + slim chat), like desktop theater */
-      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:35%;max-width:320px;min-width:220px;height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-hide-btn{display:inline-flex}.ls-embeds.ls-fs-theater .ls-chat-hide-btn,.ls-embeds.ls-fs-theater .ls-theater-btn{width:44px}.ls-embeds.ls-fs-theater .ls-cta-slot{left:44px;right:44px}.ls-embeds.ls-fs-theater .ls-cta{font-size:11px;gap:7px;padding:0 8px}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat-show-btn{display:flex}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat{display:none}}',
+      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:35%;max-width:320px;min-width:220px;height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-hide-btn,.ls-embeds.ls-fs-theater .ls-theater-btn{width:44px}.ls-embeds.ls-fs-theater .ls-cta-slot{left:44px;right:44px}.ls-embeds.ls-fs-theater .ls-cta{font-size:11px;gap:7px;padding:0 8px}}',
 
       /* mobile */
       '@media (min-width:481px){.ls-status{font-size:14px}}',
@@ -572,7 +574,7 @@
     pulseTheaterBtn();      /* fullscreen opened — pulse the (now X) close button */
   }
   function clearFsClasses(el, mode) {
-    el.classList.remove('ls-fs-' + mode, 'ls-pseudofs', 'ls-chat-hidden');   /* reset chat to shown */
+    el.classList.remove('ls-fs-' + mode, 'ls-pseudofs');
     document.documentElement.classList.remove('ls-fs-lock');
     updateFsBtns();
     pulseTheaterBtn();      /* fullscreen closed — pulse the (now expand) toggle */
