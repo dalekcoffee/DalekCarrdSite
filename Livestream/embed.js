@@ -334,16 +334,32 @@
       img.src = url;
     });
 
+    /* Discord + Ko-fi run ~1.25x as often as the five follow links. A smooth weighted
+       round-robin pre-builds an evenly spread playlist (no clumping / adjacent repeats). */
     var ctaEls = ctaSlot.querySelectorAll('.ls-cta');
-    var ctaIdx = 0, ctaPaused = false;
+    var CTA_WEIGHTS = [5, 5, 4, 4, 4, 4, 4];   /* matches CTA_ITEMS: Discord, Ko-fi, then 5 follows */
+    var ctaPlaylist = (function (w) {
+      var n = w.length, cw = [], total = 0, seq = [], i, s, best, bestVal;
+      for (i = 0; i < n; i++) { cw[i] = 0; total += w[i]; }
+      for (s = 0; s < total; s++) {
+        best = 0; bestVal = -Infinity;
+        for (i = 0; i < n; i++) { cw[i] += w[i]; if (cw[i] > bestVal) { bestVal = cw[i]; best = i; } }
+        cw[best] -= total;
+        seq.push(best);
+      }
+      return seq;
+    })(CTA_WEIGHTS);
+    var ctaPos = 0, ctaCur = ctaPlaylist[0], ctaPaused = false;
     if (ctaEls.length) {
-      ctaEls[0].classList.add('is-active');
+      ctaEls[ctaCur].classList.add('is-active');
       if (ctaEls.length > 1) {
         setInterval(function () {
-          if (ctaPaused || !card.classList.contains('ls-open')) return;   /* hold on item 0 until opened */
-          var cur = ctaEls[ctaIdx];
-          ctaIdx = (ctaIdx + 1) % ctaEls.length;
-          var next = ctaEls[ctaIdx];
+          if (ctaPaused || !card.classList.contains('ls-open')) return;   /* hold on the first item until opened */
+          ctaPos = (ctaPos + 1) % ctaPlaylist.length;
+          var nextIdx = ctaPlaylist[ctaPos];
+          if (nextIdx === ctaCur) { ctaPos = (ctaPos + 1) % ctaPlaylist.length; nextIdx = ctaPlaylist[ctaPos]; }
+          var cur = ctaEls[ctaCur], next = ctaEls[nextIdx];
+          ctaCur = nextIdx;
           cur.classList.remove('is-active');
           cur.classList.add('is-right');        /* slide current out to the right */
           next.classList.add('is-active');       /* slide next in from the left */
@@ -353,7 +369,7 @@
             void cur.offsetWidth;
             cur.classList.remove('no-anim');
           }, 460);
-        }, 6500);
+        }, 10000);
       }
       ctaSlot.addEventListener('mouseenter', function () { ctaPaused = true; });
       ctaSlot.addEventListener('mouseleave', function () { ctaPaused = false; });
