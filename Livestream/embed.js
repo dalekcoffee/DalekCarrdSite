@@ -129,6 +129,9 @@
       '.ls-fs-btn .fs-i-close{display:none}',
       '.ls-theater-btn.is-active .fs-i-expand{display:none}',
       '.ls-theater-btn.is-active .fs-i-close{display:block}',
+      /* one-shot attention pulse (3 slow cycles ~= 5s); fired on open / enter / exit */
+      '.ls-theater-btn.ls-fs-pulse{animation:ls-fs-pulse 1.667s ease-out 3}',
+      '@keyframes ls-fs-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5);background:#0c0c0c;color:rgba(255,255,255,.55)}40%{background:#171029;color:#a970ff}70%{box-shadow:0 0 0 10px rgba(169,112,255,0)}100%{box-shadow:0 0 0 0 rgba(169,112,255,0);background:#0c0c0c;color:rgba(255,255,255,.55)}}',
       /* fullscreen states — driven by our own classes so the same CSS covers the */
       /* native Fullscreen API and the iOS fixed-position fallback below */
       '.ls-pseudofs{position:fixed;top:0;left:0;width:100%;height:100%;max-width:none;z-index:2147483646;background:#000}',
@@ -311,6 +314,7 @@
       if (sk) sk.remove();
     });
     chatSlot.appendChild(cf);
+    setTimeout(pulseTheaterBtn, 700);       /* embed just opened — hint the theater toggle */
   }
 
   /* ── TAB SWITCHING ── */
@@ -371,6 +375,18 @@
   var fsActive   = null;                 /* {el, mode, pseudo} or null */
   var fsPendingEl = null, fsPendingMode = null;
 
+  /* One-shot 5s pulse to hint the toggle is interactive — fired when the embed first
+     opens and on each theater enter/exit. No repeating loop; just a gentle nudge. */
+  var fsPulseTimer = null;
+  function pulseTheaterBtn() {
+    if (!theaterBtn) return;
+    theaterBtn.classList.remove('ls-fs-pulse');
+    void theaterBtn.offsetWidth;          /* reflow so re-adding restarts the animation */
+    theaterBtn.classList.add('ls-fs-pulse');
+    if (fsPulseTimer) clearTimeout(fsPulseTimer);
+    fsPulseTimer = setTimeout(function () { theaterBtn.classList.remove('ls-fs-pulse'); }, 5000);
+  }
+
   function fsSupported(el) { return !!(el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen); }
   function fsRequest(el) { return (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen).call(el); }
   function fsExitApi() { var fn = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen; if (fn) fn.call(document); }
@@ -379,12 +395,14 @@
   function applyFsClasses(el, mode) {
     el.classList.add('ls-fs-' + mode);
     document.documentElement.classList.add('ls-fs-lock');
-    updateFsBtns();   /* swaps the toggle's glyph to the X via .is-active */
+    updateFsBtns();         /* swaps the toggle's glyph to the X via .is-active */
+    pulseTheaterBtn();      /* fullscreen opened — pulse the (now X) close button */
   }
   function clearFsClasses(el, mode) {
     el.classList.remove('ls-fs-' + mode, 'ls-pseudofs');
     document.documentElement.classList.remove('ls-fs-lock');
     updateFsBtns();
+    pulseTheaterBtn();      /* fullscreen closed — pulse the (now expand) toggle */
   }
   function enterPseudo(el, mode) {
     fsActive = { el: el, mode: mode, pseudo: true };
