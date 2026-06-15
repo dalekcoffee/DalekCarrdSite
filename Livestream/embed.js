@@ -105,7 +105,7 @@
       /* rotating call-to-action — fills the chat-header dead space; slides in from */
       /* the left, out to the right. Icons/links mirror the Links embed. */
       '.ls-cta-slot{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden}',
-      '.ls-cta{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;gap:9px;padding:0 14px;text-decoration:none;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.03em;white-space:nowrap;pointer-events:none;transform:translateX(-120%);opacity:0;transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s ease,background .2s,color .2s}',
+      '.ls-cta{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;gap:9px;padding:0 14px;text-decoration:none;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.03em;white-space:nowrap;pointer-events:none;transform:translateX(-120%);opacity:0;transition:transform .7s cubic-bezier(.33,0,.2,1),opacity .7s ease,background .2s,color .2s}',
       '.ls-cta.is-active{transform:translateX(0);opacity:1;pointer-events:auto}',
       '.ls-cta.is-right{transform:translateX(120%);opacity:0}',
       '.ls-cta.no-anim{transition:none}',
@@ -126,7 +126,6 @@
       '.ls-cta:hover .ls-cta-inline .fedi-rest{opacity:0}',
       '.ls-cta:hover .ls-cta-inline .fedi-color{opacity:1}',
       '.ls-cta-tiktok:hover .ls-cta-icon,.ls-cta-tiktok:active .ls-cta-icon{background-color:#fff;filter:drop-shadow(-1px 0 0 #ee1d52) drop-shadow(1px 0 0 #69c9d0)}',
-      '@media (prefers-reduced-motion:reduce){.ls-cta{transform:none!important;transition:opacity .3s ease,background .2s,color .2s}}',
 
       /* skeleton */
       '.ls-skeleton{position:absolute;top:0;right:0;bottom:0;left:0;z-index:2;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.25);background:var(--bg);overflow:hidden}',
@@ -369,7 +368,7 @@
             cur.classList.remove('is-right');
             void cur.offsetWidth;
             cur.classList.remove('no-anim');
-          }, 460);
+          }, 760);
         }, 10000);
       }
       ctaSlot.addEventListener('mouseenter', function () { ctaPaused = true; });
