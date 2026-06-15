@@ -171,7 +171,8 @@
       '@media (max-width:1024px){',
         '.ls-embeds{flex-direction:column}',
         '.ls-chat{flex:none;width:100%;min-width:0;border-left:none;border-top:1px solid var(--bg2)}',
-        '.ls-chat-frame{height:522px}',
+        /* flex:none so the 522px basis sticks — otherwise the base flex:1 collapses it to 0 */
+        '.ls-chat-frame{flex:none;height:522px}',
       '}'
     ].join('');
     document.head.appendChild(st);
