@@ -87,7 +87,7 @@
       '#ls-video.ls-show-beam #ls-beam,#ls-video.ls-show-twitch #ls-twitch{z-index:2}',
       '#ls-video.ls-show-beam #ls-twitch,#ls-video.ls-show-twitch #ls-beam{z-index:1}',
       '.ls-chat{flex:1;min-width:350px;display:flex;flex-direction:column;background:#18181b;border-left:1px solid var(--bg2)}',
-      '.ls-chat-head{flex-shrink:0;display:flex;align-items:stretch;justify-content:flex-end;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
+      '.ls-chat-head{flex-shrink:0;display:flex;align-items:stretch;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
       '.ls-points{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:#fff;cursor:pointer;--brand:#a970ff;transition:background .2s,color .2s,box-shadow .2s}',
       '.ls-points .pts-main{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1.1}',
       '.ls-points .pts-sub{font-size:8px;letter-spacing:.03em;opacity:.65;line-height:1.1}',
@@ -101,6 +101,32 @@
       '@keyframes ls-pts-text{0%,100%{color:#fff}30%{color:var(--brand)}}',
       '.ls-chat-frame{position:relative;flex:1;min-height:0;background:#18181b}',
       '#ls-card iframe{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block;border:none;background:transparent}',
+
+      /* rotating call-to-action — fills the chat-header dead space; slides in from */
+      /* the left, out to the right. Icons/links mirror the Links embed. */
+      '.ls-cta-slot{position:relative;flex:1;min-width:0;align-self:stretch;overflow:hidden}',
+      '.ls-cta{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;gap:9px;padding:0 14px;text-decoration:none;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.03em;white-space:nowrap;pointer-events:none;transform:translateX(-120%);opacity:0;transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s ease,background .2s,color .2s}',
+      '.ls-cta.is-active{transform:translateX(0);opacity:1;pointer-events:auto}',
+      '.ls-cta.is-right{transform:translateX(120%);opacity:0}',
+      '.ls-cta.no-anim{transition:none}',
+      '.ls-cta:hover,.ls-cta:active{background:#141414;color:#fff}',
+      '.ls-cta:focus-visible{outline:2px solid var(--brand,#fff);outline-offset:-2px}',
+      '.ls-cta-arrow{flex-shrink:0;color:rgba(255,255,255,.35);font-size:13px;transition:color .2s,transform .2s}',
+      '.ls-cta:hover .ls-cta-arrow{color:var(--brand,#fff);transform:translate(2px,-2px)}',
+      '.ls-cta-icon{display:block;flex-shrink:0;width:18px;height:18px;background-color:rgba(255,255,255,.6);-webkit-mask:var(--mi) no-repeat center/contain;mask:var(--mi) no-repeat center/contain;transition:background-color .2s,transform .2s,filter .2s}',
+      '.ls-cta:hover .ls-cta-icon{background-color:var(--brand,#fff);transform:scale(1.05)}',
+      '.ls-cta-icon.failed{display:none}',
+      '.ls-cta-icon.failed+.ls-cta-fb{display:flex}',
+      '.ls-cta-fb{display:none;align-items:center;justify-content:center;flex-shrink:0;width:18px;font-family:"Bebas Neue",sans-serif;font-size:13px;color:rgba(255,255,255,.6)}',
+      '.ls-cta:hover .ls-cta-fb{color:var(--brand,#fff)}',
+      '.ls-cta-inline{flex-shrink:0;width:18px;height:18px;transition:transform .2s}',
+      '.ls-cta-inline .fedi-rest{opacity:.55;transition:opacity .2s}',
+      '.ls-cta-inline .fedi-color{opacity:0;transition:opacity .2s}',
+      '.ls-cta:hover .ls-cta-inline{transform:scale(1.05)}',
+      '.ls-cta:hover .ls-cta-inline .fedi-rest{opacity:0}',
+      '.ls-cta:hover .ls-cta-inline .fedi-color{opacity:1}',
+      '.ls-cta-tiktok:hover .ls-cta-icon,.ls-cta-tiktok:active .ls-cta-icon{background-color:#fff;filter:drop-shadow(-1px 0 0 #ee1d52) drop-shadow(1px 0 0 #69c9d0)}',
+      '@media (prefers-reduced-motion:reduce){.ls-cta{transform:none!important;transition:opacity .3s ease,background .2s,color .2s}}',
 
       /* skeleton */
       '.ls-skeleton{position:absolute;top:0;right:0;bottom:0;left:0;z-index:2;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.25);background:var(--bg);overflow:hidden}',
@@ -190,6 +216,7 @@
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
             '<div class="ls-chat-head">' +
+              '<div class="ls-cta-slot" id="ls-cta-slot"></div>' +
               '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode — fullscreen player and chat">' + FS_ICONS + '</button>' +
             '</div>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
@@ -221,6 +248,117 @@
     return '<a class="ls-btn" href="' + p.url + '" target="_blank" rel="noopener noreferrer"' +
            ' style="--b-hover:' + p.hover + ';--b-text:' + p.text + '">' + p.name + '</a>';
   }).join('');
+
+  /* ── ROTATING CTA (chat-header dead space) ──
+     One CTA visible at a time; the current slides out to the right while the next
+     slides in from the left. Pauses on hover so people can read/click. Icons + links
+     mirror the Links embed (CSS-mask via simpleicons, with abbr fallback on CDN fail;
+     Fediverse uses the inline pentagram). */
+  var ctaSlot = mount.querySelector('#ls-cta-slot');
+  if (ctaSlot) {
+    var FEDI_SVG =
+      '<svg class="ls-cta-inline" width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<g class="fedi-rest">' +
+      '<line x1="12" y1="3" x2="20.6" y2="9.2" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="12" y1="3" x2="17.3" y2="19.3" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="12" y1="3" x2="6.7" y2="19.3" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="12" y1="3" x2="3.4" y2="9.2" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="20.6" y1="9.2" x2="17.3" y2="19.3" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="20.6" y1="9.2" x2="6.7" y2="19.3" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="20.6" y1="9.2" x2="3.4" y2="9.2" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="17.3" y1="19.3" x2="6.7" y2="19.3" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="17.3" y1="19.3" x2="3.4" y2="9.2" stroke="white" stroke-width="1.4"/>' +
+      '<line x1="6.7" y1="19.3" x2="3.4" y2="9.2" stroke="white" stroke-width="1.4"/>' +
+      '<circle cx="12" cy="3" r="2.1" fill="white"/>' +
+      '<circle cx="20.6" cy="9.2" r="2.1" fill="white"/>' +
+      '<circle cx="17.3" cy="19.3" r="2.1" fill="white"/>' +
+      '<circle cx="6.7" cy="19.3" r="2.1" fill="white"/>' +
+      '<circle cx="3.4" cy="9.2" r="2.1" fill="white"/>' +
+      '</g>' +
+      '<g class="fedi-color">' +
+      '<line x1="12" y1="3" x2="20.6" y2="9.2" stroke="#aadd00" stroke-width="1.4"/>' +
+      '<line x1="12" y1="3" x2="17.3" y2="19.3" stroke="#ffcc00" stroke-width="1.4"/>' +
+      '<line x1="12" y1="3" x2="6.7" y2="19.3" stroke="#ff8800" stroke-width="1.4"/>' +
+      '<line x1="12" y1="3" x2="3.4" y2="9.2" stroke="#ff4400" stroke-width="1.4"/>' +
+      '<line x1="20.6" y1="9.2" x2="17.3" y2="19.3" stroke="#33dd66" stroke-width="1.4"/>' +
+      '<line x1="20.6" y1="9.2" x2="6.7" y2="19.3" stroke="#44aaff" stroke-width="1.4"/>' +
+      '<line x1="20.6" y1="9.2" x2="3.4" y2="9.2" stroke="#aa3300" stroke-width="1.4"/>' +
+      '<line x1="17.3" y1="19.3" x2="6.7" y2="19.3" stroke="#5566ff" stroke-width="1.4"/>' +
+      '<line x1="17.3" y1="19.3" x2="3.4" y2="9.2" stroke="#6688cc" stroke-width="1.4"/>' +
+      '<line x1="6.7" y1="19.3" x2="3.4" y2="9.2" stroke="#cc22aa" stroke-width="1.4"/>' +
+      '<circle cx="12" cy="3" r="2.1" fill="#ffcc00"/>' +
+      '<circle cx="20.6" cy="9.2" r="2.1" fill="#66ff00"/>' +
+      '<circle cx="17.3" cy="19.3" r="2.1" fill="#00ccff"/>' +
+      '<circle cx="6.7" cy="19.3" r="2.1" fill="#8833ff"/>' +
+      '<circle cx="3.4" cy="9.2" r="2.1" fill="#ff2200"/>' +
+      '</g></svg>';
+
+    var ctaMaskIcon = function (slug, fb) {
+      return '<span class="ls-cta-icon" style="--mi:url(\'https://cdn.simpleicons.org/' + slug + '\')" data-fb="' + fb + '" aria-hidden="true"></span>' +
+             '<span class="ls-cta-fb" aria-hidden="true">' + fb + '</span>';
+    };
+
+    var CTA_ITEMS = [
+      { text: 'Join the Discord',       href: 'https://discord.com/invite/h6JerzYnpY',  brand: '#5865f2', icon: ctaMaskIcon('discord', 'DC') },
+      { text: 'Support me',             href: 'https://ko-fi.com/dalekcoffee',          brand: '#FF5E5B', icon: ctaMaskIcon('kofi', 'KO') },
+      { text: 'Follow me on TikTok',    href: 'https://www.tiktok.com/@dalekcoffee',    brand: '#69c9d0', icon: ctaMaskIcon('tiktok', 'TT'), cls: 'ls-cta-tiktok' },
+      { text: 'Follow me on Twitter',   href: 'https://x.com/DalekCoffee',              brand: '#aaa',    icon: ctaMaskIcon('x', 'X') },
+      { text: 'Follow me on Instagram', href: 'https://www.instagram.com/dalekcoffee/', brand: '#e1306c', icon: ctaMaskIcon('instagram', 'IN') },
+      { text: 'Follow me on Fediverse', href: 'https://oshi.social/@dalekcoffee',        brand: '#a970ff', icon: FEDI_SVG, cls: 'rainbow' },
+      { text: 'Follow me on Bluesky',   href: 'https://bsky.app/profile/dalek.coffee',  brand: '#0085ff', icon: ctaMaskIcon('bluesky', 'BS') }
+    ];
+
+    CTA_ITEMS.forEach(function (it) {
+      var a = document.createElement('a');
+      a.className = 'ls-cta' + (it.cls ? ' ' + it.cls : '');
+      a.href = it.href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.style.setProperty('--brand', it.brand);
+      a.setAttribute('aria-label', it.text);
+      a.innerHTML = it.icon + '<span class="ls-cta-text">' + it.text + '</span><span class="ls-cta-arrow" aria-hidden="true">↗</span>';
+      ctaSlot.appendChild(a);
+    });
+
+    /* same CDN-failure probe as the Links embed: hide the mask, reveal the abbr */
+    var ctaChecked = {};
+    ctaSlot.querySelectorAll('.ls-cta-icon[data-fb]').forEach(function (el) {
+      var url = (el.style.getPropertyValue('--mi') || '').replace(/url\(['"]?|['"]?\)/g, '');
+      if (!url || ctaChecked[url] !== undefined) return;
+      ctaChecked[url] = null;
+      var img = new Image();
+      img.onerror = function () {
+        ctaSlot.querySelectorAll('.ls-cta-icon[data-fb]').forEach(function (m) {
+          var u = (m.style.getPropertyValue('--mi') || '').replace(/url\(['"]?|['"]?\)/g, '');
+          if (u === url) m.classList.add('failed');
+        });
+      };
+      img.src = url;
+    });
+
+    var ctaEls = ctaSlot.querySelectorAll('.ls-cta');
+    var ctaIdx = 0, ctaPaused = false;
+    if (ctaEls.length) {
+      ctaEls[0].classList.add('is-active');
+      if (ctaEls.length > 1) {
+        setInterval(function () {
+          if (ctaPaused || !card.classList.contains('ls-open')) return;   /* hold on item 0 until opened */
+          var cur = ctaEls[ctaIdx];
+          ctaIdx = (ctaIdx + 1) % ctaEls.length;
+          var next = ctaEls[ctaIdx];
+          cur.classList.remove('is-active');
+          cur.classList.add('is-right');        /* slide current out to the right */
+          next.classList.add('is-active');       /* slide next in from the left */
+          setTimeout(function () {               /* once it's gone, park it back on the left */
+            cur.classList.add('no-anim');
+            cur.classList.remove('is-right');
+            void cur.offsetWidth;
+            cur.classList.remove('no-anim');
+          }, 460);
+        }, 6500);
+      }
+      ctaSlot.addEventListener('mouseenter', function () { ctaPaused = true; });
+      ctaSlot.addEventListener('mouseleave', function () { ctaPaused = false; });
+    }
+  }
 
   /* ── PLAYERS — Option B: Twitch stays loaded + muted behind Beam ── */
   function makeIframe(src) {
