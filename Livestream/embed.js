@@ -62,7 +62,9 @@
       '.ls-body{display:flex;flex-direction:column;overflow:hidden;max-height:0;opacity:0;background:var(--bg);transition:max-height .8s cubic-bezier(.4,0,.2,1),opacity .6s ease}',
       '#ls-card.ls-open .ls-body{max-height:3000px;opacity:1}',
       '.ls-banner{padding:10px 20px;border-bottom:1px solid var(--bg2);font-size:11px;letter-spacing:.05em;color:#fff;background:var(--bg)}',
-      '.ls-embeds{display:flex;flex-direction:row;position:relative;--lsChatW:350px}',
+      /* --lsChatW = the chat column's resting width, so hiding never resizes the */
+      /* control strip. Mirrors the 3.5:1 flex ratio (clamped to a 350px minimum). */
+      '.ls-embeds{display:flex;flex-direction:row;position:relative;--lsChatW:max(350px,calc(100% / 4.5))}',
       '.ls-main{flex:3.5;min-width:0;display:flex;flex-direction:column;background:var(--bg)}',
 
       /* tabs */
@@ -182,7 +184,13 @@
       '@media (min-width:1025px){.ls-embeds.ls-fs-theater .ls-main{height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}}',
       '@media (max-width:1024px){.ls-embeds.ls-fs-theater{flex-direction:column}.ls-embeds.ls-fs-theater .ls-main{flex:0 0 auto}.ls-embeds.ls-fs-theater .ls-chat{flex:1 1 auto;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}}',
       /* landscape phone: side-by-side (big player + slim chat), like desktop theater */
-      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:35%;max-width:320px;min-width:220px;height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-toggle,.ls-embeds.ls-fs-theater .ls-theater-btn{width:44px}.ls-embeds.ls-fs-theater .ls-cta-slot{left:44px;right:44px}.ls-embeds.ls-fs-theater .ls-cta{font-size:11px;gap:7px;padding:0 8px}.ls-embeds.ls-fs-theater.ls-chat-hidden{flex-direction:row}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat{position:absolute;top:var(--tabH);left:0;right:0;width:auto;border-top:none;z-index:4}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat-head{background:rgba(0,0,0,.72)}}',
+      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row;--lsChatW:clamp(220px,35%,320px)}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:var(--lsChatW);height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-toggle,.ls-embeds.ls-fs-theater .ls-theater-btn{width:44px}.ls-embeds.ls-fs-theater .ls-cta-slot{left:44px;right:44px}.ls-embeds.ls-fs-theater .ls-cta{font-size:11px;gap:7px;padding:0 8px}',
+      /* hidden in landscape FS — same as desktop: control strip stays a top-right */
+      /* bar beside the tabs, player widens (no full-width overlay over the video) */
+      '.ls-embeds.ls-fs-theater.ls-chat-hidden{flex-direction:row}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-vtabs{padding-right:var(--lsChatW)}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat{position:absolute;top:0;right:0;bottom:auto;width:var(--lsChatW);height:var(--tabH);min-height:0;border-top:none;border-left:1px solid var(--bg2);z-index:3}}',
+      /* portrait phone in theater: hiding chat just leaves a black void, so disable */
+      /* the toggle and keep the messages shown */
+      '@media (max-width:1024px) and (orientation:portrait){.ls-embeds.ls-fs-theater .ls-chat-toggle{display:none}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat-frame{display:block}}',
 
       /* mobile */
       '@media (min-width:481px){.ls-status{font-size:14px}}',
