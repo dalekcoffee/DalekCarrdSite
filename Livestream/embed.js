@@ -70,9 +70,10 @@
       /* tabs */
       '.ls-vtabs{display:flex;height:var(--tabH);border-bottom:1px solid var(--b1);background:#0c0c0c}',
       '.ls-vtab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 6px;text-align:center;cursor:pointer;background:none;border:none;border-right:1px solid var(--b1);border-bottom:2px solid transparent;color:rgba(255,255,255,.5);font-family:inherit;transition:background .2s,color .2s,border-color .2s,box-shadow .2s}',
-      /* Beam is the primary choice — 80% of the tab bar vs Twitch's 20% (4:1) */
-      '.ls-vtab[data-tab="beam"]{flex:4}',
-      '.ls-vtab[data-tab="twitch"]{flex:1}',
+      /* 60/40 split (3:2): "Backup player, has ads!" measures ~135px and needs */
+      /* ~40% of the bar to fit one line on mainstream phones; Beam stays wider. */
+      '.ls-vtab[data-tab="beam"]{flex:3}',
+      '.ls-vtab[data-tab="twitch"]{flex:2}',
       '.ls-vtab:last-child{border-right:none}',
       '.ls-vtab .vt-name{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;line-height:1}',
       '.ls-vtab .vt-tip{font-size:9px;letter-spacing:.04em;opacity:.7;line-height:1.1}',
@@ -199,6 +200,9 @@
         '.ls-chat{flex:none;width:100%;min-width:0;border-left:none;border-top:1px solid var(--bg2)}',
         /* flex:none so the 522px basis sticks — otherwise the base flex:1 collapses it to 0 */
         '.ls-chat-frame{flex:none;height:522px}',
+        /* shave the tip font a hair so "Backup player, has ads!" also fits one line */
+        /* on ~360px Android widths (not just 375px+ iPhones) at the 60/40 split */
+        '.ls-vtab .vt-tip{font-size:8.5px}',
       '}'
     ].join('');
     document.head.appendChild(st);
