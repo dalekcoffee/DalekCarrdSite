@@ -87,7 +87,7 @@
       '#ls-video.ls-show-beam #ls-beam,#ls-video.ls-show-twitch #ls-twitch{z-index:2}',
       '#ls-video.ls-show-beam #ls-twitch,#ls-video.ls-show-twitch #ls-beam{z-index:1}',
       '.ls-chat{flex:1;min-width:350px;display:flex;flex-direction:column;background:#18181b;border-left:1px solid var(--bg2)}',
-      '.ls-chat-head{flex-shrink:0;display:flex;align-items:stretch;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
+      '.ls-chat-head{flex-shrink:0;position:relative;display:flex;align-items:stretch;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
       '.ls-points{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:#fff;cursor:pointer;--brand:#a970ff;transition:background .2s,color .2s,box-shadow .2s}',
       '.ls-points .pts-main{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1.1}',
       '.ls-points .pts-sub{font-size:8px;letter-spacing:.03em;opacity:.65;line-height:1.1}',
@@ -104,8 +104,8 @@
 
       /* rotating call-to-action — fills the chat-header dead space; slides in from */
       /* the left, out to the right. Icons/links mirror the Links embed. */
-      '.ls-cta-slot{position:relative;flex:1;min-width:0;align-self:stretch;overflow:hidden}',
-      '.ls-cta{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;gap:9px;padding:0 14px;text-decoration:none;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.03em;white-space:nowrap;pointer-events:none;transform:translateX(-120%);opacity:0;transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s ease,background .2s,color .2s}',
+      '.ls-cta-slot{position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden}',
+      '.ls-cta{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;gap:9px;padding:0 14px;text-decoration:none;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.03em;white-space:nowrap;pointer-events:none;transform:translateX(-120%);opacity:0;transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .42s ease,background .2s,color .2s}',
       '.ls-cta.is-active{transform:translateX(0);opacity:1;pointer-events:auto}',
       '.ls-cta.is-right{transform:translateX(120%);opacity:0}',
       '.ls-cta.no-anim{transition:none}',
@@ -150,7 +150,7 @@
       '.ls-fs-btn:focus-visible{outline:2px solid var(--brand,#fff);outline-offset:-2px}',
       /* right-aligned (dead space to its left). Shows the expand glyph when closed */
       /* and swaps in place to the X when in theater mode — same control, one icon. */
-      '.ls-theater-btn{width:56px;border-left:1px solid var(--b1);--brand:#a970ff}',
+      '.ls-theater-btn{position:absolute;top:0;right:0;bottom:0;width:56px;z-index:2;--brand:#a970ff}',
       '.ls-theater-btn svg{width:24px;height:24px}',
       '.ls-fs-btn .fs-i-close{display:none}',
       '.ls-theater-btn.is-active .fs-i-expand{display:none}',
