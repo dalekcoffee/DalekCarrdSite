@@ -62,7 +62,7 @@
       '.ls-body{display:flex;flex-direction:column;overflow:hidden;max-height:0;opacity:0;background:var(--bg);transition:max-height .8s cubic-bezier(.4,0,.2,1),opacity .6s ease}',
       '#ls-card.ls-open .ls-body{max-height:3000px;opacity:1}',
       '.ls-banner{padding:10px 20px;border-bottom:1px solid var(--bg2);font-size:11px;letter-spacing:.05em;color:#fff;background:var(--bg)}',
-      '.ls-embeds{display:flex;flex-direction:row}',
+      '.ls-embeds{display:flex;flex-direction:row;position:relative}',
       '.ls-main{flex:3.5;min-width:0;display:flex;flex-direction:column;background:var(--bg)}',
 
       /* tabs */
@@ -154,16 +154,18 @@
       '.ls-fs-btn .fs-i-close{display:none}',
       '.ls-theater-btn.is-active .fs-i-expand{display:none}',
       '.ls-theater-btn.is-active .fs-i-close{display:block}',
-      /* chat hide/show — available in every layout. Hide embeds at the left of the CTA */
-      /* (mirrors the close on the right); show floats on the video once chat is gone. */
-      '.ls-chat-hide-btn{position:absolute;top:0;left:0;bottom:0;width:56px;z-index:2;--brand:#5b9bd5}',
-      '.ls-chat-hide-btn svg{width:22px;height:22px}',
-      '.ls-chat-show-btn{display:none;position:absolute;top:8px;right:8px;z-index:3;width:40px;height:40px;align-items:center;justify-content:center;background:rgba(0,0,0,.55);border:none;color:rgba(255,255,255,.85);cursor:pointer;transition:background .2s,color .2s}',
-      '.ls-chat-show-btn:hover,.ls-chat-show-btn:active{background:rgba(0,0,0,.82);color:#fff}',
-      '.ls-chat-show-btn:focus-visible{outline:2px solid #fff;outline-offset:-2px}',
-      '.ls-chat-show-btn svg{width:20px;height:20px;display:block}',
-      '.ls-embeds.ls-chat-hidden .ls-chat{display:none}',
-      '.ls-embeds.ls-chat-hidden .ls-chat-show-btn{display:flex}',
+      /* chat show/hide — ONE toggle in the chat header (left of the CTA, mirrors the close */
+      /* on the right). The header bar stays put in every state; only the messages collapse. */
+      '.ls-chat-toggle{position:absolute;top:0;left:0;bottom:0;width:56px;z-index:2;--brand:#5b9bd5}',
+      '.ls-chat-toggle svg{width:22px;height:22px}',
+      '.ls-chat-toggle .fs-i-chat-show{display:none}',
+      '.ls-embeds.ls-chat-hidden .ls-chat-toggle .fs-i-chat-hide{display:none}',
+      '.ls-embeds.ls-chat-hidden .ls-chat-toggle .fs-i-chat-show{display:block}',
+      /* hidden: collapse the messages and stack so the player fills the freed space; */
+      /* the chat header drops to a slim bar below it (controls stay present). */
+      '.ls-embeds.ls-chat-hidden{flex-direction:column}',
+      '.ls-embeds.ls-chat-hidden .ls-chat{flex:none;width:100%;min-width:0;border-left:none;border-top:1px solid var(--bg2)}',
+      '.ls-embeds.ls-chat-hidden .ls-chat-frame{display:none}',
       /* one-shot attention pulse (3 slow cycles ~= 5s); fired on open / enter / exit */
       '.ls-theater-btn.ls-fs-pulse{animation:ls-fs-pulse 1.667s ease-out 3}',
       '@keyframes ls-fs-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5);background:#0c0c0c;color:rgba(255,255,255,.55)}40%{background:#171029;color:#a970ff}70%{box-shadow:0 0 0 10px rgba(169,112,255,0)}100%{box-shadow:0 0 0 0 rgba(169,112,255,0);background:#0c0c0c;color:rgba(255,255,255,.55)}}',
@@ -175,7 +177,7 @@
       '@media (min-width:1025px){.ls-embeds.ls-fs-theater .ls-main{height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}}',
       '@media (max-width:1024px){.ls-embeds.ls-fs-theater{flex-direction:column}.ls-embeds.ls-fs-theater .ls-main{flex:0 0 auto}.ls-embeds.ls-fs-theater .ls-chat{flex:1 1 auto;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}}',
       /* landscape phone: side-by-side (big player + slim chat), like desktop theater */
-      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:35%;max-width:320px;min-width:220px;height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-hide-btn,.ls-embeds.ls-fs-theater .ls-theater-btn{width:44px}.ls-embeds.ls-fs-theater .ls-cta-slot{left:44px;right:44px}.ls-embeds.ls-fs-theater .ls-cta{font-size:11px;gap:7px;padding:0 8px}}',
+      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:35%;max-width:320px;min-width:220px;height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-toggle,.ls-embeds.ls-fs-theater .ls-theater-btn{width:44px}.ls-embeds.ls-fs-theater .ls-cta-slot{left:44px;right:44px}.ls-embeds.ls-fs-theater .ls-cta{font-size:11px;gap:7px;padding:0 8px}.ls-embeds.ls-fs-theater.ls-chat-hidden{flex-direction:row}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat{position:absolute;top:var(--tabH);left:0;right:0;width:auto;border-top:none;z-index:4}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat-head{background:rgba(0,0,0,.72)}}',
 
       /* mobile */
       '@media (min-width:481px){.ls-status{font-size:14px}}',
@@ -195,11 +197,12 @@
   var FS_ICONS =
     '<svg class="fs-i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M21 3l-7 7M9 21H3v-6M3 21l7-7"/></svg>' +
     '<svg class="fs-i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
-  /* rounded chat bubble: plain = show chat, slashed = hide chat (one icon per button) */
-  var CHAT_SHOW_ICON =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
+  /* rounded chat bubble: plain = show chat, slashed = hide chat. Both live in the one */
+  /* toggle; CSS shows whichever matches the state (single glyph at a time). */
   var CHAT_HIDE_ICON =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><line x1="4" y1="4" x2="20" y2="20"/></svg>';
+    '<svg class="fs-i-chat-hide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><line x1="4" y1="4" x2="20" y2="20"/></svg>';
+  var CHAT_SHOW_ICON =
+    '<svg class="fs-i-chat-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>';
 
   mount.innerHTML =
     '<div id="ls-card">' +
@@ -229,12 +232,11 @@
             '<div class="ls-video" id="ls-video">' +
               '<div class="ls-vlayer" id="ls-twitch"></div>' +
               '<div class="ls-vlayer" id="ls-beam"><div class="ls-skeleton">Loading stream</div></div>' +
-              '<button class="ls-chat-show-btn" type="button" aria-label="Show chat" title="Show chat">' + CHAT_SHOW_ICON + '</button>' +
             '</div>' +
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
             '<div class="ls-chat-head">' +
-              '<button class="ls-fs-btn ls-chat-hide-btn" type="button" aria-label="Hide chat" title="Hide chat">' + CHAT_HIDE_ICON + '</button>' +
+              '<button class="ls-fs-btn ls-chat-toggle" type="button" aria-label="Hide chat" title="Hide chat">' + CHAT_HIDE_ICON + CHAT_SHOW_ICON + '</button>' +
               '<div class="ls-cta-slot" id="ls-cta-slot"></div>' +
               '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode — fullscreen player and chat">' + FS_ICONS + '</button>' +
             '</div>' +
@@ -545,8 +547,7 @@
      .ls-fs-theater classes. */
   var embedsEl      = mount.querySelector('.ls-embeds');
   var theaterBtn    = mount.querySelector('.ls-theater-btn');
-  var chatHideBtn   = mount.querySelector('.ls-chat-hide-btn');
-  var chatShowBtn   = mount.querySelector('.ls-chat-show-btn');
+  var chatToggle    = mount.querySelector('.ls-chat-toggle');
   var fsActive   = null;                 /* {el, mode, pseudo} or null */
   var fsPendingEl = null, fsPendingMode = null;
 
@@ -644,8 +645,12 @@
   /* Chat show/hide (landscape fullscreen only): collapse the chat column so the player
      fills the width, or bring it back. Two buttons so only the relevant one is on screen —
      hide embeds in the chat header, show floats on the video once chat is gone. */
-  if (chatHideBtn) chatHideBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); embedsEl.classList.add('ls-chat-hidden'); });
-  if (chatShowBtn) chatShowBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); embedsEl.classList.remove('ls-chat-hidden'); });
+  if (chatToggle) chatToggle.addEventListener('click', function (e) {
+    e.preventDefault(); e.stopPropagation();
+    var hidden = embedsEl.classList.toggle('ls-chat-hidden');
+    chatToggle.setAttribute('aria-label', hidden ? 'Show chat' : 'Hide chat');
+    chatToggle.setAttribute('title', hidden ? 'Show chat' : 'Hide chat');
+  });
 
   /* ── COLLAPSE / LIVE STATE ── */
   function applyOpenState(open) {
