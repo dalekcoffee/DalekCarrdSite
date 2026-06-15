@@ -114,7 +114,7 @@
 
       '@keyframes ls-pulse-red{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,51,51,.7)}70%{transform:scale(1);box-shadow:0 0 0 8px rgba(255,51,51,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,51,51,0)}}',
 
-      /* fullscreen controls */
+      /* fullscreen control — a single theater toggle, in the chat header */
       '.ls-fs-btn{display:inline-flex;align-items:center;justify-content:center;width:46px;flex-shrink:0;padding:0;background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-family:inherit;transition:background .2s,color .2s,box-shadow .2s}',
       '.ls-fs-btn svg{width:17px;height:17px;display:block}',
       '.ls-fs-btn:hover,.ls-fs-btn:active{color:var(--brand,#fff);background:#141414}',
@@ -122,29 +122,17 @@
       '.fs-i-contract{display:none}',
       '.ls-fs-btn.is-active .fs-i-expand{display:none}',
       '.ls-fs-btn.is-active .fs-i-contract{display:block}',
-      '.ls-chat-fs-btn{border-left:1px solid var(--b1)}',
-      /* video overlay button — faint at rest, full on hover/touch */
-      '.ls-fs-video-btn{position:absolute;top:8px;right:8px;z-index:3;width:38px;height:38px;background:rgba(0,0,0,.55);color:rgba(255,255,255,.85);opacity:.6;transition:opacity .2s,background .2s,color .2s}',
-      '.ls-video:hover .ls-fs-video-btn{opacity:1}',
-      '.ls-fs-video-btn:hover,.ls-fs-video-btn:active{background:rgba(0,0,0,.8);color:#fff}',
-      '@media (hover:none){.ls-fs-video-btn{opacity:.85}}',
-      /* theater button lives in the strip; only meaningful once the body is open */
-      '.ls-strip-right{display:flex;align-items:center;gap:14px}',
-      '.ls-theater-btn{display:none;width:42px;height:34px;--brand:#fff;color:rgba(255,255,255,.5)}',
-      '#ls-card.ls-open .ls-theater-btn{display:inline-flex}',
-      '.ls-strip:hover .ls-theater-btn{color:#aaa}',
+      '.ls-theater-btn{border-left:1px solid var(--b1);--brand:#a970ff}',
       /* fullscreen states — driven by our own classes so the same CSS covers the */
       /* native Fullscreen API and the iOS fixed-position fallback below */
       '.ls-pseudofs{position:fixed;top:0;left:0;width:100%;height:100%;max-width:none;z-index:2147483646;background:#000}',
       '.ls-fs-lock{overflow:hidden}',
-      '#ls-video.ls-fs-video{aspect-ratio:auto;max-width:none;width:100%;height:100%;background:#000}',
-      '.ls-chat.ls-fs-chat{width:100%;height:100%;max-width:none;border:none;background:#18181b}',
-      '.ls-chat.ls-fs-chat .ls-chat-frame{height:auto;flex:1;min-height:0}',
       '.ls-embeds.ls-fs-theater{width:100%;height:100%;max-width:none;background:#000}',
-      '.ls-embeds.ls-fs-theater .ls-fs-video-btn,.ls-embeds.ls-fs-theater .ls-chat-fs-btn{display:none}',
+      /* once fullscreen, the trigger hides and the injected close (✕) takes over */
+      '.ls-embeds.ls-fs-theater .ls-theater-btn{display:none}',
       '@media (min-width:1025px){.ls-embeds.ls-fs-theater .ls-main{height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}}',
       '@media (max-width:1024px){.ls-embeds.ls-fs-theater{flex-direction:column}.ls-embeds.ls-fs-theater .ls-main{flex:0 0 auto}.ls-embeds.ls-fs-theater .ls-chat{flex:1 1 auto;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}}',
-      /* injected exit affordance (theater + iOS pseudo-fullscreen) */
+      /* injected close button (top-right) — the in-fullscreen exit affordance */
       '.ls-fs-exit{position:absolute;top:10px;right:10px;z-index:12;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25);color:#fff;cursor:pointer}',
       '.ls-fs-exit svg{width:18px;height:18px;display:block}',
       '.ls-fs-exit:hover,.ls-fs-exit:active{background:rgba(0,0,0,.85)}',
@@ -162,8 +150,8 @@
   }
 
   /* ── MARKUP ── */
-  /* Expand + contract glyphs live together in each toggle button; CSS swaps which
-     one shows via the .is-active class. FS_X_ICON is the standalone exit (close). */
+  /* Expand + contract glyphs live together in the toggle button; CSS swaps which
+     one shows via the .is-active class. FS_X_ICON is the in-fullscreen close (✕). */
   var FS_ICONS =
     '<svg class="fs-i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>' +
     '<svg class="fs-i-contract" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>';
@@ -177,13 +165,10 @@
           '<div class="ls-dot" id="ls-dot"></div>' +
           '<div class="ls-status" id="ls-status">Connecting…</div>' +
         '</div>' +
-        '<div class="ls-strip-right">' +
-          '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode — fullscreen player and chat">' + FS_ICONS + '</button>' +
-          '<div class="ls-toggle" aria-hidden="true">' +
-            '<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-              '<path d="M1 1L8 8.5L15 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
-            '</svg>' +
-          '</div>' +
+        '<div class="ls-toggle" aria-hidden="true">' +
+          '<svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+            '<path d="M1 1L8 8.5L15 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg>' +
         '</div>' +
       '</div>' +
       '<div class="ls-body">' +
@@ -201,7 +186,6 @@
             '<div class="ls-video" id="ls-video">' +
               '<div class="ls-vlayer" id="ls-twitch"></div>' +
               '<div class="ls-vlayer" id="ls-beam"><div class="ls-skeleton">Loading stream</div></div>' +
-              '<button class="ls-fs-btn ls-fs-video-btn" type="button" aria-label="Fullscreen video">' + FS_ICONS + '</button>' +
             '</div>' +
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
@@ -214,7 +198,7 @@
                 '</span>' +
                 '<span class="pts-sub">Keep a muted twitch tab in the background!</span>' +
               '</a>' +
-              '<button class="ls-fs-btn ls-chat-fs-btn" type="button" aria-label="Fullscreen chat" style="--brand:#a970ff">' + FS_ICONS + '</button>' +
+              '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode — fullscreen player and chat">' + FS_ICONS + '</button>' +
             '</div>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
           '</div>' +
@@ -386,16 +370,13 @@
     });
   }
 
-  /* ── FULLSCREEN (video / chat / theater) ──
-     Twitch chat has no native fullscreen and Beam's is unreliable, so we fullscreen
-     our own containers instead. iPhone Safari has no element-level Fullscreen API
-     (only bare <video>), so there we fall back to a fixed-position "pseudo" fullscreen
-     that fills the browser viewport. Both paths are driven by the same .ls-fs-<mode>
-     classes, so the CSS above covers them identically. */
+  /* ── FULLSCREEN (theater) ──
+     One toggle (in the chat header) fullscreens the whole embed together — the tab
+     bar, both players, the points CTA, and chat. iPhone Safari has no element-level
+     Fullscreen API (only bare <video>), so there we fall back to a fixed-position
+     "pseudo" fullscreen that fills the viewport; both paths share the .ls-fs-theater
+     classes. While fullscreen the trigger hides and an injected ✕ (top-right) exits. */
   var embedsEl   = mount.querySelector('.ls-embeds');
-  var chatEl     = mount.querySelector('#ls-chat');
-  var videoFsBtn = mount.querySelector('.ls-fs-video-btn');
-  var chatFsBtn  = mount.querySelector('.ls-chat-fs-btn');
   var theaterBtn = mount.querySelector('.ls-theater-btn');
   var fsActive   = null;                 /* {el, mode, pseudo} or null */
   var fsPendingEl = null, fsPendingMode = null;
@@ -408,7 +389,7 @@
   function applyFsClasses(el, mode) {
     el.classList.add('ls-fs-' + mode);
     document.documentElement.classList.add('ls-fs-lock');
-    if (mode === 'theater') injectExit(el);   /* the theater toggle lives in the strip, which is hidden once fullscreen */
+    if (mode === 'theater') injectExit(el);   /* trigger hides in fullscreen, so add a ✕ close */
     updateFsBtns();
   }
   function clearFsClasses(el, mode) {
@@ -469,10 +450,7 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && fsActive && fsActive.pseudo) exitFs(); });
 
   function updateFsBtns() {
-    var mode = fsActive ? fsActive.mode : null;
-    setFsBtn(videoFsBtn, mode === 'video',   'Fullscreen video', 'Exit fullscreen');
-    setFsBtn(chatFsBtn,  mode === 'chat',    'Fullscreen chat',  'Exit fullscreen');
-    setFsBtn(theaterBtn, mode === 'theater', 'Theater mode — fullscreen player and chat', 'Exit theater mode');
+    setFsBtn(theaterBtn, !!(fsActive && fsActive.mode === 'theater'), 'Theater mode — fullscreen player and chat', 'Exit theater mode');
   }
   function setFsBtn(btn, active, labelOff, labelOn) {
     if (!btn) return;
@@ -492,8 +470,6 @@
   }
   function removeExit(el) { var b = el.querySelector('.ls-fs-exit'); if (b) b.parentNode.removeChild(b); }
 
-  if (videoFsBtn) videoFsBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); toggleFs(videoSlot, 'video'); });
-  if (chatFsBtn)  chatFsBtn.addEventListener('click',  function (e) { e.preventDefault(); e.stopPropagation(); toggleFs(chatEl, 'chat'); });
   if (theaterBtn) theaterBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); toggleFs(embedsEl, 'theater'); });
 
   /* ── COLLAPSE / LIVE STATE ── */
