@@ -68,9 +68,9 @@
       /* tabs */
       '.ls-vtabs{display:flex;height:var(--tabH);border-bottom:1px solid var(--b1);background:#0c0c0c}',
       '.ls-vtab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 6px;text-align:center;cursor:pointer;background:none;border:none;border-right:1px solid var(--b1);border-bottom:2px solid transparent;color:rgba(255,255,255,.5);font-family:inherit;transition:background .2s,color .2s,border-color .2s,box-shadow .2s}',
-      /* Beam is the primary choice — give it a wider tab than Twitch (+25% / -25%) */
-      '.ls-vtab[data-tab="beam"]{flex:1.25}',
-      '.ls-vtab[data-tab="twitch"]{flex:.75}',
+      /* Beam is the primary choice — 80% of the tab bar vs Twitch's 20% (4:1) */
+      '.ls-vtab[data-tab="beam"]{flex:4}',
+      '.ls-vtab[data-tab="twitch"]{flex:1}',
       '.ls-vtab:last-child{border-right:none}',
       '.ls-vtab .vt-name{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;line-height:1}',
       '.ls-vtab .vt-tip{font-size:9px;letter-spacing:.04em;opacity:.7;line-height:1.1}',
