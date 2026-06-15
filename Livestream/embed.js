@@ -154,10 +154,14 @@
       '.ls-fs-btn .fs-i-close{display:none}',
       '.ls-theater-btn.is-active .fs-i-expand{display:none}',
       '.ls-theater-btn.is-active .fs-i-close{display:block}',
-      /* landscape button — mirrors the theater toggle on the LEFT; phone-portrait only */
-      '.ls-landscape-btn{display:none;position:absolute;top:0;left:0;bottom:0;width:56px;z-index:2;--brand:#5b9bd5}',
-      '.ls-landscape-btn svg{width:22px;height:22px}',
-      '@media (max-width:1024px) and (orientation:portrait){.ls-landscape-btn{display:inline-flex}}',
+      /* chat show/hide toggle — floats on the video, shown only in landscape fullscreen */
+      '.ls-chat-toggle{display:none;position:absolute;top:8px;right:8px;z-index:3;width:40px;height:40px;align-items:center;justify-content:center;background:rgba(0,0,0,.55);border:none;color:rgba(255,255,255,.85);cursor:pointer;transition:background .2s,color .2s}',
+      '.ls-chat-toggle:hover,.ls-chat-toggle:active{background:rgba(0,0,0,.82);color:#fff}',
+      '.ls-chat-toggle:focus-visible{outline:2px solid #fff;outline-offset:-2px}',
+      '.ls-chat-toggle svg{width:20px;height:20px;display:block}',
+      '.fs-i-chat-off{display:none}',
+      '.ls-embeds.ls-chat-hidden .ls-chat-toggle .fs-i-chat-on{display:none}',
+      '.ls-embeds.ls-chat-hidden .ls-chat-toggle .fs-i-chat-off{display:block}',
       /* one-shot attention pulse (3 slow cycles ~= 5s); fired on open / enter / exit */
       '.ls-theater-btn.ls-fs-pulse{animation:ls-fs-pulse 1.667s ease-out 3}',
       '@keyframes ls-fs-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5);background:#0c0c0c;color:rgba(255,255,255,.55)}40%{background:#171029;color:#a970ff}70%{box-shadow:0 0 0 10px rgba(169,112,255,0)}100%{box-shadow:0 0 0 0 rgba(169,112,255,0);background:#0c0c0c;color:rgba(255,255,255,.55)}}',
@@ -169,7 +173,7 @@
       '@media (min-width:1025px){.ls-embeds.ls-fs-theater .ls-main{height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}}',
       '@media (max-width:1024px){.ls-embeds.ls-fs-theater{flex-direction:column}.ls-embeds.ls-fs-theater .ls-main{flex:0 0 auto}.ls-embeds.ls-fs-theater .ls-chat{flex:1 1 auto;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}}',
       /* landscape phone: side-by-side (big player + slim chat), like desktop theater */
-      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:35%;max-width:320px;min-width:220px;height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}}',
+      '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:35%;max-width:320px;min-width:220px;height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-toggle{display:flex}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat{display:none}}',
 
       /* mobile */
       '@media (min-width:481px){.ls-status{font-size:14px}}',
@@ -189,9 +193,10 @@
   var FS_ICONS =
     '<svg class="fs-i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M21 3l-7 7M9 21H3v-6M3 21l7-7"/></svg>' +
     '<svg class="fs-i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
-  /* landscape device glyph for the "go landscape" button */
-  var LANDSCAPE_ICON =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="18" y1="6" x2="18" y2="18"/></svg>';
+  /* chat-on (bubble) and chat-off (bubble + slash) for the show/hide toggle */
+  var CHAT_ICONS =
+    '<svg class="fs-i-chat-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+    '<svg class="fs-i-chat-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="3" y1="3" x2="21" y2="21"/></svg>';
 
   mount.innerHTML =
     '<div id="ls-card">' +
@@ -221,11 +226,11 @@
             '<div class="ls-video" id="ls-video">' +
               '<div class="ls-vlayer" id="ls-twitch"></div>' +
               '<div class="ls-vlayer" id="ls-beam"><div class="ls-skeleton">Loading stream</div></div>' +
+              '<button class="ls-chat-toggle" type="button" aria-label="Hide chat" title="Hide chat">' + CHAT_ICONS + '</button>' +
             '</div>' +
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
             '<div class="ls-chat-head">' +
-              '<button class="ls-fs-btn ls-landscape-btn" type="button" aria-label="Landscape mode — bigger player">' + LANDSCAPE_ICON + '</button>' +
               '<div class="ls-cta-slot" id="ls-cta-slot"></div>' +
               '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode — fullscreen player and chat">' + FS_ICONS + '</button>' +
             '</div>' +
@@ -534,12 +539,11 @@
      no element-level Fullscreen API (only bare <video>), so there we fall back to a
      fixed-position "pseudo" fullscreen that fills the viewport; both paths share the
      .ls-fs-theater classes. */
-  var embedsEl     = mount.querySelector('.ls-embeds');
-  var theaterBtn   = mount.querySelector('.ls-theater-btn');
-  var landscapeBtn = mount.querySelector('.ls-landscape-btn');
+  var embedsEl      = mount.querySelector('.ls-embeds');
+  var theaterBtn    = mount.querySelector('.ls-theater-btn');
+  var chatToggleBtn = mount.querySelector('.ls-chat-toggle');
   var fsActive   = null;                 /* {el, mode, pseudo} or null */
   var fsPendingEl = null, fsPendingMode = null;
-  var wantLandscape = false;             /* set when entry was via the landscape button */
 
   /* One-shot 5s pulse to hint the toggle is interactive — fired when the embed first
      opens and on each theater enter/exit. No repeating loop; just a gentle nudge. */
@@ -558,33 +562,18 @@
   function fsExitApi() { var fn = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen; if (fn) fn.call(document); }
   function fsElement() { return document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement || null; }
 
-  /* Ask the device to rotate to landscape. Only works in fullscreen and only where the
-     Screen Orientation API supports lock (Android Chrome/Firefox) — it auto-releases on
-     exit, so it never leaves the phone stuck. iOS/desktop reject it; there the responsive
-     CSS takes over the moment the user turns the phone, so nothing is forced/fights. */
-  function lockLandscape() {
-    try {
-      var o = window.screen && screen.orientation;
-      if (o && o.lock) { var p = o.lock('landscape'); if (p && p.catch) p.catch(function () {}); }
-    } catch (e) {}
-  }
-  function unlockOrientation() {
-    try { if (window.screen && screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {}
-  }
-
   function applyFsClasses(el, mode) {
     el.classList.add('ls-fs-' + mode);
     document.documentElement.classList.add('ls-fs-lock');
     updateFsBtns();         /* swaps the toggle's glyph to the X via .is-active */
     pulseTheaterBtn();      /* fullscreen opened — pulse the (now X) close button */
-    if (wantLandscape) lockLandscape();   /* entered via the landscape button */
   }
   function clearFsClasses(el, mode) {
-    el.classList.remove('ls-fs-' + mode, 'ls-pseudofs');
+    el.classList.remove('ls-fs-' + mode, 'ls-pseudofs', 'ls-chat-hidden');   /* reset chat to shown */
     document.documentElement.classList.remove('ls-fs-lock');
+    if (chatToggleBtn) { chatToggleBtn.setAttribute('aria-label', 'Hide chat'); chatToggleBtn.setAttribute('title', 'Hide chat'); }
     updateFsBtns();
     pulseTheaterBtn();      /* fullscreen closed — pulse the (now expand) toggle */
-    if (wantLandscape) { unlockOrientation(); wantLandscape = false; }
   }
   function enterPseudo(el, mode) {
     fsActive = { el: el, mode: mode, pseudo: true };
@@ -648,13 +637,13 @@
 
   if (theaterBtn) theaterBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); toggleFs(embedsEl, 'theater'); });
 
-  /* Landscape button: enter theater fullscreen and request a landscape rotation. The
-     responsive CSS does the side-by-side layout; the rotation is best-effort (Android). */
-  if (landscapeBtn) landscapeBtn.addEventListener('click', function (e) {
+  /* Chat show/hide (landscape fullscreen only): collapse the chat column so the player
+     fills the width, or bring it back. Toggling the class drives the CSS + icon swap. */
+  if (chatToggleBtn) chatToggleBtn.addEventListener('click', function (e) {
     e.preventDefault(); e.stopPropagation();
-    wantLandscape = true;
-    if (fsActive && fsActive.mode === 'theater') lockLandscape();   /* already fullscreen — just rotate */
-    else toggleFs(embedsEl, 'theater');                              /* enter theater; lock once it engages */
+    var hidden = embedsEl.classList.toggle('ls-chat-hidden');
+    chatToggleBtn.setAttribute('aria-label', hidden ? 'Show chat' : 'Hide chat');
+    chatToggleBtn.setAttribute('title', hidden ? 'Show chat' : 'Hide chat');
   });
 
   /* ── COLLAPSE / LIVE STATE ── */
