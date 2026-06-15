@@ -85,6 +85,7 @@
       '#ls-video.ls-show-beam #ls-twitch,#ls-video.ls-show-twitch #ls-beam{z-index:1}',
       '.ls-chat{flex:1;min-width:350px;display:flex;flex-direction:column;background:#18181b;border-left:1px solid var(--bg2)}',
       '.ls-chat-head{flex-shrink:0;display:flex;align-items:stretch;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
+      '.ls-chat-head-spacer{flex:1;min-width:0}',
       '.ls-points{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:#fff;cursor:pointer;--brand:#a970ff;transition:background .2s,color .2s,box-shadow .2s}',
       '.ls-points .pts-main{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1.1}',
       '.ls-points .pts-sub{font-size:8px;letter-spacing:.03em;opacity:.65;line-height:1.1}',
@@ -180,7 +181,7 @@
                 '<span class="vt-name">Beam</span><span class="vt-tip">Ad-free player!</span>' +
               '</button>' +
               '<button class="ls-vtab" type="button" data-tab="twitch" aria-pressed="false" style="--brand:#a970ff">' +
-                '<span class="vt-name">Twitch</span><span class="vt-tip">Native player</span>' +
+                '<span class="vt-name">Twitch</span><span class="vt-tip">Backup player, has ads!</span>' +
               '</button>' +
             '</div>' +
             '<div class="ls-video" id="ls-video">' +
@@ -190,14 +191,7 @@
           '</div>' +
           '<div class="ls-chat" id="ls-chat">' +
             '<div class="ls-chat-head">' +
-              '<a class="ls-points" href="https://www.twitch.tv/dalekcoffee" target="_blank" rel="noopener noreferrer" title="Channel points are only earned on Twitch itself — open this tab and keep it open (you can mute it) while you watch here.">' +
-                '<span class="pts-main">Want to earn channel points? ' +
-                  '<svg class="pts-launch" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-                    '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>' +
-                  '</svg>' +
-                '</span>' +
-                '<span class="pts-sub">Keep a muted twitch tab in the background!</span>' +
-              '</a>' +
+              '<div class="ls-chat-head-spacer"></div>' +     /* points CTA removed — left as dead space for now */
               '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode — fullscreen player and chat">' + FS_ICONS + '</button>' +
             '</div>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
