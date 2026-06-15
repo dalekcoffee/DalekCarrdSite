@@ -62,7 +62,7 @@
       '.ls-body{display:flex;flex-direction:column;overflow:hidden;max-height:0;opacity:0;background:var(--bg);transition:max-height .8s cubic-bezier(.4,0,.2,1),opacity .6s ease}',
       '#ls-card.ls-open .ls-body{max-height:3000px;opacity:1}',
       '.ls-banner{padding:10px 20px;border-bottom:1px solid var(--bg2);font-size:11px;letter-spacing:.05em;color:#fff;background:var(--bg)}',
-      '.ls-embeds{display:flex;flex-direction:row;position:relative}',
+      '.ls-embeds{display:flex;flex-direction:row;position:relative;--lsChatW:350px}',
       '.ls-main{flex:3.5;min-width:0;display:flex;flex-direction:column;background:var(--bg)}',
 
       /* tabs */
@@ -86,7 +86,7 @@
       '.ls-vlayer{position:absolute;top:0;right:0;bottom:0;left:0}',
       '#ls-video.ls-show-beam #ls-beam,#ls-video.ls-show-twitch #ls-twitch{z-index:2}',
       '#ls-video.ls-show-beam #ls-twitch,#ls-video.ls-show-twitch #ls-beam{z-index:1}',
-      '.ls-chat{flex:1;min-width:350px;display:flex;flex-direction:column;background:#18181b;border-left:1px solid var(--bg2)}',
+      '.ls-chat{flex:1;min-width:var(--lsChatW);display:flex;flex-direction:column;background:#18181b;border-left:1px solid var(--bg2)}',
       '.ls-chat-head{flex-shrink:0;position:relative;display:flex;align-items:stretch;height:var(--tabH);background:#0c0c0c;border-bottom:1px solid var(--b1)}',
       '.ls-points{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;text-decoration:none;color:#fff;cursor:pointer;--brand:#a970ff;transition:background .2s,color .2s,box-shadow .2s}',
       '.ls-points .pts-main{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1.1}',
@@ -161,11 +161,16 @@
       '.ls-chat-toggle .fs-i-chat-show{display:none}',
       '.ls-embeds.ls-chat-hidden .ls-chat-toggle .fs-i-chat-hide{display:none}',
       '.ls-embeds.ls-chat-hidden .ls-chat-toggle .fs-i-chat-show{display:block}',
-      /* hidden: collapse the messages and stack so the player fills the freed space; */
-      /* the chat header drops to a slim bar below it (controls stay present). */
-      '.ls-embeds.ls-chat-hidden{flex-direction:column}',
-      '.ls-embeds.ls-chat-hidden .ls-chat{flex:none;width:100%;min-width:0;border-left:none;border-top:1px solid var(--bg2)}',
+      /* hidden: collapse ONLY the messages. The header bar (tabs + controls) stays put */
+      /* in the top strip; the player widens into the freed space below it. */
       '.ls-embeds.ls-chat-hidden .ls-chat-frame{display:none}',
+      /* desktop: keep the row, give the player the full width, and float the control */
+      /* bar back into the top-right strip (tab row reserves that width so nothing overlaps). */
+      '@media (min-width:1025px){',
+        '.ls-embeds.ls-chat-hidden .ls-main{flex:1 1 100%}',
+        '.ls-embeds.ls-chat-hidden .ls-vtabs{padding-right:var(--lsChatW)}',
+        '.ls-embeds.ls-chat-hidden .ls-chat{position:absolute;top:0;right:0;bottom:auto;width:var(--lsChatW);min-width:0;height:var(--tabH);border-top:none;z-index:3}',
+      '}',
       /* one-shot attention pulse (3 slow cycles ~= 5s); fired on open / enter / exit */
       '.ls-theater-btn.ls-fs-pulse{animation:ls-fs-pulse 1.667s ease-out 3}',
       '@keyframes ls-fs-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5);background:#0c0c0c;color:rgba(255,255,255,.55)}40%{background:#171029;color:#a970ff}70%{box-shadow:0 0 0 10px rgba(169,112,255,0)}100%{box-shadow:0 0 0 0 rgba(169,112,255,0);background:#0c0c0c;color:rgba(255,255,255,.55)}}',
