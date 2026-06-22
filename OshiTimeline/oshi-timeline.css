@@ -218,6 +218,12 @@
   border-left: 3px solid var(--a);
   color: rgba(255, 255, 255, .6);
 }
+/* <small> matches the native Misskey/Sharkey look: smaller + dimmer.
+   Set explicitly so the host page's CSS reset can't neutralize it. */
+#ofs small {
+  font-size: .9em;
+  opacity: .7;
+}
 /* MFM function-tag animations ($[spin] etc.). */
 #ofs ._fx {
   display: inline-block;
