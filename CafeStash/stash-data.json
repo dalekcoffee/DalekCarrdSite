@@ -64,7 +64,7 @@
           { "label": "CPU",         "name": "Ryzen 9 9950X3D",       "desc": "AMD flagship for gaming & streaming.",             "url": "https://amzn.to/3Z9mNNH", "img": "Images/Setup/ryzen 9 9950x3d.png" },
           { "label": "RAM",         "name": "G.SKILL Flare X5 32GB", "desc": "Fast DDR5 tuned for Ryzen performance.",           "url": "https://amzn.to/4aPTB5J", "img": "Images/Setup/G.SKILL Flare X5 Series DDR5 RAM.png" },
           { "label": "MOBO",        "name": "X870E Aorus Elite",      "desc": "Feature-rich AM5 board with solid VRMs.",         "url": "https://amzn.to/3L9Xacy", "img": "Images/Setup/GIGABYTE X870E AORUS Elite WIFI7.png" },
-          { "label": "GPU",         "name": "RTX 3090 FTW3",          "desc": "Beefy card that handles anything thrown at it.",  "url": "https://amzn.to/4aQGocQ", "img": "Images/Setup/EVGA GeForce RTX 3090 FTW3.png" },
+          { "label": "GPU",         "name": "Radeon RX 9070 XT",      "desc": "Beefy card that handles anything thrown at it.",  "url": "https://amzn.to/4xJA53E", "img": "Images/Setup/GIGABYTE Radeon RX 9070 XT.png" },
           { "label": "SSD · Windows",   "name": "WD_BLACK SN850X 1TB",   "desc": "Fast NVMe boot drive.",                           "url": "https://amzn.to/4jtRWF2", "img": "Images/Setup/WD_BLACK SN850X 1TB NVMe SSD.png" },
           { "label": "SSD · Linux", "name": "T-Force Vulcan Z 1TB",  "desc": "Reliable drive for the Linux side.",              "url": "https://amzn.to/4jtyg4a", "img": "Images/Setup/TEAMGROUP T-FORCE VULCAN Z.png" }
         ]
