@@ -4,7 +4,6 @@
     "heading": "Dalek Shop",
     "tag": "Printify",
     "items": [
-      { "name": "15oz Insulated Tumbler", "sub": "Drinkware", "desc": "Keep your brew hot all stream long.", "url": "https://shop.dalek.coffee/product/29027031", "img": "Images/Merch/15oz-insulated-tumbler-dalek-dark-red-gothic A.png" },
       { "name": "15oz Insulated Tumbler", "sub": "Drinkware", "desc": "Keep your brew hot all stream long.", "url": "https://shop.dalek.coffee/product/29027031", "img": "Images/Merch/15oz-insulated-tumbler-dalek-dark-red-gothic B.png" },
       { "name": "", "sub": "", "desc": "", "url": "https://shop.dalek.coffee/", "img": "" },
       { "name": "", "sub": "", "desc": "", "url": "https://shop.dalek.coffee/", "img": "" }
