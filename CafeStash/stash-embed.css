@@ -23,6 +23,10 @@ body {
   background: var(--bg);
   border-top: 2px solid #fff;
   border-bottom: 1px solid var(--b2);
+  /* Reserve space on first paint so the embed doesn't jump from a tiny
+     skeleton to full size once the panels are injected. Floor is sized to
+     roughly cover the default (Merch) tab; tune if the jump persists. */
+  min-height: 640px;
 }
 
 /* ── INTRO DESCRIPTION ── */
@@ -440,6 +444,9 @@ body {
    RESPONSIVE — mobile / narrow
 ════════════════════════════ */
 @media (max-width: 1280px) {
+
+  /* ── Smaller min-height floor for narrow screens ── */
+  .card { min-height: 480px; }
 
   /* ── Grids: 4-col → 2-col ── */
   .coffee-beans-grid,
