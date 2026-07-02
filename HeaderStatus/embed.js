@@ -137,7 +137,7 @@
     { match: ['visual studio'], icon: '💻' },
     { match: ['discord'], icon: '💬' },
     { match: ['fortnite'], color: '#4799ed' },
-    { match: ['the finals'], color: '#3E0104' },
+    { match: ['the finals'], color: '#D21F3C' },
     { match: ['resonite'], icon: '🔮', rainbow: true }
   ];
 
