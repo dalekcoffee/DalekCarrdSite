@@ -88,21 +88,25 @@
   color: rgba(255, 255, 255, .45);
 }
 #ofs ._bt {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
-  padding: 9px 18px;
-  background: rgba(103, 107, 247, .5);
+  padding: 6px 12px;
+  background: rgba(103, 107, 247, .38);
   color: #d8d8ff;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
-  border-radius: 8px;
+  border-radius: 7px;
   text-transform: uppercase;
+  letter-spacing: .03em;
   border: none;
   white-space: nowrap;
   flex-shrink: 0;
-  position: relative;
-  z-index: 3;
+  backdrop-filter: blur(2px);
 }
 
 /* ──────────────────────── Section label ─────────────────────────── */
@@ -122,6 +126,28 @@
   height: 6px;
   border-radius: 50%;
   background: var(--a);
+}
+/* "New post" badge — sits far-right in the label bar, only shown (via inline
+   style) when there's a fresh, unseen post. Accent pill with a soft glow/pulse. */
+#ofs ._nu {
+  margin-left: auto;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(103, 107, 247, .22);
+  border: 1px solid rgba(103, 107, 247, .5);
+  color: #c9cbff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  animation: _ofsPulse 2.4s ease-in-out infinite;
+}
+@keyframes _ofsPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(103, 107, 247, .0); }
+  50%      { box-shadow: 0 0 8px 1px rgba(103, 107, 247, .45); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #ofs ._nu { animation: none; }
 }
 #ofs ._ti {
   padding: 0 20px;
@@ -511,10 +537,6 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 14px 18px;
-  }
-  #ofs ._bt {
-    width: 100%;
-    justify-content: center;
   }
   #ofs ._ti,
   #ofs ._lw {
