@@ -23,8 +23,7 @@
     '<div id="ofs"><div id="_c">' +
       '<div class="_hd" id="_hdr"></div>' +
       '<div class="_fb">' +
-        '<div class="_lb"><span class="_ld"></span>Fediverse &middot; Oshi.Social' +
-          '<span class="_nu" id="_nu" style="display:none">New</span></div>' +
+        '<div class="_lb"><span class="_ld"></span>Fediverse &middot; Oshi.Social</div>' +
         '<div class="_ti"><div id="_tl"><div class="_os">···</div></div></div>' +
         '<div class="_lw"><button class="_lm" id="_lb2" style="display:none">Load more</button></div>' +
       '</div>' +
@@ -34,9 +33,12 @@
   var loadMoreBtn = document.getElementById('_lb2');
 
   /* ───────────────────────────── State ───────────────────────────── */
-  var userId     = null;   // resolved from users/show
-  var untilId    = null;   // pagination cursor
-  var emojiCache = {};     // normalized shortcode -> image url
+  var userId     = null;      // resolved from users/show
+  var untilId    = null;      // pagination cursor
+  var emojiCache = {};        // normalized shortcode -> image url
+  var prevSeenTs = Infinity;  // newest post ts from the visitor's previous visit;
+                              // Infinity until captureFreshness runs (⇒ no "New" badges,
+                              // the correct first-visit / storage-unreadable behavior)
 
   /* ────────────────────────────── API ────────────────────────────── */
   function api(endpoint, body) {
@@ -367,6 +369,11 @@
           renderInline(n.user.name || n.user.username, n.user.emojis) + '</div>'
       : '';
 
+    // "New" pill: an original post (not a pure boost) made since the visitor's last
+    // visit (prevSeenTs) and still under FRESH_MS. See captureFreshness.
+    var noteTs = note.createdAt ? new Date(note.createdAt).getTime() : 0;
+    var isNew  = !isBoost && noteTs > prevSeenTs && (Date.now() - noteTs) < FRESH_MS;
+
     var author = note.user;
     return '<div class="_no">' + boostBanner +
       '<div class="_nr"><img src="' + escapeHtml(author.avatarUrl) + '" class="_na" loading="lazy">' +
@@ -374,6 +381,7 @@
         '<div class="_nt">' +
           '<span class="_nn">' + renderInline(author.name || author.username, author.emojis) + '</span>' +
           '<span class="_nh">@' + escapeHtml(author.username) + '</span>' +
+          (isNew ? '<span class="_nnew">New</span>' : '') +
           '<span class="_ts">' + timeAgo(note.createdAt) + '</span>' +
         '</div>' +
         cwBlock + body +
@@ -387,16 +395,19 @@
       '</div></div></div>';
   }
 
-  /* ────────────────────────── New-post badge ─────────────────────── */
-  // Show the "New" badge when the newest *original* post (or quote — but not a
-  // pure boost) is under FRESH_MS old AND newer than what this visitor last saw.
-  // Loading the page records the newest post as seen, so the badge self-dismisses
-  // on the next visit. localStorage is best-effort: if it throws (private mode,
-  // blocked), storedTs stays 0 and the badge degrades to pure time-based.
-  function markFreshness(notes) {
-    var badge = document.getElementById('_nu');
-    if (!badge) return;
-
+  /* ────────────────────────── New-post baseline ──────────────────── */
+  // Capture the "last visit" baseline into prevSeenTs, then advance the stored
+  // baseline to the newest post now on screen. buildNote badges any post that is
+  // newer than prevSeenTs (and under FRESH_MS) — so a returning visitor only sees
+  // posts made since they last loaded the page, and those badges self-dismiss next
+  // visit. Must run on the reset page BEFORE notes are rendered.
+  //
+  // Ordering matters: read the *previous* value first, hold it in prevSeenTs, and
+  // only then overwrite storage. A first-time visitor (no stored value) or blocked
+  // storage leaves prevSeenTs = Infinity ⇒ nothing is "newer" ⇒ no badges, which is
+  // the intended behavior (everything is technically new to them). Baselines use
+  // post timestamps, not Date.now(), to avoid client/server clock skew.
+  function captureFreshness(notes) {
     // Newest note that isn't a pure boost (same test as buildNote's isBoost).
     var newest = null;
     for (var i = 0; i < notes.length; i++) {
@@ -405,18 +416,20 @@
       newest = n;
       break;
     }
-    if (!newest || !newest.createdAt) return; // nothing postable to flag
+    if (!newest || !newest.createdAt) return; // nothing postable to baseline
 
+    var storedTs = null;
+    try {
+      var raw = localStorage.getItem(SEEN_KEY);
+      if (raw !== null) storedTs = parseInt(raw, 10) || 0;
+    } catch (e) {}
+
+    // Only a real prior visit lowers prevSeenTs from Infinity into badge-able range.
+    if (storedTs !== null) prevSeenTs = storedTs;
+
+    // Advance the stored baseline to the newest post seen this visit.
     var newestTs = new Date(newest.createdAt).getTime();
-    var storedTs = 0;
-    try { storedTs = parseInt(localStorage.getItem(SEEN_KEY), 10) || 0; } catch (e) {}
-
-    var isFresh  = (Date.now() - newestTs) < FRESH_MS;
-    var isUnseen = newestTs > storedTs;
-    badge.style.display = (isFresh && isUnseen) ? '' : 'none';
-
-    // Record this visit as having seen the newest post.
-    try { localStorage.setItem(SEEN_KEY, String(Math.max(storedTs, newestTs))); } catch (e) {}
+    try { localStorage.setItem(SEEN_KEY, String(Math.max(storedTs || 0, newestTs))); } catch (e) {}
   }
 
   /* ─────────────────────────── Timeline load ─────────────────────── */
@@ -428,7 +441,7 @@
       if (reset) timeline.innerHTML = '';
       if (!notes || !notes.length) return;
 
-      if (reset) markFreshness(notes);
+      if (reset) captureFreshness(notes);
 
       var html = '';
       notes.forEach(function (n) { html += buildNote(n); });
