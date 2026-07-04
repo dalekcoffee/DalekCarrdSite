@@ -6,6 +6,8 @@
   var BASE      = 'https://oshi.social';
   var CSS_URL   = 'https://dalekcoffee.github.io/DalekCarrdSite/OshiTimeline/oshi-timeline.css';
   var PAGE_SIZE = 10;
+  var FRESH_MS  = 6 * 3600 * 1000;          // "new post" window: 6 hours
+  var SEEN_KEY  = 'ofsSeen:' + USERNAME;    // localStorage: newest post ts this visitor has seen
 
   /* ──────────────────────── Mount + stylesheet ───────────────────── */
   var mount = document.getElementById('ofs-root') || document.body;
@@ -21,7 +23,8 @@
     '<div id="ofs"><div id="_c">' +
       '<div class="_hd" id="_hdr"></div>' +
       '<div class="_fb">' +
-        '<div class="_lb"><span class="_ld"></span>Fediverse &middot; Oshi.Social</div>' +
+        '<div class="_lb"><span class="_ld"></span>Fediverse &middot; Oshi.Social' +
+          '<span class="_nu" id="_nu" style="display:none">New</span></div>' +
         '<div class="_ti"><div id="_tl"><div class="_os">···</div></div></div>' +
         '<div class="_lw"><button class="_lm" id="_lb2" style="display:none">Load more</button></div>' +
       '</div>' +
@@ -384,6 +387,38 @@
       '</div></div></div>';
   }
 
+  /* ────────────────────────── New-post badge ─────────────────────── */
+  // Show the "New" badge when the newest *original* post (or quote — but not a
+  // pure boost) is under FRESH_MS old AND newer than what this visitor last saw.
+  // Loading the page records the newest post as seen, so the badge self-dismisses
+  // on the next visit. localStorage is best-effort: if it throws (private mode,
+  // blocked), storedTs stays 0 and the badge degrades to pure time-based.
+  function markFreshness(notes) {
+    var badge = document.getElementById('_nu');
+    if (!badge) return;
+
+    // Newest note that isn't a pure boost (same test as buildNote's isBoost).
+    var newest = null;
+    for (var i = 0; i < notes.length; i++) {
+      var n = notes[i];
+      if (n.renote && !(n.text || '').trim()) continue; // pure boost — skip
+      newest = n;
+      break;
+    }
+    if (!newest || !newest.createdAt) return; // nothing postable to flag
+
+    var newestTs = new Date(newest.createdAt).getTime();
+    var storedTs = 0;
+    try { storedTs = parseInt(localStorage.getItem(SEEN_KEY), 10) || 0; } catch (e) {}
+
+    var isFresh  = (Date.now() - newestTs) < FRESH_MS;
+    var isUnseen = newestTs > storedTs;
+    badge.style.display = (isFresh && isUnseen) ? '' : 'none';
+
+    // Record this visit as having seen the newest post.
+    try { localStorage.setItem(SEEN_KEY, String(Math.max(storedTs, newestTs))); } catch (e) {}
+  }
+
   /* ─────────────────────────── Timeline load ─────────────────────── */
   function load(reset) {
     var params = { userId: userId, limit: PAGE_SIZE, withReplies: false };
@@ -392,6 +427,8 @@
     return api('users/notes', params).then(function (notes) {
       if (reset) timeline.innerHTML = '';
       if (!notes || !notes.length) return;
+
+      if (reset) markFreshness(notes);
 
       var html = '';
       notes.forEach(function (n) { html += buildNote(n); });
@@ -517,12 +554,12 @@
     if (user.bannerUrl && /^https?:\/\//.test(user.bannerUrl))
       header.style.backgroundImage = 'url("' + user.bannerUrl.replace(/["'()\\]/g, '') + '")';
     header.innerHTML =
+      '<a href="' + BASE + '/@' + escapeHtml(user.username) + '" target="_blank" rel="noopener noreferrer" class="_bt">View on Oshi.Social ↗</a>' +
       '<div class="_hc"><div class="_hl">' +
         '<img src="' + escapeHtml(user.avatarUrl) + '" class="_av">' +
         '<div class="_on">' + renderInline(user.name || user.username, user.emojis) + '</div>' +
         '<div class="_oh">@' + escapeHtml(user.username) + '@oshi.social</div>' +
       '</div>' +
-      '<a href="' + BASE + '/@' + escapeHtml(user.username) + '" target="_blank" rel="noopener noreferrer" class="_bt">View on Oshi.Social ↗</a>' +
       '</div>';
 
     load(true);
