@@ -31,7 +31,10 @@
 .dks-np.idle .dks-np-label{color:#5f5f66}
 .dks-np-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:#6c6c72;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dks-np-chev{font-family:'Space Mono',monospace;font-size:11px;color:#7a7a7f;flex:0 0 auto}
-.dks-np-body{padding:0 18px 15px}
+/* Slides open like the original music embed (max-height + opacity ease);
+   bottom padding rides the transition so the collapsed state is truly 0px */
+.dks-np-body{padding:0 18px;max-height:0;opacity:0;overflow:hidden;transition:max-height .6s cubic-bezier(.4,0,.2,1),opacity .4s ease,padding-bottom .6s cubic-bezier(.4,0,.2,1)}
+.dks-np-body.open{max-height:160px;opacity:1;padding-bottom:15px}
 .dks-np-grid{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center}
 .dks-np-title{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:21px;letter-spacing:.4px;color:#f0f0f2;text-transform:uppercase;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dks-np-artist{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#7c7c82;text-transform:uppercase;margin-top:4px}
@@ -134,5 +137,5 @@
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce){
   .dks-np-dot{animation:none}
-  .dks-caret,.dks-prompt,.dks-detail,.dks-bar-fill,.dks-row-btns,.dks-poster,.dks-btn,.dks-tab{transition:none}
+  .dks-caret,.dks-prompt,.dks-detail,.dks-bar-fill,.dks-row-btns,.dks-poster,.dks-btn,.dks-tab,.dks-np-body{transition:none}
 }

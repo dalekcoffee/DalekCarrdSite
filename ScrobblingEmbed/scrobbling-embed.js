@@ -305,7 +305,7 @@
           '</div>' +
           '<span class="dks-np-chev dks-hide" id="dks-np-chev">▾</span>' +
         '</div>' +
-        '<div class="dks-np-body dks-hide" id="dks-np-body">' +
+        '<div class="dks-np-body" id="dks-np-body">' +
           '<div class="dks-np-grid">' +
             '<div class="dks-tile dks-tile-64" id="dks-np-tile"><span id="dks-np-code"></span><img id="dks-np-img" alt=""></div>' +
             '<div style="min-width:0">' +
@@ -388,14 +388,14 @@
       el('dks-np-label').textContent = 'Nothing Playing';
       sub.classList.add('dks-hide');
       chev.classList.add('dks-hide');
-      body.classList.add('dks-hide');
+      body.classList.remove('open');
       return;
     }
     np.classList.remove('idle');
     el('dks-np-label').textContent = mode === 'music' ? 'Now Playing' : 'Now Watching';
     chev.classList.remove('dks-hide');
     chev.textContent = npOpen ? '▾' : '▸';
-    body.classList.toggle('dks-hide', !npOpen);
+    body.classList.toggle('open', npOpen);
     var title = mode === 'music'
       ? (liveState.music.track ? liveState.music.track.track_metadata.track_name : '')
       : (liveState.video.data ? liveState.video.data.title : '');
