@@ -19,7 +19,6 @@
       color: #555; padding: 8px 0 14px; line-height: 1.8;
     }
     #sandbox-status span { color: #888; }
-    #sandbox-status a { color: #888; }
   </style>
 </head>
 <body>
@@ -28,9 +27,9 @@
   <div id="sandbox-status">
     Sandbox mode &mdash; params:
     <span>?mock=1</span> (fixtures, no network) &middot;
-    <span>&amp;live=anime|music|both|none</span> &middot;
-    <span>&amp;newer=anime|music</span> (winner when both live)<br>
-    real endpoints: <span>?animeLive=&lt;url&gt;&amp;animeStats=&lt;url&gt;</span>
+    <span>&amp;live=video|music|both|none</span> &middot;
+    <span>&amp;newer=video|music</span> (winner when both live)<br>
+    real endpoints: <span>?trakt=&lt;feed-url&gt;</span> &middot; <span>&amp;music=&lt;url&gt;</span>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -43,7 +42,7 @@
       <span class="dkt-heading">Top Listens</span>
     </div>
 
-    <!-- Unified live strip: Now Playing (music) / Now Watching (anime) -->
+    <!-- Unified live strip: Now Playing (music) / Now Watching (Trakt) -->
     <div class="dkt-np-strip">
       <div class="dkt-np-dot" id="dkt-np-dot"></div>
       <div class="dkt-np-label" id="dkt-np-label">Nothing Playing</div>
@@ -66,9 +65,10 @@
       </div>
     </div>
 
-    <!-- MUSIC | ANIME mode switcher -->
+    <!-- MUSIC | TV | ANIME mode switcher -->
     <div class="dkt-tabs dka-mode" id="dka-mode-container">
       <button class="dkt-tab active" id="dka-mode-music" data-mode="music">Music</button>
+      <button class="dkt-tab" id="dka-mode-tv" data-mode="tv">TV</button>
       <button class="dkt-tab" id="dka-mode-anime" data-mode="anime">Anime</button>
     </div>
 
@@ -80,7 +80,7 @@
       <button class="dkt-tab" data-r="recent">Recent</button>
     </div>
 
-    <!-- Anime tabs -->
+    <!-- Video tabs (shared by TV and ANIME modes) -->
     <div class="dkt-tabs dka-hidden" id="dka-tab-container">
       <button class="dkt-tab active" data-r="watching">Watching</button>
       <button class="dkt-tab" data-r="recent">Recent</button>
@@ -94,13 +94,16 @@
       <div class="dkt-h-plays"><span id="dkt-h-plays-label">Plays</span></div>
     </div>
 
-    <!-- Track / anime list -->
+    <!-- Track / video list -->
     <div id="dkt-list"></div>
 
     <!-- Footer -->
     <div id="dkt-footer">
       <a class="dkt-foot-link" id="dkt-foot-lb" href="https://listenbrainz.org/user/Dalek.coffee" target="_blank" rel="noopener noreferrer">
         View on ListenBrainz
+      </a>
+      <a class="dkt-foot-link dka-hidden" id="dkt-foot-tk" href="https://trakt.tv/users/dalekcoffee" target="_blank" rel="noopener noreferrer">
+        View on Trakt
       </a>
       <a class="dkt-foot-link dka-hidden" id="dkt-foot-al" href="https://anilist.co/user/DalekCoffee/" target="_blank" rel="noopener noreferrer">
         View on AniList

@@ -1,41 +1,59 @@
-# ScrobblingEmbed — Unified Music + Anime Card
+# ScrobblingEmbed — Unified Music + TV + Anime Card (Trakt-backed)
 
-Sandbox clone of `MusicEmbed/` with AniList anime scrobbling merged in. Production
+Sandbox clone of `MusicEmbed/` with a Trakt.tv watch section merged in. Production
 (`MusicEmbed/`) is untouched — test here first, then replace the Carrd markup when happy.
 
-## What it adds on top of the music embed
+## Architecture
 
-- **Unified live strip** — one "Now Playing / Now Watching" strip serves both media.
-  Each source polls independently; if both are live, whichever activity was received
-  most recently wins (anime carries `updated_at` from its last Plex event; music uses
-  the moment its track last changed). Stop the anime, play music → strip flips to music.
-- **MUSIC | ANIME switcher** under the live strip. Music side is identical to production.
-  Anime side: **Watching** (default) | Recent | Completed, fed by the AniList list of
-  [DalekCoffee](https://anilist.co/user/DalekCoffee/). Posters come straight from
-  AniList (no cover-art fallback chain needed).
+- **Music** — unchanged from production: ListenBrainz via the existing n8n stats webhook.
+- **Video (TV + anime)** — Plex scrobbles *everything* to Trakt through a new n8n
+  workflow ("Plex to Trakt Scrobbler"); a second workflow ("Carrd Trakt Feed") serves
+  this embed. Anime is detected from **Trakt genre tags**, not the Plex library.
+  The existing Plex→AniList scrobbler keeps running unchanged — anime lands on both
+  services.
+- **Unified live strip** — one "Now Playing / Now Watching" strip. Music and Trakt
+  (`/users/:id/watching`) poll independently; if both are live, whichever activity
+  was received most recently wins.
+- **Watching vs Completed is inferred from progress**: the feed compares episodes
+  you've watched against episodes aired (`completed < aired` ⇒ Watching `EP 34/48`,
+  otherwise Completed with your Trakt rating).
+- **Posters** come from TMDB, resolved and cached inside the n8n feed — the embed
+  just receives final image URLs.
+
+## Modes & tabs
+
+`MUSIC | TV | ANIME` switcher under the live strip. Music side is identical to
+production. TV and ANIME share one tab set — **Watching** (default) | Recent |
+Completed — differing only in the feed's `?media=tv|anime` param.
 
 ## Configuration (top of `scrobbling-embed.js`)
 
 | Constant | Value |
 | --- | --- |
 | `N8N_NP_WEBHOOK` / `N8N_STATS_WEBHOOK` | unchanged — existing music GET webhook |
-| `N8N_ANIME_LIVE_WEBHOOK` | **fill in** — GET URL of the "Plex Anime Live" workflow's *Embed Feed* webhook |
-| `N8N_ANIME_STATS_WEBHOOK` | **fill in** — GET URL of the "Carrd AniList Stats" workflow's webhook |
+| `N8N_TRAKT_FEED_WEBHOOK` | **fill in** — GET URL of the "Carrd Trakt Feed" workflow |
+| `TRAKT_USER` | `dalekcoffee` (footer link) |
 
-Leave the anime URLs empty and the card runs music-only (anime tabs show a
-"webhook not configured" empty state; the live strip just never shows anime).
+Leave the Trakt URL empty and the card runs music-only (video tabs show a
+"webhook not configured" empty state; the live strip just never shows video).
 
 ## n8n setup (workflows are provided separately — NOT stored in this repo)
 
-1. Import the two workflow JSONs (delivered outside the repo), replace the
-   `REPLACE-WITH-RANDOM-UUID-*` webhook paths with random UUIDs, and activate them.
-2. **Plex Anime Live** exposes a POST webhook — add its **production** URL as a
-   *second* webhook in Plex (Settings → Webhooks). Plex sends every event to every
-   registered URL, so the existing scrobbler workflow is unaffected.
-3. Copy the two GET URLs into the config constants above.
+1. Create a Trakt API app at `trakt.tv/oauth/applications` (client id/secret) and a
+   free TMDB API key at `themoviedb.org` — both live only in n8n.
+2. Import the two workflow JSONs (delivered outside the repo), replace the
+   `REPLACE-WITH-*` placeholders (webhook paths, Trakt client id, TMDB key),
+   attach the Trakt OAuth2 credential to the scrobbler's HTTP node, and activate.
+3. **Plex to Trakt Scrobbler** exposes a POST webhook — add its **production** URL
+   as an additional webhook in Plex (Settings → Webhooks). Plex sends every event
+   to every registered URL, so the AniList scrobbler is unaffected.
+4. Copy the feed's GET URL into `N8N_TRAKT_FEED_WEBHOOK`.
 
-Note: n8n workflow static data only persists for **production** (active) executions —
-"Test workflow" runs won't retain live state between calls.
+Notes:
+- The feed reads Trakt's public user endpoints with just the client id — your
+  Trakt profile (and watch history) must be set to public.
+- n8n workflow static data (caches, playback progress) only persists for
+  **production** executions — "Test workflow" runs won't retain state.
 
 ## Sandbox testing (`test.html`)
 
@@ -43,9 +61,9 @@ Serve the repo locally (`python3 -m http.server`) and open
 `ScrobblingEmbed/test.html` with query params:
 
 - `?mock=1` — fixture data, zero network. Extra knobs:
-  - `&live=anime|music|both|none` — which live sources report activity
-  - `&newer=anime|music` — who wins when both are live
-- `?animeLive=<url>&animeStats=<url>` — point at the real n8n webhooks
+  - `&live=video|music|both|none` — which live sources report activity
+  - `&newer=video|music` — who wins when both are live
+- `?trakt=<feed-url>` — point at the real Trakt feed webhook
 - `?music=<url>` — override the music webhook too
 
 ## Deploying to Carrd

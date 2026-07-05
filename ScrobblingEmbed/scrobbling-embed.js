@@ -1,7 +1,7 @@
 (function () {
 
-var LB_USER      = 'Dalek.coffee';
-var ANILIST_USER = 'DalekCoffee';
+var LB_USER    = 'Dalek.coffee';
+var TRAKT_USER = 'dalekcoffee';
 
 /*
  * ─── n8n webhook URLs ─────────────────────────────────────────────────────────
@@ -9,32 +9,32 @@ var ANILIST_USER = 'DalekCoffee';
  *   GET N8N_STATS_WEBHOOK + '?range=' + range
  *   range: 'now_playing' | 'recent' | 'this_month' | 'this_year' | 'all_time'
  *
- * Anime (fill these in after importing the two new n8n workflows — see README):
- *   N8N_ANIME_LIVE_WEBHOOK   GET → { watching, show, matchedTitle, season,
- *                            episode, totalEpisodes, poster, siteUrl, updated_at }
- *   N8N_ANIME_STATS_WEBHOOK  GET ?range=watching|recent|completed → { entries: [...] }
+ * Video (fill in after importing the "Carrd Trakt Feed" n8n workflow — README):
+ *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=now'
+ *     → { watching, type, title, episodeTitle, season, episode, totalEpisodes,
+ *         isAnime, poster, siteUrl, updated_at }
+ *   GET N8N_TRAKT_FEED_WEBHOOK + '?media=tv|anime&range=watching|recent|completed'
+ *     → { entries: [...] }
  *
- * Leave the anime URLs empty to run music-only (anime side shows empty states).
+ * Leave the Trakt URL empty to run music-only (video tabs show empty states).
  */
 var N8N_NP_WEBHOOK    = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
 var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
-var N8N_ANIME_LIVE_WEBHOOK  = '';
-var N8N_ANIME_STATS_WEBHOOK = '';
+var N8N_TRAKT_FEED_WEBHOOK = '';
 
 /*
  * ─── Sandbox overrides ────────────────────────────────────────────────────────
  * test.html only — production Carrd pages carry no query string, so these are
  * inert there. ?mock=1 renders fixture data with no network calls.
- *   ?mock=1&live=anime|music|both|none&newer=anime|music
- *   ?animeLive=<url>&animeStats=<url>&music=<url> to point at real webhooks.
+ *   ?mock=1&live=video|music|both|none&newer=video|music
+ *   ?trakt=<url>&music=<url> to point at real webhooks.
  */
 var QS = null;
 try { QS = new URLSearchParams(window.location.search); } catch (e) {}
 function qp(k) { return QS ? QS.get(k) : null; }
 var MOCK = qp('mock') === '1';
-if (qp('animeLive'))  N8N_ANIME_LIVE_WEBHOOK  = qp('animeLive');
-if (qp('animeStats')) N8N_ANIME_STATS_WEBHOOK = qp('animeStats');
-if (qp('music'))      { N8N_NP_WEBHOOK = qp('music'); N8N_STATS_WEBHOOK = qp('music'); }
+if (qp('trakt')) N8N_TRAKT_FEED_WEBHOOK = qp('trakt');
+if (qp('music')) { N8N_NP_WEBHOOK = qp('music'); N8N_STATS_WEBHOOK = qp('music'); }
 
 var BRANDS = [
   {id:'yt', name:'YouTube',   short:'YT', color:'#FF0000', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/youtube/black',    url:'https://www.youtube.com/results?search_query='},
@@ -43,12 +43,19 @@ var BRANDS = [
   {id:'ge', name:'Genius',    short:'GE', color:'#FFFF00', textOnHover:'#000', icon:'https://cdn.simpleicons.org/genius/black',     url:'https://genius.com/search?q='}
 ];
 
-/* AniList button links straight to the matched entry when siteUrl is known */
-var ANIME_BRANDS = [
-  {id:'al', name:'AniList',     short:'AL', color:'#02A9FF', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/anilist/black',     url:'https://anilist.co/search/anime?search='},
-  {id:'cr', name:'Crunchyroll', short:'CR', color:'#F47521', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/crunchyroll/black', url:'https://www.crunchyroll.com/search?q='},
-  {id:'yt', name:'YouTube',     short:'YT', color:'#FF0000', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/youtube/black',     url:'https://www.youtube.com/results?search_query='}
-];
+/* Trakt button links straight to the matched show/movie when siteUrl is known */
+var TRAKT_BRAND = {id:'tk', name:'Trakt',       short:'TK', color:'#ED1C24', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/trakt/black',       url:'https://trakt.tv/search?query='};
+var VIDEO_BRANDS = {
+  tv: [
+    TRAKT_BRAND,
+    {id:'yt', name:'YouTube',     short:'YT', color:'#FF0000', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/youtube/black',     url:'https://www.youtube.com/results?search_query='}
+  ],
+  anime: [
+    TRAKT_BRAND,
+    {id:'cr', name:'Crunchyroll', short:'CR', color:'#F47521', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/crunchyroll/black', url:'https://www.crunchyroll.com/search?q='},
+    {id:'al', name:'AniList',     short:'AL', color:'#02A9FF', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/anilist/black',     url:'https://anilist.co/search/anime?search='}
+  ]
+};
 
 /* ─── Strip feat. artists + brackets so iTunes queries are clean ─── */
 function cleanStr(s) {
@@ -87,12 +94,13 @@ function makeBtn(brand, q, hrefOverride) {
   return a;
 }
 
-function makeAnimeBtns(container, title, siteUrl) {
+function makeVideoBtns(container, media, title, siteUrl) {
   container.innerHTML = '';
+  var brands = VIDEO_BRANDS[media] || VIDEO_BRANDS.tv;
   var q = encodeURIComponent(title);
-  for (var b = 0; b < ANIME_BRANDS.length; b++) {
-    var brand = ANIME_BRANDS[b];
-    container.appendChild(makeBtn(brand, q, (brand.id === 'al' && siteUrl) ? siteUrl : null));
+  for (var b = 0; b < brands.length; b++) {
+    var brand = brands[b];
+    container.appendChild(makeBtn(brand, q, (brand.id === 'tk' && siteUrl) ? siteUrl : null));
   }
 }
 
@@ -291,7 +299,7 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track, album) {
   });
 }
 
-/* ─── Direct poster loader — AniList gives us a final URL, no resolution chain ─── */
+/* ─── Direct poster loader — the n8n feed hands us final TMDB URLs ─── */
 function loadPoster(imgEl, wipeEl, url) {
   imgEl.style.display = 'none';
   imgEl.removeAttribute('src');
@@ -307,7 +315,7 @@ function loadPoster(imgEl, wipeEl, url) {
   imgEl.src = url;
 }
 
-/* ─── Relative time for anime rows (AniList updatedAt is unix seconds) ─── */
+/* ─── Relative time for video rows (feed emits unix seconds) ─── */
 function relTime(unixSec) {
   if (!unixSec) return '';
   var s = Math.max(0, Math.floor(Date.now() / 1000) - unixSec);
@@ -322,32 +330,32 @@ function relTime(unixSec) {
  * ─── Tab data cache ───────────────────────────────────────────────────────────
  * In-memory only — no sessionStorage needed since n8n owns the hour-level cache.
  * This just prevents re-hitting n8n on tab switches within the same page load.
- * Anime ranges use 'anime_'-prefixed keys, so they never collide with music.
+ * Video ranges use '<media>_'-prefixed keys, so they never collide with music.
  */
 var dataCache = {};
 
 /*
  * ═══ UNIFIED LIVE STRIP ════════════════════════════════════════════════════════
- * One strip serves both media types. Each source polls independently and writes
+ * One strip serves music and video. Each source polls independently and writes
  * into liveState; updateLiveStrip() picks what to show:
  *   - one source active            → show it
- *   - both active                  → most recent activity wins (anime carries
- *     updated_at from its last Plex event; music tracks the client-observed
- *     moment its track key last changed)
+ *   - both active                  → most recent activity wins (video carries
+ *     updated_at = Trakt started_at; music tracks the client-observed moment
+ *     its track key last changed)
  *   - neither                     → "Nothing Playing", body collapses
  */
 var liveState = {
   music: { active: false, key: null, track: null, changedAt: 0 },
-  anime: { active: false, key: null, data:  null, changedAt: 0 }
+  video: { active: false, key: null, data:  null, changedAt: 0 }
 };
 var liveRenderedKey = null;
 
 function updateLiveStrip() {
-  var m = liveState.music, a = liveState.anime;
+  var m = liveState.music, v = liveState.video;
   var mode = null;
-  if (m.active && a.active) mode = (a.changedAt >= m.changedAt) ? 'anime' : 'music';
+  if (m.active && v.active) mode = (v.changedAt >= m.changedAt) ? 'video' : 'music';
   else if (m.active) mode = 'music';
-  else if (a.active) mode = 'anime';
+  else if (v.active) mode = 'video';
 
   var card  = document.getElementById('dkt-card');
   var dot   = document.getElementById('dkt-np-dot');
@@ -367,14 +375,14 @@ function updateLiveStrip() {
   label.textContent = (mode === 'music') ? 'Now Playing' : 'Now Watching';
   label.classList.add('active');
   body.classList.add('open');
-  if (card) card.classList.toggle('dka-live-anime', mode === 'anime');
+  if (card) card.classList.toggle('dka-live-anime', mode === 'video');
 
-  var key = mode + ':' + (mode === 'music' ? m.key : a.key);
+  var key = mode + ':' + (mode === 'music' ? m.key : v.key);
   if (key === liveRenderedKey) return;
   liveRenderedKey = key;
 
   if (mode === 'music') renderMusicNP(m.track);
-  else renderAnimeNW(a.data);
+  else renderVideoNW(v.data);
 }
 
 function renderMusicNP(track) {
@@ -393,17 +401,19 @@ function renderMusicNP(track) {
   loadCoverArt(npImg, npWipe, getCoverInfo(track), md.artist_name, md.track_name, md.release_name);
 }
 
-function renderAnimeNW(d) {
-  var title = d.matchedTitle || d.show || 'Unknown';
-  var sub = '';
-  if (d.isMovie) sub = 'Movie';
-  else {
-    if (d.season && d.season > 1) sub = 'S' + d.season + ' · ';
-    sub += 'EP ' + (d.episode || '?') + (d.totalEpisodes ? ' / ' + d.totalEpisodes : '');
+function renderVideoNW(d) {
+  var title = d.title || 'Unknown';
+  var sub;
+  if (d.type === 'movie') {
+    sub = 'Movie';
+  } else {
+    sub = (d.season && d.season > 1 ? 'S' + d.season + ' · ' : '') + 'EP ' + (d.episode || '?');
+    if (d.totalEpisodes) sub += ' / ' + d.totalEpisodes;
+    if (d.episodeTitle)  sub += ' — ' + d.episodeTitle;
   }
   document.getElementById('dkt-np-title').textContent  = title;
   document.getElementById('dkt-np-artist').textContent = sub;
-  makeAnimeBtns(document.getElementById('dkt-np-btns'), title, d.siteUrl);
+  makeVideoBtns(document.getElementById('dkt-np-btns'), d.isAnime ? 'anime' : 'tv', title, d.siteUrl);
   loadPoster(document.getElementById('dkt-np-img'), document.getElementById('dkt-np-wipe'), d.poster);
 }
 
@@ -452,12 +462,12 @@ function pollNowPlaying() {
 }
 
 /*
- * ─── Anime Now Watching polling ───────────────────────────────────────────────
- * The n8n live endpoint only reads workflow static data (no upstream call), so
- * polling every 2 min is cheap. State is event-driven from Plex webhooks.
+ * ─── Video Now Watching polling ───────────────────────────────────────────────
+ * The n8n feed proxies Trakt's /users/:id/watching with a 60 s server cache,
+ * so a 90 s client poll keeps the strip fresh without hammering anything.
  */
 var nwTimer     = null;
-var NW_INTERVAL = 120000; /* 2 min */
+var NW_INTERVAL = 90000; /* 1.5 min */
 
 function scheduleNextNWPoll(delay) {
   if (MOCK) return;
@@ -471,25 +481,25 @@ function scheduleNextNWPoll(delay) {
   }, delay !== undefined ? delay : NW_INTERVAL);
 }
 
-function applyAnimeNW(d) {
+function applyVideoNW(d) {
   var active = !!(d && d.watching);
-  liveState.anime.active = active;
-  liveState.anime.data   = active ? d : null;
-  liveState.anime.key    = active ? ((d.mediaId || d.matchedTitle || d.show) + ':' + (d.episode || '')) : null;
-  if (d && d.updated_at) liveState.anime.changedAt = d.updated_at;
+  liveState.video.active = active;
+  liveState.video.data   = active ? d : null;
+  liveState.video.key    = active ? (d.title + ':' + (d.season || '') + ':' + (d.episode || '')) : null;
+  if (d && d.updated_at) liveState.video.changedAt = d.updated_at;
   updateLiveStrip();
 }
 
 function pollNowWatching() {
-  if (MOCK) { applyAnimeNW(mockAnimeLive()); return; }
-  if (!N8N_ANIME_LIVE_WEBHOOK) return;
-  fetch(N8N_ANIME_LIVE_WEBHOOK + '?t=' + Date.now())
+  if (MOCK) { applyVideoNW(mockVideoLive()); return; }
+  if (!N8N_TRAKT_FEED_WEBHOOK) return;
+  fetch(N8N_TRAKT_FEED_WEBHOOK + '?range=now&t=' + Date.now())
     .then(function(r) {
       if (!r.ok) { scheduleNextNWPoll(); return null; }
       scheduleNextNWPoll();
       return r.json();
     })
-    .then(function(d) { if (d) applyAnimeNW(d); })
+    .then(function(d) { if (d) applyVideoNW(d); })
     .catch(function() { scheduleNextNWPoll(); });
 }
 
@@ -607,8 +617,8 @@ function loadData(range) {
     .catch(function() {});
 }
 
-/* ─── Build an anime row ─── */
-function buildAnimeRow(e, idx, range) {
+/* ─── Build a video (TV/anime) row ─── */
+function buildVideoRow(e, idx, range, media) {
   var title = e.title || 'Unknown';
 
   var row = document.createElement('div'); row.className = 'dkt-row';
@@ -623,18 +633,24 @@ function buildAnimeRow(e, idx, range) {
   artDiv.appendChild(wipeDiv); artDiv.appendChild(mainImg);
 
   var sub;
-  if (range === 'completed') {
-    sub = (e.episodes ? e.episodes + ' EP' : '') + (e.completedAt ? (e.episodes ? ' · ' : '') + e.completedAt : '');
+  if (range === 'recent') {
+    if (e.type === 'movie') {
+      sub = 'Movie';
+    } else {
+      sub = (e.season && e.season > 1 ? 'S' + e.season + ' · ' : '') + 'EP ' + (e.number || '?');
+      if (e.episodeTitle) sub += ' — ' + e.episodeTitle;
+    }
+  } else if (range === 'completed') {
+    sub = e.episodes ? e.episodes + ' EP' : '';
   } else {
     sub = 'EP ' + (e.progress || 0) + (e.episodes ? ' / ' + e.episodes : '');
-    if (range === 'recent' && e.status && e.status !== 'CURRENT') sub += ' · ' + e.status.toLowerCase();
   }
 
   var infoDiv   = document.createElement('div'); infoDiv.className = 'dkt-info';
   var titleDiv  = document.createElement('div'); titleDiv.className = 'dkt-title';  titleDiv.textContent = title;
   var subDiv    = document.createElement('div'); subDiv.className = 'dkt-artist';   subDiv.textContent = sub;
   var btnsDiv   = document.createElement('div'); btnsDiv.className = 'dkt-btns';
-  makeAnimeBtns(btnsDiv, title, e.siteUrl);
+  makeVideoBtns(btnsDiv, media, title, e.siteUrl);
   infoDiv.appendChild(titleDiv); infoDiv.appendChild(subDiv); infoDiv.appendChild(btnsDiv);
 
   var countCol = document.createElement('div'); countCol.className = 'dkt-count-col';
@@ -659,7 +675,7 @@ function buildAnimeRow(e, idx, range) {
   return row;
 }
 
-function renderAnime(entries, range) {
+function renderVideo(entries, range, media) {
   var list = document.getElementById('dkt-list');
   var colLabel = range === 'watching' ? 'EP' : (range === 'completed' ? 'Score' : 'When');
   document.getElementById('dkt-h-plays-label').textContent = colLabel;
@@ -667,24 +683,24 @@ function renderAnime(entries, range) {
   if (!entries || !entries.length) {
     var empty = document.createElement('div');
     empty.className = 'dkt-empty';
-    empty.textContent = N8N_ANIME_STATS_WEBHOOK || MOCK
+    empty.textContent = N8N_TRAKT_FEED_WEBHOOK || MOCK
       ? 'Nothing here yet.'
-      : 'Anime webhook not configured yet.';
+      : 'Trakt webhook not configured yet.';
     list.appendChild(empty);
     return;
   }
-  for (var i = 0; i < entries.length; i++) list.appendChild(buildAnimeRow(entries[i], i, range));
+  for (var i = 0; i < entries.length; i++) list.appendChild(buildVideoRow(entries[i], i, range, media));
 }
 
-/* ─── loadAnimeData — mirrors loadData via the anime stats webhook ─── */
-function loadAnimeData(range) {
-  if (uiMode !== 'anime') return;
-  var cacheKey = 'anime_' + range;
-  if (dataCache[cacheKey]) { renderAnime(dataCache[cacheKey], range); return; }
-  if (MOCK) { dataCache[cacheKey] = mockAnimeEntries(range); renderAnime(dataCache[cacheKey], range); return; }
-  if (!N8N_ANIME_STATS_WEBHOOK) { renderAnime([], range); return; }
+/* ─── loadVideoData — TV and ANIME share this, differing only in ?media= ─── */
+function loadVideoData(media, range) {
+  if (uiMode !== media) return;
+  var cacheKey = media + '_' + range;
+  if (dataCache[cacheKey]) { renderVideo(dataCache[cacheKey], range, media); return; }
+  if (MOCK) { dataCache[cacheKey] = mockVideoEntries(media, range); renderVideo(dataCache[cacheKey], range, media); return; }
+  if (!N8N_TRAKT_FEED_WEBHOOK) { renderVideo([], range, media); return; }
 
-  fetch(N8N_ANIME_STATS_WEBHOOK + '?range=' + encodeURIComponent(range) + '&t=' + Date.now())
+  fetch(N8N_TRAKT_FEED_WEBHOOK + '?media=' + media + '&range=' + encodeURIComponent(range) + '&t=' + Date.now())
     .then(function(r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
@@ -692,44 +708,49 @@ function loadAnimeData(range) {
     .then(function(d) {
       var entries = (d && d.entries) || [];
       dataCache[cacheKey] = entries;
-      if (uiMode === 'anime') renderAnime(entries, range);
+      if (uiMode === media) renderVideo(entries, range, media);
     })
     .catch(function() {});
 }
 
 /*
- * ─── MUSIC | ANIME mode switcher ──────────────────────────────────────────────
- * Only swaps the tab row + list content; the live strip is unified and ignores
- * this (it always shows whichever medium is actually playing).
+ * ─── MUSIC | TV | ANIME mode switcher ─────────────────────────────────────────
+ * Swaps the tab row + list content; the live strip is unified and ignores this
+ * (it always shows whichever medium is actually playing). TV and ANIME share
+ * the video tab row and renderer — only the feed's ?media= param differs.
  */
 var uiMode = 'music';
 var currentMusicRange = 'this_year';
-var currentAnimeRange = 'watching';
+var currentVideoRange = 'watching';
+
+var MODE_META = {
+  music: { heading: 'Top Listens',   col: 'Track', foot: 'dkt-foot-lb' },
+  tv:    { heading: 'On The Screen', col: 'Show',  foot: 'dkt-foot-tk' },
+  anime: { heading: 'My Anime',      col: 'Anime', foot: 'dkt-foot-al' }
+};
 
 function setMode(mode) {
   uiMode = mode;
-  var musicBtn = document.getElementById('dka-mode-music');
-  var animeBtn = document.getElementById('dka-mode-anime');
-  if (musicBtn) musicBtn.classList.toggle('active', mode === 'music');
-  if (animeBtn) animeBtn.classList.toggle('active', mode === 'anime');
+  var modes = ['music', 'tv', 'anime'];
+  for (var i = 0; i < modes.length; i++) {
+    var btn = document.getElementById('dka-mode-' + modes[i]);
+    if (btn) btn.classList.toggle('active', mode === modes[i]);
+    var foot = document.getElementById(MODE_META[modes[i]].foot);
+    if (foot) foot.classList.toggle('dka-hidden', mode !== modes[i]);
+  }
 
   var musicTabs = document.getElementById('dkt-tab-container');
-  var animeTabs = document.getElementById('dka-tab-container');
+  var videoTabs = document.getElementById('dka-tab-container');
   if (musicTabs) musicTabs.classList.toggle('dka-hidden', mode !== 'music');
-  if (animeTabs) animeTabs.classList.toggle('dka-hidden', mode !== 'anime');
+  if (videoTabs) videoTabs.classList.toggle('dka-hidden', mode === 'music');
 
   var heading = document.querySelector('#dkt-card .dkt-heading');
-  if (heading) heading.textContent = mode === 'music' ? 'Top Listens' : 'My Anime';
+  if (heading) heading.textContent = MODE_META[mode].heading;
   var trackLabel = document.getElementById('dkt-h-track-label');
-  if (trackLabel) trackLabel.textContent = mode === 'music' ? 'Track' : 'Anime';
-
-  var lbLink = document.getElementById('dkt-foot-lb');
-  var alLink = document.getElementById('dkt-foot-al');
-  if (lbLink) lbLink.classList.toggle('dka-hidden', mode !== 'music');
-  if (alLink) alLink.classList.toggle('dka-hidden', mode !== 'anime');
+  if (trackLabel) trackLabel.textContent = MODE_META[mode].col;
 
   if (mode === 'music') loadData(currentMusicRange);
-  else loadAnimeData(currentAnimeRange);
+  else loadVideoData(mode, currentVideoRange);
 }
 
 var modeContainer = document.getElementById('dka-mode-container');
@@ -751,26 +772,26 @@ document.getElementById('dkt-tab-container').addEventListener('click', function(
   loadData(r);
 });
 
-var animeTabContainer = document.getElementById('dka-tab-container');
-if (animeTabContainer) {
-  animeTabContainer.addEventListener('click', function(e) {
+var videoTabContainer = document.getElementById('dka-tab-container');
+if (videoTabContainer) {
+  videoTabContainer.addEventListener('click', function(e) {
     var r = e.target.dataset && e.target.dataset.r;
     if (!r) return;
     var tabs = document.querySelectorAll('#dka-tab-container .dkt-tab');
     for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
     e.target.classList.add('active');
-    currentAnimeRange = r;
-    loadAnimeData(r);
+    currentVideoRange = r;
+    loadVideoData(uiMode, r);
   });
 }
 
 /*
  * ═══ MOCK FIXTURES (sandbox only — ?mock=1) ═══════════════════════════════════
- * ?live=anime|music|both|none controls which live sources report activity;
- * ?newer=anime|music decides the winner when both are live.
+ * ?live=video|music|both|none controls which live sources report activity;
+ * ?newer=video|music decides the winner when both are live.
  */
-var MOCK_LIVE  = qp('live')  || 'anime';
-var MOCK_NEWER = qp('newer') || 'anime';
+var MOCK_LIVE  = qp('live')  || 'video';
+var MOCK_NEWER = qp('newer') || 'video';
 
 function mockMusicNP() {
   if (MOCK_LIVE !== 'music' && MOCK_LIVE !== 'both') return { playing: false, track: null };
@@ -779,42 +800,51 @@ function mockMusicNP() {
   } } };
 }
 
-function mockAnimeLive() {
-  if (MOCK_LIVE !== 'anime' && MOCK_LIVE !== 'both') return { watching: false, updated_at: Date.now() - 3600000 };
+function mockVideoLive() {
+  if (MOCK_LIVE !== 'video' && MOCK_LIVE !== 'both') return { watching: false, updated_at: Date.now() - 3600000 };
   return {
-    watching: true,
-    show: 'Frieren: Beyond Journey’s End',
-    matchedTitle: 'Frieren: Beyond Journey’s End',
-    season: 1, episode: 7, totalEpisodes: 28, isMovie: false,
-    mediaId: 154587,
-    poster: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-gHSraOSa0nBG.jpg',
-    siteUrl: 'https://anilist.co/anime/154587',
-    event: 'media.play',
-    updated_at: MOCK_NEWER === 'anime' ? Date.now() + 5000 : Date.now() - 600000
+    watching: true, type: 'episode',
+    title: 'Frieren: Beyond Journey’s End', episodeTitle: 'The Land Where Souls Rest',
+    season: 1, episode: 7, totalEpisodes: 28, isAnime: true,
+    poster: 'https://image.tmdb.org/t/p/w342/dqZENchTd7lp5zht7BdlqM7RBhD.jpg',
+    siteUrl: 'https://trakt.tv/shows/frieren-beyond-journey-s-end',
+    updated_at: MOCK_NEWER === 'video' ? Date.now() + 5000 : Date.now() - 600000
   };
 }
 
-function mockAnimeEntries(range) {
-  var mk = function(title, eps, prog, score, daysAgo, poster, url, status) {
-    return { title: title, episodes: eps, progress: prog, score: score, status: status || 'CURRENT',
-      updatedAt: Math.floor(Date.now() / 1000) - daysAgo * 86400,
-      completedAt: score ? '2026-06-1' + daysAgo : null,
-      poster: poster || '', siteUrl: url || '' };
+function mockVideoEntries(media, range) {
+  var nowSec = Math.floor(Date.now() / 1000);
+  var mk = function(title, eps, prog, score, daysAgo, extra) {
+    var e = { title: title, episodes: eps, progress: prog, score: score,
+      updatedAt: nowSec - daysAgo * 86400, poster: '', siteUrl: '' };
+    for (var k in (extra || {})) e[k] = extra[k];
+    return e;
   };
+  if (media === 'anime') {
+    if (range === 'completed') return [
+      mk('Solo Leveling', 12, 12, 9, 2),
+      mk('Cowboy Bebop', 26, 26, 10, 5)
+    ];
+    if (range === 'recent') return [
+      mk('Frieren: Beyond Journey’s End', 28, 7, 0, 0, { type: 'episode', season: 1, number: 7, episodeTitle: 'The Land Where Souls Rest' }),
+      mk('One Piece', null, 1088, 0, 1, { type: 'episode', season: 21, number: 1088 })
+    ];
+    return [ /* watching — inference case: completed < aired */
+      mk('Frieren: Beyond Journey’s End', 28, 7, 0, 0),
+      mk('One Piece', 1122, 1088, 0, 1)
+    ];
+  }
   if (range === 'completed') return [
-    mk('Solo Leveling', 12, 12, 9, 2, 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx151807-m1gX3iwfx0Vl.jpg', 'https://anilist.co/anime/151807', 'COMPLETED'),
-    mk('Cowboy Bebop', 26, 26, 10, 5, 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1-CXtrrkMpJ8Zq.png', 'https://anilist.co/anime/1', 'COMPLETED'),
-    mk('Bocchi the Rock!', 12, 12, 0, 8, '', 'https://anilist.co/anime/130003', 'COMPLETED')
+    mk('The Bear', 28, 28, 9, 3),
+    mk('Severance', 19, 19, 0, 12)
   ];
   if (range === 'recent') return [
-    mk('Frieren: Beyond Journey’s End', 28, 7, 0, 0, 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-gHSraOSa0nBG.jpg', 'https://anilist.co/anime/154587'),
-    mk('One Piece', null, 1088, 0, 1, '', 'https://anilist.co/anime/21'),
-    mk('Solo Leveling', 12, 12, 9, 2, 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx151807-m1gX3iwfx0Vl.jpg', 'https://anilist.co/anime/151807', 'COMPLETED')
+    mk('Severance', 19, 12, 0, 0, { type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?' }),
+    mk('Dune: Part Two', null, 1, 8, 1, { type: 'movie' })
   ];
   return [
-    mk('Frieren: Beyond Journey’s End', 28, 7, 0, 0, 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx154587-gHSraOSa0nBG.jpg', 'https://anilist.co/anime/154587'),
-    mk('One Piece', null, 1088, 0, 1, '', 'https://anilist.co/anime/21'),
-    mk('Delicious in Dungeon', 24, 15, 0, 3, '', 'https://anilist.co/anime/153518')
+    mk('Severance', 19, 12, 0, 0),
+    mk('Slow Horses', 24, 18, 0, 4)
   ];
 }
 
