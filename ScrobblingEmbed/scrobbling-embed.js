@@ -31,6 +31,8 @@
   var MOCK = qp('mock') === '1';
   if (qp('trakt')) N8N_TRAKT_FEED_WEBHOOK = qp('trakt');
   if (qp('music')) { N8N_NP_WEBHOOK = qp('music'); N8N_STATS_WEBHOOK = qp('music'); }
+  /* preview an accent from the design palette, e.g. ?accent=%23caa27a */
+  if (qp('accent')) { try { document.documentElement.style.setProperty('--dks-accent', qp('accent')); } catch (e) {} }
 
   /* ─── Platform button sets (design: PlatformButtons.dc.html) ─── */
   var MUSIC_BRANDS = [
@@ -665,9 +667,12 @@
       wrap.addEventListener('click', function () { selectPoster(kind, i); }); /* touch */
       strip.appendChild(wrap);
     });
-
-    strip.addEventListener('scroll', function () { caretUpdate(kind); }, { passive: true });
   }
+
+  /* keep the caret glued to its poster while the strip scrolls (bound once) */
+  ['watch', 'fav'].forEach(function (kind) {
+    el('dks-' + kind + '-strip').addEventListener('scroll', function () { caretUpdate(kind); }, { passive: true });
+  });
 
   function loadFeedRange(range, kind) {
     if (MOCK) { renderStrip(kind, mockFeedEntries(range)); return; }
