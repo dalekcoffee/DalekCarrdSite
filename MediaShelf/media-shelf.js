@@ -294,7 +294,11 @@
     '<div class="dks-card">' +
       '<div class="dks-header">' +
         '<span class="dks-title">Dalek’s Shelf</span>' +
-        '<span class="dks-src">Trakt · ListenBrainz</span>' +
+        '<span class="dks-src">' +
+          '<a class="dks-src-link" href="https://trakt.tv/users/dalekcoffee" target="_blank" rel="noopener noreferrer">Trakt</a>' +
+          ' · ' +
+          '<a class="dks-src-link" href="https://listenbrainz.org/user/Dalek.coffee/stats/?range=year" target="_blank" rel="noopener noreferrer">ListenBrainz</a>' +
+        '</span>' +
       '</div>' +
       '<div class="dks-np idle" id="dks-np">' +
         '<div class="dks-np-head" id="dks-np-head">' +
