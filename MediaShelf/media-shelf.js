@@ -332,7 +332,13 @@
         '<div class="dks-list" id="dks-list"></div>' +
       '</div>' +
       '<div class="dks-section">' +
-        '<div class="dks-sec-head"><span class="dks-sec-label">▤ Currently Watching</span></div>' +
+        '<div class="dks-sec-head">' +
+          '<span class="dks-sec-label">▤ On Screen</span>' +
+          '<div class="dks-tabs" id="dks-watch-tabs">' +
+            '<button class="dks-tab active" data-r="watching">Watching</button>' +
+            '<button class="dks-tab" data-r="recent">Recent</button>' +
+          '</div>' +
+        '</div>' +
         '<div class="dks-strip" id="dks-watch-strip"></div>' +
         '<div class="dks-zone" id="dks-watch-zone">' +
           '<div class="dks-caret" id="dks-watch-caret"></div>' +
@@ -600,7 +606,7 @@
 
   /* ═══ POSTER STRIPS (Currently Watching / Favorites) ══════════════════════ */
   var POSTER_PITCH = 118; /* 104 poster + 14 gap */
-  var stripState = { watch: { idx: 0, entries: [] }, fav: { idx: 0, entries: [] } };
+  var stripState = { watch: { idx: 0, entries: [], mode: 'watching' }, fav: { idx: 0, entries: [], mode: 'favorites' } };
 
   function caretUpdate(kind) {
     var st = stripState[kind];
@@ -620,6 +626,24 @@
     d.querySelector('.dks-d-ep').textContent = epText + (pct !== null ? ' · ' + pct + '%' : '');
     d.querySelector('.dks-bar-fill').style.width = (pct || 0) + '%';
     d.querySelector('.dks-d-meta').textContent = (e.kind || 'SERIES') + ' · ' + (relTime(e.updatedAt) || 'recently');
+    fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
+  }
+
+  function epLabel(e) {
+    if (e.type === 'movie') return 'Movie';
+    var s = (e.season && e.season > 1 ? 'S' + e.season + ' · ' : '') + 'E' + (e.number || '?');
+    if (e.episodeTitle) s += ' — ' + e.episodeTitle;
+    return s;
+  }
+
+  function fillRecentDetail(e) {
+    var d = el('dks-watch-detail');
+    d.innerHTML =
+      '<div class="dks-d-row1"><span class="dks-d-title"></span><span class="dks-d-ep"></span></div>' +
+      '<div class="dks-d-meta-row"><span class="dks-d-meta"></span><div class="dks-btns"></div></div>';
+    d.querySelector('.dks-d-title').textContent = e.title;
+    d.querySelector('.dks-d-ep').textContent = epLabel(e);
+    d.querySelector('.dks-d-meta').textContent = (e.kind || 'SERIES') + ' · ' + (relTime(e.watchedAt) || 'recently');
     fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
   }
 
@@ -652,13 +676,16 @@
     for (var i = 0; i < posters.length; i++) posters[i].classList.toggle('ring', i === idx);
     el('dks-' + kind + '-zone').classList.add('live');
     caretUpdate(kind);
-    if (kind === 'watch') fillWatchDetail(st.entries[idx]);
-    else fillFavDetail(st.entries[idx]);
+    if (kind === 'watch') {
+      if (st.mode === 'recent') fillRecentDetail(st.entries[idx]);
+      else fillWatchDetail(st.entries[idx]);
+    } else fillFavDetail(st.entries[idx]);
   }
 
-  function renderStrip(kind, entries) {
+  function renderStrip(kind, entries, mode) {
     var st = stripState[kind];
     st.entries = entries || [];
+    st.mode = mode || (kind === 'fav' ? 'favorites' : 'watching');
     st.idx = 0;
     var strip = el('dks-' + kind + '-strip');
     var zone = el('dks-' + kind + '-zone');
@@ -685,7 +712,17 @@
       poster.appendChild(img);
       loadPoster(img, e.poster);
 
-      if (kind === 'watch') {
+      if (kind === 'watch' && st.mode === 'recent') {
+        var rol = document.createElement('div'); rol.className = 'dks-poster-ol';
+        var rrow = document.createElement('div'); rrow.className = 'dks-ol-row';
+        var rlab = document.createElement('span'); rlab.className = 'dks-ol-ep';
+        rlab.textContent = e.type === 'movie' ? 'MOVIE' : ('S' + (e.season || 1) + 'E' + (e.number || '?'));
+        var rtime = document.createElement('span'); rtime.className = 'dks-ol-ep';
+        rtime.textContent = relTime(e.watchedAt) || '';
+        rrow.appendChild(rlab); rrow.appendChild(rtime);
+        rol.appendChild(rrow);
+        poster.appendChild(rol);
+      } else if (kind === 'watch') {
         var pct = e.epTotal ? Math.round((e.epWatched / e.epTotal) * 100) : null;
         var ol = document.createElement('div'); ol.className = 'dks-poster-ol';
         var row = document.createElement('div'); row.className = 'dks-ol-row';
@@ -731,35 +768,42 @@
     el('dks-' + kind + '-strip').addEventListener('scroll', function () { caretUpdate(kind); }, { passive: true });
   });
 
+  /* which range is currently selected per strip, so a slow fetch from an
+     inactive tab can't clobber the active one */
+  var activeRange = { watch: 'watching', fav: 'favorites' };
+
   function loadFeedRange(range, kind) {
     var cacheKey = 'feed_' + range;
-    if (dataCache[cacheKey]) { renderStrip(kind, dataCache[cacheKey]); return; }
-    if (MOCK) { dataCache[cacheKey] = mockFeedEntries(range); renderStrip(kind, dataCache[cacheKey]); return; }
-    if (!N8N_TRAKT_FEED_WEBHOOK) { renderStrip(kind, []); return; }
+    if (dataCache[cacheKey]) { renderStrip(kind, dataCache[cacheKey], range); return; }
+    if (MOCK) { dataCache[cacheKey] = mockFeedEntries(range); renderStrip(kind, dataCache[cacheKey], range); return; }
+    if (!N8N_TRAKT_FEED_WEBHOOK) { renderStrip(kind, [], range); return; }
     fetch(N8N_TRAKT_FEED_WEBHOOK + '?range=' + range + '&t=' + Date.now())
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (d) {
         var entries = (d && d.entries) || [];
         dataCache[cacheKey] = entries;
-        if (range === currentFavRange || kind !== 'fav') renderStrip(kind, entries);
+        if (!activeRange[kind] || range === activeRange[kind]) renderStrip(kind, entries, range);
       })
-      .catch(function () { renderStrip(kind, []); });
+      .catch(function () { renderStrip(kind, [], range); });
   }
 
-  /* ─── Favorites | Top Rated tabs (both render into the fav strip) ─── */
-  var currentFavRange = 'favorites';
-  var favTabs = el('dks-fav-tabs');
-  if (favTabs) {
-    favTabs.addEventListener('click', function (e) {
+  function bindStripTabs(tabsId, kind) {
+    var tabsEl = el(tabsId);
+    if (!tabsEl) return;
+    tabsEl.addEventListener('click', function (e) {
       var r = e.target.dataset && e.target.dataset.r;
-      if (!r || r === currentFavRange) return;
-      var tabs = favTabs.querySelectorAll('.dks-tab');
+      if (!r || r === activeRange[kind]) return;
+      var tabs = tabsEl.querySelectorAll('.dks-tab');
       for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
       e.target.classList.add('active');
-      currentFavRange = r;
-      loadFeedRange(r, 'fav');
+      activeRange[kind] = r;
+      loadFeedRange(r, kind);
     });
   }
+
+  /* ▤ On Screen → Watching | Recent, and ★ Best Of → Favorites | Top Rated */
+  bindStripTabs('dks-watch-tabs', 'watch');
+  bindStripTabs('dks-fav-tabs', 'fav');
 
   /* ═══ MOCK FIXTURES (sandbox only — ?mock=1) ══════════════════════════════ */
   var MOCK_LIVE = qp('live') || 'video';
@@ -790,6 +834,13 @@
       { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', poster: '', traktUrl: '', imdbUrl: '' }
+    ];
+    if (range === 'recent') return [
+      { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', watchedAt: nowSec - 3 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, type: 'episode', season: 9, number: 2, episodeTitle: 'Rick, Bts, Sev...', watchedAt: nowSec - 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 2 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 7, episodeTitle: 'A Dangerous Woman Arrives', watchedAt: nowSec - 4 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', watchedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' }
     ];
     if (range === 'favorites') return [
       { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', poster: '', traktUrl: '', imdbUrl: '' },
