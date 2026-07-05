@@ -753,7 +753,41 @@
     ];
   }
 
+  /* ═══ LOADING SKELETON — card renders full-size before any data arrives ═══ */
+  function renderListPlaceholders() {
+    var list = el('dks-list');
+    list.innerHTML = '';
+    for (var i = 0; i < 6; i++) {
+      var row = document.createElement('div'); row.className = 'dks-row';
+      var rank = document.createElement('div'); rank.className = 'dks-rank'; rank.textContent = i + 1;
+      var tile = document.createElement('div'); tile.className = 'dks-tile dks-tile-60';
+      var info = document.createElement('div'); info.className = 'dks-row-info';
+      var l1 = document.createElement('div'); l1.className = 'dks-ph-line'; l1.style.width = (46 - i * 3) + '%';
+      var l2 = document.createElement('div'); l2.className = 'dks-ph-line sub'; l2.style.width = (24 + (i % 3) * 5) + '%';
+      info.appendChild(l1); info.appendChild(l2);
+      row.appendChild(rank); row.appendChild(tile); row.appendChild(info); row.appendChild(document.createElement('div'));
+      list.appendChild(row);
+    }
+  }
+
+  function renderStripPlaceholders(kind) {
+    var strip = el('dks-' + kind + '-strip');
+    strip.innerHTML = '';
+    for (var i = 0; i < 5; i++) {
+      var wrap = document.createElement('div'); wrap.className = 'dks-poster-wrap'; wrap.style.cursor = 'default';
+      var poster = document.createElement('div'); poster.className = 'dks-poster';
+      var title = document.createElement('div'); title.className = 'dks-poster-title';
+      var bar = document.createElement('div'); bar.className = 'dks-ph-line sub'; bar.style.width = (55 + (i % 3) * 15) + '%'; bar.style.marginTop = '0';
+      title.appendChild(bar);
+      wrap.appendChild(poster); wrap.appendChild(title);
+      strip.appendChild(wrap);
+    }
+  }
+
   /* ═══ INIT ═════════════════════════════════════════════════════════════════ */
+  renderListPlaceholders();
+  renderStripPlaceholders('watch');
+  renderStripPlaceholders('fav');
   setTimeout(function () {
     pollNowPlaying();
     pollNowWatching();

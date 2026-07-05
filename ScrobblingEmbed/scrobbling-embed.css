@@ -58,7 +58,8 @@
 .dks-tab:focus-visible{outline:1px solid var(--dks-accent);outline-offset:-1px}
 
 /* ── Top Listens list ── */
-.dks-list{max-height:516px;overflow-y:auto;scrollbar-gutter:stable;margin:0 -4px;padding:0 4px}
+/* min-height = max-height so the card renders full-size before data arrives */
+.dks-list{min-height:516px;max-height:516px;overflow-y:auto;scrollbar-gutter:stable;margin:0 -4px;padding:0 4px}
 .dks-row{display:grid;grid-template-columns:30px 60px 1fr auto;gap:16px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
 .dks-rank{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:22px;color:#3a3a40;text-align:center}
 .dks-row-info{min-width:0}
@@ -69,7 +70,7 @@
 .dks-plays{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:22px;color:#5f5f66;text-align:right}
 
 /* ── Poster strips (Currently Watching / Favorites) ── */
-.dks-strip{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px}
+.dks-strip{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;min-height:186px}
 .dks-poster-wrap{flex:0 0 104px;cursor:pointer}
 .dks-poster{position:relative;width:104px;height:146px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(135deg,rgba(255,255,255,0.03) 0 6px,transparent 6px 12px),var(--dks-tile);border:1px solid rgba(255,255,255,0.08);font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:32px;color:rgba(255,255,255,0.24);overflow:hidden;transition:box-shadow .2s ease,border-color .2s ease}
 .dks-poster.ring{border-color:var(--dks-accent);box-shadow:0 0 0 2px var(--dks-accent)}
@@ -81,7 +82,7 @@
 .dks-bar{height:3px;background:rgba(255,255,255,0.16)}
 .dks-bar-fill{height:100%;width:0%;background:var(--dks-accent);transition:width .28s ease}
 .dks-badge{position:absolute;top:0;left:0;background:var(--dks-card);border:1px solid var(--dks-accent);font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--dks-accent);padding:1px 6px;z-index:2}
-.dks-poster-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5px;color:#9a9aa0;text-transform:uppercase;margin-top:8px;line-height:1.3}
+.dks-poster-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5px;color:#9a9aa0;text-transform:uppercase;margin-top:8px;line-height:1.3;min-height:24px}
 
 /* ── Detail zone (caret + prompt + panel) ── */
 .dks-zone{position:relative;height:104px;margin-top:12px}
@@ -111,6 +112,10 @@
 .dks-btn{display:inline-flex;align-items:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:#9a9aa0;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:5px 9px;cursor:pointer;transition:all .12s;text-decoration:none !important}
 .dks-btn:hover,.dks-btn:active{background:var(--bb);border-color:var(--bb);color:var(--bt)}
 .dks-btn:focus-visible{outline:1px solid var(--dks-accent);outline-offset:1px}
+
+/* ── Loading placeholders (skeleton keeps the card full-size pre-data) ── */
+.dks-ph-line{height:10px;background:rgba(255,255,255,0.05)}
+.dks-ph-line.sub{height:7px;background:rgba(255,255,255,0.035);margin-top:7px}
 
 /* ── Empty state ── */
 .dks-empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#5f5f66;text-transform:uppercase;padding:18px 0;text-align:center}
