@@ -104,6 +104,9 @@
 .dks-d-score small{font-size:11px;color:#5f5f66;font-weight:700}
 .dks-d-bar{height:3px;background:rgba(255,255,255,0.08);margin-bottom:11px}
 .dks-d-meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+/* Detail-panel platform buttons reveal on section hover (like Top Listens rows) */
+.dks-detail .dks-btns{opacity:0;transform:translateY(3px);transition:opacity .28s ease,transform .28s ease;pointer-events:none}
+.dks-section:hover .dks-detail .dks-btns{opacity:1;transform:translateY(0);pointer-events:auto}
 .dks-d-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:#7c7c82;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dks-d-meta.fav{letter-spacing:1.5px;margin-bottom:8px;white-space:normal}
 .dks-d-note{font-family:'Space Grotesk',sans-serif;font-size:12.5px;line-height:1.5;color:#c4c4c9;margin-bottom:11px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
@@ -129,13 +132,13 @@
 .dks-empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#5f5f66;text-transform:uppercase;padding:18px 0;text-align:center}
 .dks-hide{display:none !important}
 
-/* ── Touch devices: hover never fires, keep row buttons reachable ── */
+/* ── Touch devices: hover never fires, keep buttons reachable ── */
 @media (hover: none){
-  .dks-row-btns{opacity:1;transform:none;pointer-events:auto}
+  .dks-row-btns,.dks-detail .dks-btns{opacity:1;transform:none;pointer-events:auto}
 }
 
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce){
   .dks-np-dot{animation:none}
-  .dks-caret,.dks-prompt,.dks-detail,.dks-bar-fill,.dks-row-btns,.dks-poster,.dks-btn,.dks-tab,.dks-np-body{transition:none}
+  .dks-caret,.dks-prompt,.dks-detail,.dks-bar-fill,.dks-row-btns,.dks-poster,.dks-btn,.dks-tab,.dks-np-body,.dks-detail .dks-btns{transition:none}
 }
