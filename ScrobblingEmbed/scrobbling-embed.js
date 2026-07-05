@@ -593,7 +593,8 @@
       '<div class="dks-d-note"></div>' +
       '<div class="dks-btns"></div>';
     d.querySelector('.dks-d-title').textContent = e.title;
-    d.querySelector('.dks-d-score').innerHTML = '★ ' + stars(e.score || 0) + '<small>/5</small>';
+    if (e.score) d.querySelector('.dks-d-score').innerHTML = '★ ' + stars(e.score) + '<small>/5</small>';
+    else d.querySelector('.dks-d-score').textContent = '—';
     d.querySelector('.dks-d-meta').textContent = e.meta || (e.kind || '');
     var noteEl = d.querySelector('.dks-d-note');
     noteEl.textContent = e.note || '';
@@ -663,9 +664,9 @@
           ol.appendChild(bar);
         }
         poster.appendChild(ol);
-      } else {
+      } else if (e.score) {
         var badge = document.createElement('span'); badge.className = 'dks-badge';
-        badge.textContent = '★' + stars(e.score || 0);
+        badge.textContent = '★' + stars(e.score);
         poster.appendChild(badge);
       }
 
@@ -724,7 +725,7 @@
     var nowSec = Math.floor(Date.now() / 1000);
     if (range === 'favorites') return [
       { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me.', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me.', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', note: '', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', poster: '', traktUrl: '', imdbUrl: '' }
