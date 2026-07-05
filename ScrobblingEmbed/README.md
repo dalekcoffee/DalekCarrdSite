@@ -18,9 +18,11 @@ when happy.
 4. **Currently Watching** — Trakt poster strip with EP x/n + % + progress bar;
    hovering a poster rings it, slides the accent caret, and fills the detail
    panel. Watching = shows where episodes watched < episodes aired.
-5. **All-Time Favorites** — everything rated **9–10 on Trakt** (shows + films),
-   ★score badge, detail panel with rating + meta. (The design's personal-note
-   row is omitted — Trakt notes need VIP.)
+5. **Best Of** — two tabs: **Favorites** (Trakt's heart-icon Favorites list,
+   in your curated order) and **Top Rated** (everything rated ≥ `favMinRating`,
+   highest score then most recently rated). Detail panel shows literal star
+   glyphs (Trakt's 5-star half-step scale), meta, and a note row (up to 4
+   lines) fed by your Trakt notes or reviews.
 
 Anime is detected from Trakt genre tags; anime items add a Crunchyroll button
 to the media set (YouTube · IMDb · Trakt). Accent color is a single CSS var

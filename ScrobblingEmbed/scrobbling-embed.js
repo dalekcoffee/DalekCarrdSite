@@ -338,7 +338,7 @@
       '</div>' +
       '<div class="dks-section">' +
         '<div class="dks-sec-head">' +
-          '<span class="dks-sec-label">★ All-Time</span>' +
+          '<span class="dks-sec-label">★ Best Of</span>' +
           '<div class="dks-tabs" id="dks-fav-tabs">' +
             '<button class="dks-tab active" data-r="favorites">Favorites</button>' +
             '<button class="dks-tab" data-r="toprated">Top Rated</button>' +
