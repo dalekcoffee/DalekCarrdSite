@@ -34,22 +34,30 @@
   /* preview an accent from the design palette, e.g. ?accent=%23caa27a */
   if (qp('accent')) { try { document.documentElement.style.setProperty('--dks-accent', qp('accent')); } catch (e) {} }
 
-  /* ─── Platform button sets (design: PlatformButtons.dc.html) ─── */
+  /* ─── Platform button sets (design: PlatformButtons.dc.html) ─────────────────
+   * Brand icons come pre-tinted in the resting gray from simpleicons (same CDN
+   * the production music embed uses); on hover a filter pushes them to white,
+   * or to black for the light brands (Genius, IMDb).
+   */
+  var ICO_REST  = '9a9aa0';
+  var TO_WHITE  = 'brightness(0) invert(1)';
+  var TO_BLACK  = 'brightness(0)';
+
   var MUSIC_BRANDS = [
-    { label: '▶ YouTube',  bb: '#FF0000', bt: '#ffffff', url: 'https://www.youtube.com/results?search_query=' },
-    { label: 'Spotify',    bb: '#1DB954', bt: '#ffffff', url: 'https://open.spotify.com/search/' },
-    { label: 'SoundCloud', bb: '#FF5500', bt: '#ffffff', url: 'https://soundcloud.com/search?q=' },
-    { label: 'Genius',     bb: '#FFE24B', bt: '#000000', url: 'https://genius.com/search?q=' }
+    { label: 'YouTube',    icon: 'youtube',    bb: '#FF0000', bt: '#ffffff', bi: TO_WHITE, url: 'https://www.youtube.com/results?search_query=' },
+    { label: 'Spotify',    icon: 'spotify',    bb: '#1DB954', bt: '#ffffff', bi: TO_WHITE, url: 'https://open.spotify.com/search/' },
+    { label: 'SoundCloud', icon: 'soundcloud', bb: '#FF5500', bt: '#ffffff', bi: TO_WHITE, url: 'https://soundcloud.com/search?q=' },
+    { label: 'Genius',     icon: 'genius',     bb: '#FFE24B', bt: '#000000', bi: TO_BLACK, url: 'https://genius.com/search?q=' }
   ];
 
   function mediaBrandDefs(item) {
     var q = encodeURIComponent(item.title || '');
     var defs = [
-      { label: '▶ YouTube', bb: '#FF0000', bt: '#ffffff', href: 'https://www.youtube.com/results?search_query=' + q },
-      { label: 'IMDb',      bb: '#F5C518', bt: '#000000', href: item.imdbUrl || ('https://www.imdb.com/find/?q=' + q) },
-      { label: 'Trakt',     bb: '#ED1C24', bt: '#ffffff', href: item.traktUrl || ('https://trakt.tv/search?query=' + q) }
+      { label: 'YouTube', icon: 'youtube', bb: '#FF0000', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.youtube.com/results?search_query=' + q },
+      { label: 'IMDb',    icon: 'imdb',    bb: '#F5C518', bt: '#000000', bi: TO_BLACK, href: item.imdbUrl || ('https://www.imdb.com/find/?q=' + q) },
+      { label: 'Trakt',   icon: 'trakt',   bb: '#ED1C24', bt: '#ffffff', bi: TO_WHITE, href: item.traktUrl || ('https://trakt.tv/search?query=' + q) }
     ];
-    if (item.isAnime) defs.push({ label: 'Crunchyroll', bb: '#F47521', bt: '#ffffff', href: 'https://www.crunchyroll.com/search?q=' + q });
+    if (item.isAnime) defs.push({ label: 'Crunchyroll', icon: 'crunchyroll', bb: '#F47521', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.crunchyroll.com/search?q=' + q });
     return defs;
   }
 
@@ -61,17 +69,27 @@
       a.className = 'dks-btn';
       a.style.setProperty('--bb', d.bb);
       a.style.setProperty('--bt', d.bt);
+      a.style.setProperty('--bi', d.bi);
       a.href = d.href;
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
-      a.textContent = d.label;
+      if (d.icon) {
+        var ico = document.createElement('img');
+        ico.src = 'https://cdn.simpleicons.org/' + d.icon + '/' + ICO_REST;
+        ico.alt = '';
+        ico.setAttribute('aria-hidden', 'true');
+        a.appendChild(ico);
+      }
+      a.appendChild(document.createTextNode(d.label));
       container.appendChild(a);
     }
   }
 
   function musicBtnDefs(track, artist) {
     var q = encodeURIComponent(track + ' ' + artist);
-    return MUSIC_BRANDS.map(function (b) { return { label: b.label, bb: b.bb, bt: b.bt, href: b.url + q }; });
+    return MUSIC_BRANDS.map(function (b) {
+      return { label: b.label, icon: b.icon, bb: b.bb, bt: b.bt, bi: b.bi, href: b.url + q };
+    });
   }
 
   /* ─── 2-letter tile code from a title ─── */
