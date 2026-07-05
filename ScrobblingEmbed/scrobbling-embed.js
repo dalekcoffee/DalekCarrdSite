@@ -667,6 +667,10 @@
       wrap.addEventListener('click', function () { selectPoster(kind, i); }); /* touch */
       strip.appendChild(wrap);
     });
+
+    /* Final prototype behavior: poster 0 pre-selected (ring + caret + detail),
+       so the panel is populated without hover — required on touch devices. */
+    selectPoster(kind, 0);
   }
 
   /* keep the caret glued to its poster while the strip scrolls (bound once) */

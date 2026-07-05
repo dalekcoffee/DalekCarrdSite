@@ -113,6 +113,11 @@
 .dks-empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#5f5f66;text-transform:uppercase;padding:18px 0;text-align:center}
 .dks-hide{display:none !important}
 
+/* ── Touch devices: hover never fires, keep row buttons reachable ── */
+@media (hover: none){
+  .dks-row-btns{opacity:1;transform:none;pointer-events:auto}
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce){
   .dks-np-dot{animation:none}
