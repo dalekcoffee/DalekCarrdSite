@@ -26,9 +26,9 @@ when happy.
 
 Anime is detected from Trakt genre tags; anime items add a Crunchyroll button
 to the media set (YouTube · IMDb · Trakt). Accent color is a single CSS var
-(`--dks-accent`, currently white) in `scrobbling-embed.css`.
+(`--dks-accent`, currently white) in `media-shelf.css`.
 
-## Configuration (top of `scrobbling-embed.js`)
+## Configuration (top of `media-shelf.js`)
 
 | Constant | Value |
 | --- | --- |
@@ -59,7 +59,7 @@ Notes:
 ## Sandbox testing (`test.html`)
 
 Serve the repo locally (`python3 -m http.server`) and open
-`ScrobblingEmbed/test.html`:
+`MediaShelf/test.html`:
 
 - `?mock=1` — fixture data, zero network:
   - `&live=video|music|both|none` — which live sources report activity
@@ -72,9 +72,9 @@ Paste into a Carrd embed:
 
 ```html
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/ScrobblingEmbed/scrobbling-embed.css">
+<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/MediaShelf/media-shelf.css">
 <div id="dks-shelf"></div>
-<script src="https://dalekcoffee.github.io/DalekCarrdSite/ScrobblingEmbed/scrobbling-embed.js"></script>
+<script src="https://dalekcoffee.github.io/DalekCarrdSite/MediaShelf/media-shelf.js"></script>
 ```
 
 The script renders the entire shelf into `#dks-shelf`. This card replaces the
