@@ -89,6 +89,16 @@
     return (s % 1 === 0) ? String(s) : s.toFixed(1);
   }
 
+  /* Literal star glyphs: 9/10 → ★★★★ + half star (clipped glyph) */
+  function starsMarkup(score10) {
+    var s = Math.round(score10) / 2;
+    var full = Math.floor(s);
+    var html = '';
+    for (var i = 0; i < full; i++) html += '<span class="dks-star">★</span>';
+    if (s - full >= 0.5) html += '<span class="dks-star dks-star-half">★</span>';
+    return html;
+  }
+
   /* ─── Relative time (unix seconds) ─── */
   function relTime(unixSec) {
     if (!unixSec) return '';
@@ -309,7 +319,13 @@
         '</div>' +
       '</div>' +
       '<div class="dks-section">' +
-        '<span class="dks-sec-label dks-mb">★ All-Time Favorites</span>' +
+        '<div class="dks-sec-head">' +
+          '<span class="dks-sec-label">★ All-Time</span>' +
+          '<div class="dks-tabs" id="dks-fav-tabs">' +
+            '<button class="dks-tab active" data-r="favorites">Favorites</button>' +
+            '<button class="dks-tab" data-r="toprated">Top Rated</button>' +
+          '</div>' +
+        '</div>' +
         '<div class="dks-strip" id="dks-fav-strip"></div>' +
         '<div class="dks-zone" id="dks-fav-zone">' +
           '<div class="dks-caret" id="dks-fav-caret"></div>' +
@@ -593,8 +609,12 @@
       '<div class="dks-d-note"></div>' +
       '<div class="dks-btns"></div>';
     d.querySelector('.dks-d-title').textContent = e.title;
-    if (e.score) d.querySelector('.dks-d-score').innerHTML = '★ ' + stars(e.score) + '<small>/5</small>';
-    else d.querySelector('.dks-d-score').textContent = '—';
+    if (e.score) {
+      d.querySelector('.dks-d-score').innerHTML = starsMarkup(e.score);
+      d.querySelector('.dks-d-score').title = stars(e.score) + '/5';
+    } else {
+      d.querySelector('.dks-d-score').textContent = '—';
+    }
     d.querySelector('.dks-d-meta').textContent = e.meta || (e.kind || '');
     var noteEl = d.querySelector('.dks-d-note');
     noteEl.textContent = e.note || '';
@@ -690,12 +710,33 @@
   });
 
   function loadFeedRange(range, kind) {
-    if (MOCK) { renderStrip(kind, mockFeedEntries(range)); return; }
+    var cacheKey = 'feed_' + range;
+    if (dataCache[cacheKey]) { renderStrip(kind, dataCache[cacheKey]); return; }
+    if (MOCK) { dataCache[cacheKey] = mockFeedEntries(range); renderStrip(kind, dataCache[cacheKey]); return; }
     if (!N8N_TRAKT_FEED_WEBHOOK) { renderStrip(kind, []); return; }
     fetch(N8N_TRAKT_FEED_WEBHOOK + '?range=' + range + '&t=' + Date.now())
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (d) { renderStrip(kind, (d && d.entries) || []); })
+      .then(function (d) {
+        var entries = (d && d.entries) || [];
+        dataCache[cacheKey] = entries;
+        if (range === currentFavRange || kind !== 'fav') renderStrip(kind, entries);
+      })
       .catch(function () { renderStrip(kind, []); });
+  }
+
+  /* ─── Favorites | Top Rated tabs (both render into the fav strip) ─── */
+  var currentFavRange = 'favorites';
+  var favTabs = el('dks-fav-tabs');
+  if (favTabs) {
+    favTabs.addEventListener('click', function (e) {
+      var r = e.target.dataset && e.target.dataset.r;
+      if (!r || r === currentFavRange) return;
+      var tabs = favTabs.querySelectorAll('.dks-tab');
+      for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+      e.target.classList.add('active');
+      currentFavRange = r;
+      loadFeedRange(r, 'fav');
+    });
   }
 
   /* ═══ MOCK FIXTURES (sandbox only — ?mock=1) ══════════════════════════════ */
@@ -723,6 +764,11 @@
 
   function mockFeedEntries(range) {
     var nowSec = Math.floor(Date.now() / 1000);
+    if (range === 'toprated') return [
+      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', poster: '', traktUrl: '', imdbUrl: '' }
+    ];
     if (range === 'favorites') return [
       { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me.', poster: '', traktUrl: '', imdbUrl: '' },
