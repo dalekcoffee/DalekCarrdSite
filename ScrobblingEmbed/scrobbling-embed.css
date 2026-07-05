@@ -102,6 +102,9 @@
 .dks-d-meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .dks-d-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:#7c7c82;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dks-d-meta.fav{letter-spacing:1.5px;margin-bottom:8px;white-space:normal}
+.dks-d-note{font-family:'Space Grotesk',sans-serif;font-size:12.5px;line-height:1.5;color:#c4c4c9;margin-bottom:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Favorites zone carries the note row — design height 126px */
+#dks-fav-zone{height:126px}
 
 /* ── Platform buttons ── */
 .dks-btns{display:flex;flex-wrap:wrap;gap:6px}

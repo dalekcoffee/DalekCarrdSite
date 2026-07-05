@@ -83,6 +83,12 @@
     return (words[0][0] + words[1][0]).toUpperCase();
   }
 
+  /* ─── Trakt stores ratings as 1-10; its UI shows 5 stars in .5 steps ─── */
+  function stars(score10) {
+    var s = Math.round(score10) / 2;
+    return (s % 1 === 0) ? String(s) : s.toFixed(1);
+  }
+
   /* ─── Relative time (unix seconds) ─── */
   function relTime(unixSec) {
     if (!unixSec) return '';
@@ -584,10 +590,14 @@
     d.innerHTML =
       '<div class="dks-d-row1"><span class="dks-d-title"></span><span class="dks-d-score"></span></div>' +
       '<div class="dks-d-meta fav"></div>' +
+      '<div class="dks-d-note"></div>' +
       '<div class="dks-btns"></div>';
     d.querySelector('.dks-d-title').textContent = e.title;
-    d.querySelector('.dks-d-score').innerHTML = '★ ' + Number(e.score || 0) + '<small>/10</small>';
+    d.querySelector('.dks-d-score').innerHTML = '★ ' + stars(e.score || 0) + '<small>/5</small>';
     d.querySelector('.dks-d-meta').textContent = e.meta || (e.kind || '');
+    var noteEl = d.querySelector('.dks-d-note');
+    noteEl.textContent = e.note || '';
+    noteEl.classList.toggle('dks-hide', !e.note);
     fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
   }
 
@@ -655,7 +665,7 @@
         poster.appendChild(ol);
       } else {
         var badge = document.createElement('span'); badge.className = 'dks-badge';
-        badge.textContent = '★' + Number(e.score || 0);
+        badge.textContent = '★' + stars(e.score || 0);
         poster.appendChild(badge);
       }
 
@@ -713,11 +723,11 @@
   function mockFeedEntries(range) {
     var nowSec = Math.floor(Date.now() / 1000);
     if (range === 'favorites') return [
-      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 18 EP', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me.', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', note: '', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', poster: '', traktUrl: '', imdbUrl: '' }
     ];
     return [
       { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, epWatched: 18, epTotal: 28, updatedAt: nowSec - 2 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
