@@ -18,7 +18,7 @@
    */
   var N8N_NP_WEBHOOK    = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
   var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
-  var N8N_TRAKT_FEED_WEBHOOK = '';
+  var N8N_TRAKT_FEED_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/trakt-scrobbling-feed';
 
   /*
    * ─── Sandbox overrides (test.html only; inert on Carrd) ────────────────────
