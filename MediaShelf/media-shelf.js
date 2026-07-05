@@ -332,7 +332,7 @@
         '<div class="dks-list" id="dks-list"></div>' +
       '</div>' +
       '<div class="dks-section">' +
-        '<span class="dks-sec-label dks-mb">▤ Currently Watching</span>' +
+        '<div class="dks-sec-head"><span class="dks-sec-label">▤ Currently Watching</span></div>' +
         '<div class="dks-strip" id="dks-watch-strip"></div>' +
         '<div class="dks-zone" id="dks-watch-zone">' +
           '<div class="dks-caret" id="dks-watch-caret"></div>' +
