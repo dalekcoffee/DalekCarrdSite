@@ -1,30 +1,30 @@
-# ScrobblingEmbed — Unified Music + TV + Anime Card (Trakt-backed)
+# Dalek's Shelf — Unified Music + Watch Embed (Trakt-backed)
 
-Sandbox clone of `MusicEmbed/` with a Trakt.tv watch section merged in. Production
-(`MusicEmbed/`) is untouched — test here first, then replace the Carrd markup when happy.
+Sandbox implementation of the hi-fi "Dalek's Shelf" design (from the
+`design_handoff_media_embed` handoff) on the Trakt/n8n architecture. Production
+(`MusicEmbed/`) is untouched — test here first, then replace the Carrd embed
+when happy.
 
-## Architecture
+## Sections (one 720px card, top to bottom)
 
-- **Music** — unchanged from production: ListenBrainz via the existing n8n stats webhook.
-- **Video (TV + anime)** — Plex scrobbles *everything* to Trakt through a new n8n
-  workflow ("Plex to Trakt Scrobbler"); a second workflow ("Carrd Trakt Feed") serves
-  this embed. Anime is detected from **Trakt genre tags**, not the Plex library.
-  The existing Plex→AniList scrobbler keeps running unchanged — anime lands on both
-  services.
-- **Unified live strip** — one "Now Playing / Now Watching" strip. Music and Trakt
-  (`/users/:id/watching`) poll independently; if both are live, whichever activity
-  was received most recently wins.
-- **Watching vs Completed is inferred from progress**: the feed compares episodes
-  you've watched against episodes aired (`completed < aired` ⇒ Watching `EP 34/48`,
-  otherwise Completed with your Trakt rating).
-- **Posters** come from TMDB, resolved and cached inside the n8n feed — the embed
-  just receives final image URLs.
+1. **Header** — "Dalek's Shelf" · "Trakt · ListenBrainz".
+2. **Now Playing** — collapsible; unified across media: shows the live music
+   track *or* the live Trakt session ("NOW WATCHING" + media buttons),
+   whichever activity was received most recently. Muted "Nothing Playing" row
+   when idle.
+3. **Top Listens** — Month / Year (default) / All Time tabs from the existing
+   music webhook; scrollable ranked list; hover a row for platform buttons.
+   Album art via CoverArtArchive → Deezer → iTunes (hatch tile fallback).
+4. **Currently Watching** — Trakt poster strip with EP x/n + % + progress bar;
+   hovering a poster rings it, slides the accent caret, and fills the detail
+   panel. Watching = shows where episodes watched < episodes aired.
+5. **All-Time Favorites** — everything rated **9–10 on Trakt** (shows + films),
+   ★score badge, detail panel with rating + meta. (The design's personal-note
+   row is omitted — Trakt notes need VIP.)
 
-## Modes & tabs
-
-`MUSIC | TV | ANIME` switcher under the live strip. Music side is identical to
-production. TV and ANIME share one tab set — **Watching** (default) | Recent |
-Completed — differing only in the feed's `?media=tv|anime` param.
+Anime is detected from Trakt genre tags; anime items add a Crunchyroll button
+to the media set (YouTube · IMDb · Trakt). Accent color is a single CSS var
+(`--dks-accent`, currently white) in `scrobbling-embed.css`.
 
 ## Configuration (top of `scrobbling-embed.js`)
 
@@ -32,46 +32,48 @@ Completed — differing only in the feed's `?media=tv|anime` param.
 | --- | --- |
 | `N8N_NP_WEBHOOK` / `N8N_STATS_WEBHOOK` | unchanged — existing music GET webhook |
 | `N8N_TRAKT_FEED_WEBHOOK` | **fill in** — GET URL of the "Carrd Trakt Feed" workflow |
-| `TRAKT_USER` | `dalekcoffee` (footer link) |
 
-Leave the Trakt URL empty and the card runs music-only (video tabs show a
-"webhook not configured" empty state; the live strip just never shows video).
+Feed ranges: `?range=now` (live session) · `?range=watching` · `?range=favorites`.
+Leave the Trakt URL empty and the card runs music-only.
 
 ## n8n setup (workflows are provided separately — NOT stored in this repo)
 
-1. Create a Trakt API app at `trakt.tv/oauth/applications` (client id/secret) and a
-   free TMDB API key at `themoviedb.org` — both live only in n8n.
+1. Create a Trakt API app (`trakt.tv/oauth/applications`) and a free TMDB API
+   key (`themoviedb.org`) — both live only in n8n.
 2. Import the two workflow JSONs (delivered outside the repo), replace the
-   `REPLACE-WITH-*` placeholders (webhook paths, Trakt client id, TMDB key),
-   attach the Trakt OAuth2 credential to the scrobbler's HTTP node, and activate.
-3. **Plex to Trakt Scrobbler** exposes a POST webhook — add its **production** URL
-   as an additional webhook in Plex (Settings → Webhooks). Plex sends every event
-   to every registered URL, so the AniList scrobbler is unaffected.
+   `REPLACE-WITH-*` placeholders, attach the Trakt OAuth2 credential to the
+   scrobbler's HTTP node, and activate.
+3. **Plex to Trakt Scrobbler** exposes a POST webhook — add its **production**
+   URL as an additional webhook in Plex. The AniList scrobbler is unaffected
+   (anime scrobbles to both services).
 4. Copy the feed's GET URL into `N8N_TRAKT_FEED_WEBHOOK`.
 
 Notes:
-- The feed reads Trakt's public user endpoints with just the client id — your
-  Trakt profile (and watch history) must be set to public.
-- n8n workflow static data (caches, playback progress) only persists for
-  **production** executions — "Test workflow" runs won't retain state.
+- The feed reads Trakt public endpoints with just the client id — your Trakt
+  profile must be public.
+- n8n static data (caches, playback progress) persists only on **production**
+  executions.
 
 ## Sandbox testing (`test.html`)
 
 Serve the repo locally (`python3 -m http.server`) and open
-`ScrobblingEmbed/test.html` with query params:
+`ScrobblingEmbed/test.html`:
 
-- `?mock=1` — fixture data, zero network. Extra knobs:
+- `?mock=1` — fixture data, zero network:
   - `&live=video|music|both|none` — which live sources report activity
   - `&newer=video|music` — who wins when both are live
-- `?trakt=<feed-url>` — point at the real Trakt feed webhook
-- `?music=<url>` — override the music webhook too
+- `?trakt=<feed-url>` / `&music=<url>` — point at real webhooks
 
 ## Deploying to Carrd
 
-Paste the card markup from `test.html` (everything inside `<div class="wrap">`,
-minus the sandbox status bar) into the Carrd embed, and load
-`scrobbling-embed.css` / `scrobbling-embed.js` from GitHub Pages.
+Paste into a Carrd embed:
 
-**Do not place this card on the same page as the production music embed** — both
-use the same `dkt-` element ids and would collide. This card *replaces* the music
-card.
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/ScrobblingEmbed/scrobbling-embed.css">
+<div id="dks-shelf"></div>
+<script src="https://dalekcoffee.github.io/DalekCarrdSite/ScrobblingEmbed/scrobbling-embed.js"></script>
+```
+
+The script renders the entire shelf into `#dks-shelf`. This card replaces the
+production music embed — don't run both on the same page.

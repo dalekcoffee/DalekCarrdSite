@@ -4,25 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>Scrobbling Embed — Sandbox Test</title>
+  <title>Dalek's Shelf — Sandbox Test</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@400;500&display=swap">
   <link rel="stylesheet" href="scrobbling-embed.css">
   <style>
-    body { margin: 0; padding: 20px; background: #050505; display: flex; justify-content: center; }
-    .wrap { width: 100%; max-width: 560px; }
-    /* Sandbox status bar */
+    body { margin: 0; padding: 28px; background: #070708; }
     #sandbox-status {
+      max-width: 720px; margin: 0 auto 14px;
       font-family: 'Space Mono', monospace;
       font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
-      color: #555; padding: 8px 0 14px; line-height: 1.8;
+      color: #555; line-height: 1.8;
     }
     #sandbox-status span { color: #888; }
   </style>
 </head>
 <body>
-<div class="wrap">
 
   <div id="sandbox-status">
     Sandbox mode &mdash; params:
@@ -33,87 +31,11 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <!--  Scrobbling embed card — this markup is what gets pasted in Carrd  -->
+  <!--  Carrd paste: this div + the two includes (css above, js below).   -->
+  <!--  The script renders the whole shelf into #dks-shelf.               -->
   <!-- ═══════════════════════════════════════════════════════════════════ -->
-  <div id="dkt-card">
+  <div id="dks-shelf"></div>
 
-    <!-- Header -->
-    <div class="dkt-strip">
-      <span class="dkt-heading">Top Listens</span>
-    </div>
-
-    <!-- Unified live strip: Now Playing (music) / Now Watching (Trakt) -->
-    <div class="dkt-np-strip">
-      <div class="dkt-np-dot" id="dkt-np-dot"></div>
-      <div class="dkt-np-label" id="dkt-np-label">Nothing Playing</div>
-    </div>
-
-    <!-- Live expandable body (shared by both media types) -->
-    <div class="dkt-np-body" id="dkt-np-body">
-      <div class="dkt-np-inner">
-        <!-- Art / poster -->
-        <div class="dkt-art" id="dkt-np-art">
-          <div class="dkt-wipe" id="dkt-np-wipe"></div>
-          <img class="dkt-main-img" id="dkt-np-img" alt="">
-        </div>
-        <!-- Info -->
-        <div class="dkt-np-info">
-          <div class="dkt-np-title" id="dkt-np-title"></div>
-          <div class="dkt-np-artist" id="dkt-np-artist"></div>
-          <div class="dkt-np-btns" id="dkt-np-btns"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MUSIC | TV | ANIME mode switcher -->
-    <div class="dkt-tabs dka-mode" id="dka-mode-container">
-      <button class="dkt-tab active" id="dka-mode-music" data-mode="music">Music</button>
-      <button class="dkt-tab" id="dka-mode-tv" data-mode="tv">TV</button>
-      <button class="dkt-tab" id="dka-mode-anime" data-mode="anime">Anime</button>
-    </div>
-
-    <!-- Music tabs -->
-    <div class="dkt-tabs" id="dkt-tab-container">
-      <button class="dkt-tab" data-r="this_month">Month</button>
-      <button class="dkt-tab active" data-r="this_year">Year</button>
-      <button class="dkt-tab" data-r="all_time">All Time</button>
-      <button class="dkt-tab" data-r="recent">Recent</button>
-    </div>
-
-    <!-- Video tabs (shared by TV and ANIME modes) -->
-    <div class="dkt-tabs dka-hidden" id="dka-tab-container">
-      <button class="dkt-tab active" data-r="watching">Watching</button>
-      <button class="dkt-tab" data-r="recent">Recent</button>
-      <button class="dkt-tab" data-r="completed">Completed</button>
-    </div>
-
-    <!-- Table header -->
-    <div class="dkt-table-head">
-      <div class="dkt-h-rank">#</div>
-      <div class="dkt-h-track"><span id="dkt-h-track-label">Track</span></div>
-      <div class="dkt-h-plays"><span id="dkt-h-plays-label">Plays</span></div>
-    </div>
-
-    <!-- Track / video list -->
-    <div id="dkt-list"></div>
-
-    <!-- Footer -->
-    <div id="dkt-footer">
-      <a class="dkt-foot-link" id="dkt-foot-lb" href="https://listenbrainz.org/user/Dalek.coffee" target="_blank" rel="noopener noreferrer">
-        View on ListenBrainz
-      </a>
-      <a class="dkt-foot-link dka-hidden" id="dkt-foot-tk" href="https://trakt.tv/users/dalekcoffee" target="_blank" rel="noopener noreferrer">
-        View on Trakt
-      </a>
-      <a class="dkt-foot-link dka-hidden" id="dkt-foot-al" href="https://anilist.co/user/DalekCoffee/" target="_blank" rel="noopener noreferrer">
-        View on AniList
-      </a>
-    </div>
-
-  </div><!-- /#dkt-card -->
-
-</div><!-- /.wrap -->
-
-<script src="scrobbling-embed.js"></script>
+  <script src="scrobbling-embed.js"></script>
 </body>
 </html>
