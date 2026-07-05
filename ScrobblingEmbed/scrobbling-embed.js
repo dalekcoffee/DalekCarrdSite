@@ -55,7 +55,7 @@
     var defs = [
       { label: 'YouTube', icon: 'youtube', bb: '#FF0000', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.youtube.com/results?search_query=' + q },
       { label: 'IMDb',    icon: 'imdb',    bb: '#F5C518', bt: '#000000', bi: TO_BLACK, href: item.imdbUrl || ('https://www.imdb.com/find/?q=' + q) },
-      { label: 'Trakt',   icon: 'trakt',   bb: '#ED1C24', bt: '#ffffff', bi: TO_WHITE, href: item.traktUrl || ('https://trakt.tv/search?query=' + q) }
+      { label: 'Trakt',   icon: 'trakt',   bb: '#9F42C6', bt: '#ffffff', bi: TO_WHITE, href: item.traktUrl || ('https://trakt.tv/search?query=' + q) }
     ];
     if (item.isAnime) defs.push({ label: 'Crunchyroll', icon: 'crunchyroll', bb: '#F47521', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.crunchyroll.com/search?q=' + q });
     return defs;
