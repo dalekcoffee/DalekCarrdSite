@@ -489,9 +489,9 @@
       .catch(function () { scheduleNextPoll(); });
   }
 
-  /* ── Trakt now-watching poll (90 s; server caches 60 s) ── */
+  /* ── Trakt now-watching poll (30 s; server caches 20 s) ── */
   var nwTimer = null;
-  var NW_INTERVAL = 90000;
+  var NW_INTERVAL = 30000;
   function scheduleNextNWPoll(delay) {
     if (MOCK) return;
     clearTimeout(nwTimer);
