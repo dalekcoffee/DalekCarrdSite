@@ -112,9 +112,10 @@
 .dks-section:hover .dks-detail .dks-btns{opacity:1;transform:translateY(0);pointer-events:auto}
 .dks-d-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:#7c7c82;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dks-d-meta.fav{letter-spacing:1.5px;margin-bottom:8px;white-space:normal}
-.dks-d-note{font-family:'Space Grotesk',sans-serif;font-size:12.5px;line-height:1.5;color:#c4c4c9;margin-bottom:11px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-/* Favorites zone carries up to 4 lines of note text */
-#dks-fav-zone{height:186px}
+.dks-d-note{font-family:'Space Grotesk',sans-serif;font-size:13px;line-height:1.5;color:#c4c4c9;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.dks-d-notedate{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#5f5f66;margin-bottom:9px}
+/* Favorites zone carries up to 4 lines of note text + a review date */
+#dks-fav-zone{height:200px}
 /* Literal star glyphs in the detail panel; half star = clipped glyph */
 .dks-d-score .dks-star{color:var(--dks-accent);letter-spacing:1px}
 .dks-d-score .dks-star-half{display:inline-block;width:.52em;overflow:hidden;white-space:nowrap;vertical-align:baseline}

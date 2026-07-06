@@ -653,6 +653,7 @@
       '<div class="dks-d-row1"><span class="dks-d-title"></span><span class="dks-d-score"></span></div>' +
       '<div class="dks-d-meta fav"></div>' +
       '<div class="dks-d-note"></div>' +
+      '<div class="dks-d-notedate"></div>' +
       '<div class="dks-btns"></div>';
     d.querySelector('.dks-d-title').textContent = e.title;
     if (e.score) {
@@ -665,6 +666,10 @@
     var noteEl = d.querySelector('.dks-d-note');
     noteEl.textContent = e.note || '';
     noteEl.classList.toggle('dks-hide', !e.note);
+    var dateEl = d.querySelector('.dks-d-notedate');
+    var showDate = e.note && e.noteDate;
+    dateEl.textContent = showDate ? 'Reviewed ' + e.noteDate : '';
+    dateEl.classList.toggle('dks-hide', !showDate);
     fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
   }
 
@@ -831,9 +836,9 @@
   function mockFeedEntries(range) {
     var nowSec = Math.floor(Date.now() / 1000);
     if (range === 'toprated') return [
-      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', noteDate: '14 Mar 2026', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' }
     ];
     if (range === 'recent') return [
       { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', watchedAt: nowSec - 3 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
@@ -843,11 +848,11 @@
       { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', watchedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' }
     ];
     if (range === 'favorites') return [
-      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me.', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', noteDate: '9 Feb 2026', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me.', noteDate: '21 Nov 2025', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', note: '', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', noteDate: '30 Dec 2025', poster: '', traktUrl: '', imdbUrl: '' }
     ];
     return [
       { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, epWatched: 18, epTotal: 28, updatedAt: nowSec - 2 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
