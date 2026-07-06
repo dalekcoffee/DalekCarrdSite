@@ -113,7 +113,7 @@
     var full = Math.floor(s);
     var html = '';
     for (var i = 0; i < full; i++) html += '<span class="dks-star">★</span>';
-    if (s - full >= 0.5) html += '<span class="dks-star dks-star-half">★</span>';
+    if (s - full >= 0.5) html += '<span class="dks-star-half">★</span>';
     return html;
   }
 

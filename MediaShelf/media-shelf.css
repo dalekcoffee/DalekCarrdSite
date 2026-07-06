@@ -116,9 +116,13 @@
 .dks-d-notedate{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#5f5f66;margin-bottom:9px}
 /* Favorites zone carries up to 4 lines of note text + a review date */
 #dks-fav-zone{height:200px}
-/* Literal star glyphs in the detail panel; half star = clipped glyph */
+/* Literal star glyphs in the detail panel */
 .dks-d-score .dks-star{color:var(--dks-accent);letter-spacing:1px}
-.dks-d-score .dks-star-half{display:inline-block;width:.52em;overflow:hidden;white-space:nowrap;vertical-align:baseline}
+/* Half star: a dim full glyph with an accent left-half overlaid — same glyph,
+   same box, so it stays vertically aligned with the full stars (the old clip
+   approach shifted the inline-block baseline via overflow:hidden) */
+.dks-d-score .dks-star-half{position:relative;display:inline-block;letter-spacing:1px;color:rgba(255,255,255,0.18);vertical-align:baseline}
+.dks-d-score .dks-star-half::before{content:'\2605';position:absolute;left:0;top:0;width:50%;height:100%;overflow:hidden;color:var(--dks-accent)}
 
 /* ── Platform buttons ── */
 .dks-btns{display:flex;flex-wrap:wrap;gap:6px}
