@@ -156,6 +156,9 @@
   }
   function getCoverInfo(t) {
     var meta = t.track_metadata || t;
+    /* Prefer a cover URL the n8n workflow already resolved server-side (fast,
+       cached, validated) — falls back through the client-side chain on error. */
+    if (t.cover_url || meta.cover_url) return { type: 'direct', url: t.cover_url || meta.cover_url };
     var map = meta.mbid_mapping || {};
     var add = meta.additional_info || {};
     var caaId = map.caa_id || t.caa_id || null;
