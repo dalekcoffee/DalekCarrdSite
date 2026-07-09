@@ -15,9 +15,15 @@ when happy.
 3. **Top Listens** — Month / Year (default) / All Time tabs from the existing
    music webhook; scrollable ranked list; hover a row for platform buttons.
    Album art via CoverArtArchive → Deezer → iTunes (hatch tile fallback).
-4. **Currently Watching** — Trakt poster strip with EP x/n + % + progress bar;
-   hovering a poster rings it, slides the accent caret, and fills the detail
-   panel. Watching = shows where episodes watched < episodes aired.
+4. **On Screen** — two tabs: **Watching** (Trakt poster strip with EP x/n + % +
+   progress bar; watching = shows where episodes watched < episodes aired) and
+   **Recent** (the 10 most recent watches). Hovering a poster rings it, slides
+   the accent caret, and fills the detail panel. Recent posters and their detail
+   panel now carry the same episode progress bar (`epWatched` / `epTotal` from
+   the feed), so a full bar reads "finished" and a partial + stale timestamp
+   reads "dropped"; movies and shows with no known total omit the bar. The 11th
+   Recent tile is a **See More** card linking to your Trakt history
+   (`trakt.tv/users/<user>/history`).
 5. **Best Of** — two tabs: **Favorites** (Trakt's heart-icon Favorites list,
    in your curated order) and **Top Rated** (everything rated ≥ `favMinRating`,
    highest score then most recently rated). Detail panel shows literal star

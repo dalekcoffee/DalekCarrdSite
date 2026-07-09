@@ -609,7 +609,20 @@
 
   /* ═══ POSTER STRIPS (Currently Watching / Favorites) ══════════════════════ */
   var POSTER_PITCH = 118; /* 104 poster + 14 gap */
+  var RECENT_LIMIT = 10;  /* Recent shows the 10 most recent; the 11th tile links to Trakt */
+  var TRAKT_HISTORY_URL = 'https://trakt.tv/users/' + TRAKT_USER + '/history';
   var stripState = { watch: { idx: 0, entries: [], mode: 'watching' }, fav: { idx: 0, entries: [], mode: 'favorites' } };
+
+  /* Recent watch progress — how far through the series this watch sits, so a
+     viewer can read "finished" (full bar) vs "dropped" (partial + stale time).
+     Movies are a single sitting, so they carry no episode bar. Returns known:
+     false when the feed didn't send episode totals (graceful — bar is hidden). */
+  function recentProgress(e) {
+    if (!e || e.type === 'movie') return { known: false };
+    if (!e.epTotal) return { known: false };
+    var pct = Math.max(0, Math.min(100, Math.round((e.epWatched / e.epTotal) * 100)));
+    return { known: true, pct: pct, done: (e.epWatched || 0) >= e.epTotal };
+  }
 
   function caretUpdate(kind) {
     var st = stripState[kind];
@@ -641,12 +654,20 @@
 
   function fillRecentDetail(e) {
     var d = el('dks-watch-detail');
+    var prog = recentProgress(e);
     d.innerHTML =
       '<div class="dks-d-row1"><span class="dks-d-title"></span><span class="dks-d-ep"></span></div>' +
+      (prog.known ? '<div class="dks-d-bar"><div class="dks-bar-fill"></div></div>' : '') +
       '<div class="dks-d-meta-row"><span class="dks-d-meta"></span><div class="dks-btns"></div></div>';
     d.querySelector('.dks-d-title').textContent = e.title;
-    d.querySelector('.dks-d-ep').textContent = epLabel(e);
-    d.querySelector('.dks-d-meta').textContent = (e.kind || 'SERIES') + ' · ' + (relTime(e.watchedAt) || 'recently');
+    var epText = epLabel(e);
+    if (prog.known) epText += ' · ' + prog.pct + '%';
+    d.querySelector('.dks-d-ep').textContent = epText;
+    if (prog.known) d.querySelector('.dks-bar-fill').style.width = prog.pct + '%';
+    var meta = [e.kind || 'SERIES'];
+    if (prog.known) meta.push((e.epWatched || 0) + ' / ' + e.epTotal + ' EP' + (prog.done ? ' · FINISHED' : ''));
+    meta.push(relTime(e.watchedAt) || 'recently');
+    d.querySelector('.dks-d-meta').textContent = meta.join(' · ');
     fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
   }
 
@@ -692,8 +713,12 @@
 
   function renderStrip(kind, entries, mode) {
     var st = stripState[kind];
-    st.entries = entries || [];
     st.mode = mode || (kind === 'fav' ? 'favorites' : 'watching');
+    var all = entries || [];
+    /* Recent caps at the 10 most recent; a "see more" tile (below) links to the
+       full Trakt history whenever it's the active tab and there's anything to show. */
+    var isRecent = kind === 'watch' && st.mode === 'recent';
+    st.entries = isRecent ? all.slice(0, RECENT_LIMIT) : all;
     st.idx = 0;
     var strip = el('dks-' + kind + '-strip');
     var zone = el('dks-' + kind + '-zone');
@@ -721,6 +746,7 @@
       loadPoster(img, e.poster);
 
       if (kind === 'watch' && st.mode === 'recent') {
+        var rprog = recentProgress(e);
         var rol = document.createElement('div'); rol.className = 'dks-poster-ol';
         var rrow = document.createElement('div'); rrow.className = 'dks-ol-row';
         var rlab = document.createElement('span'); rlab.className = 'dks-ol-ep';
@@ -729,6 +755,14 @@
         rtime.textContent = relTime(e.watchedAt) || '';
         rrow.appendChild(rlab); rrow.appendChild(rtime);
         rol.appendChild(rrow);
+        /* Progress bar tells "finished" (full) from "dropped" (partial) at a glance. */
+        if (rprog.known) {
+          var rbar = document.createElement('div'); rbar.className = 'dks-bar';
+          var rfill = document.createElement('div'); rfill.className = 'dks-bar-fill';
+          rfill.style.width = rprog.pct + '%';
+          rbar.appendChild(rfill);
+          rol.appendChild(rbar);
+        }
         poster.appendChild(rol);
       } else if (kind === 'watch') {
         var pct = e.epTotal ? Math.round((e.epWatched / e.epTotal) * 100) : null;
@@ -766,9 +800,24 @@
       strip.appendChild(wrap);
     });
 
+    /* Recent's 11th tile: a "see more" card linking to the full Trakt history. */
+    if (isRecent) strip.appendChild(buildSeeMore());
+
     /* Final prototype behavior: poster 0 pre-selected (ring + caret + detail),
        so the panel is populated without hover — required on touch devices. */
     selectPoster(kind, 0);
+  }
+
+  function buildSeeMore() {
+    var wrap = document.createElement('div'); wrap.className = 'dks-poster-wrap dks-seemore';
+    var a = document.createElement('a'); a.className = 'dks-seemore-box';
+    a.href = TRAKT_HISTORY_URL; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    var arrow = document.createElement('span'); arrow.className = 'dks-seemore-arrow'; arrow.textContent = '→';
+    var txt = document.createElement('span'); txt.className = 'dks-seemore-txt'; txt.textContent = 'See More';
+    a.appendChild(arrow); a.appendChild(txt);
+    var title = document.createElement('div'); title.className = 'dks-poster-title'; title.textContent = 'On Trakt';
+    wrap.appendChild(a); wrap.appendChild(title);
+    return wrap;
   }
 
   /* keep the caret glued to its poster while the strip scrolls (bound once) */
@@ -844,11 +893,18 @@
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' }
     ];
     if (range === 'recent') return [
-      { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', watchedAt: nowSec - 3 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, type: 'episode', season: 9, number: 2, episodeTitle: 'Rick, Bts, Sev...', watchedAt: nowSec - 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', epWatched: 18, epTotal: 28, watchedAt: nowSec - 3 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, type: 'episode', season: 9, number: 2, episodeTitle: 'Rick, Bts, Sev...', epWatched: 82, epTotal: 82, watchedAt: nowSec - 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 2 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 7, episodeTitle: 'A Dangerous Woman Arrives', watchedAt: nowSec - 4 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', watchedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 12, episodeTitle: 'Let’s Go to the Cursed House', epWatched: 12, epTotal: 12, watchedAt: nowSec - 4 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', epWatched: 3, epTotal: 10, watchedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'One Piece', kind: 'ANIME', isAnime: true, type: 'episode', season: 21, number: 1088, episodeTitle: 'The Battle Ends', epWatched: 1088, epTotal: null, watchedAt: nowSec - 8 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'The Bear', kind: 'SERIES', isAnime: false, type: 'episode', season: 3, number: 6, episodeTitle: 'Napkins', epWatched: 24, epTotal: 28, watchedAt: nowSec - 10 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, type: 'movie', watchedAt: nowSec - 12 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Jujutsu Kaisen', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 23, episodeTitle: 'Shibuya Incident', epWatched: 47, epTotal: 47, watchedAt: nowSec - 15 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 9, episodeTitle: 'The Dirt Under Your Nails', epWatched: 18, epTotal: 18, watchedAt: nowSec - 18 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 4, episodeTitle: 'A Man With No Sword', epWatched: 28, epTotal: 48, watchedAt: nowSec - 21 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 24 * 86400, poster: '', traktUrl: '', imdbUrl: '' }
     ];
     if (range === 'favorites') return [
       { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', noteDate: '9 Feb 2026', poster: '', traktUrl: '', imdbUrl: '' },
