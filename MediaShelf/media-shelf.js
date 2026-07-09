@@ -610,7 +610,7 @@
   /* ═══ POSTER STRIPS (Currently Watching / Favorites) ══════════════════════ */
   var POSTER_PITCH = 118; /* 104 poster + 14 gap */
   var RECENT_LIMIT = 10;  /* Recent shows the 10 most recent; the 11th tile links to Trakt */
-  var TRAKT_HISTORY_URL = 'https://trakt.tv/users/' + TRAKT_USER + '/history';
+  var TRAKT_HISTORY_URL = 'https://app.trakt.tv/profile/' + TRAKT_USER + '?mode=media';
   var stripState = { watch: { idx: 0, entries: [], mode: 'watching' }, fav: { idx: 0, entries: [], mode: 'favorites' } };
 
   /* Recent watch progress — how far through the series this watch sits, so a
