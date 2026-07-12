@@ -63,6 +63,13 @@
 .dks-tab.active::after{content:'';position:absolute;left:6px;right:6px;bottom:0;height:2px;background:var(--dks-accent)}
 .dks-tab:focus-visible{outline:1px solid var(--dks-accent);outline-offset:-1px}
 
+/* ── Best Of category chips (All / Anime / TV Shows / Movies) ── */
+.dks-filters{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 12px}
+.dks-chip{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:4px 9px;cursor:pointer;color:#7a7a7f;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);transition:all .12s}
+.dks-chip:hover{color:#c4c4c9;border-color:rgba(255,255,255,0.25)}
+.dks-chip.active{color:var(--dks-card);background:var(--dks-accent);border-color:var(--dks-accent)}
+.dks-chip:focus-visible{outline:1px solid var(--dks-accent);outline-offset:1px}
+
 /* ── Top Listens list ── */
 /* min-height = max-height so the card renders full-size before data arrives */
 .dks-list{min-height:516px;max-height:516px;overflow-y:auto;scrollbar-gutter:stable;margin:0 -4px;padding:0 4px}
@@ -120,8 +127,15 @@
 .dks-d-meta.fav{letter-spacing:1.5px;margin-bottom:8px;white-space:normal}
 .dks-d-note{font-family:'Space Grotesk',sans-serif;font-size:13px;line-height:1.5;color:#c4c4c9;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .dks-d-notedate{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#5f5f66;margin-bottom:9px}
-/* Favorites zone carries up to 4 lines of note text + a review date */
-#dks-fav-zone{height:200px}
+/* Spoiler-marked reviews (Trakt "contains spoilers" or inline [spoiler] tags)
+   render blurred and unreadable until clicked; keyboard reachable via role=button */
+.dks-spoiler{filter:blur(6px);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .25s ease}
+.dks-spoiler:not(.revealed):hover{filter:blur(5px)}
+.dks-spoiler.revealed{filter:none;cursor:auto;user-select:text;-webkit-user-select:text}
+.dks-spoiler:focus-visible{outline:1px solid var(--dks-accent);outline-offset:2px}
+.dks-spoiler-hint{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dks-accent);opacity:.75;margin-bottom:7px}
+/* Favorites zone carries up to 4 lines of note text + spoiler hint + review date */
+#dks-fav-zone{height:214px}
 /* Literal star glyphs in the detail panel */
 .dks-d-score .dks-star{color:var(--dks-accent);letter-spacing:1px}
 /* Half star: a dim full glyph with an accent left-half overlaid — same glyph,
@@ -154,5 +168,5 @@
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce){
   .dks-np-dot{animation:none}
-  .dks-caret,.dks-prompt,.dks-detail,.dks-bar-fill,.dks-row-btns,.dks-poster,.dks-btn,.dks-tab,.dks-np-body,.dks-detail .dks-btns{transition:none}
+  .dks-caret,.dks-prompt,.dks-detail,.dks-bar-fill,.dks-row-btns,.dks-poster,.dks-btn,.dks-tab,.dks-np-body,.dks-detail .dks-btns,.dks-chip,.dks-spoiler{transition:none}
 }

@@ -117,6 +117,45 @@
     return html;
   }
 
+  /* ─── Timestamp tolerance: unix seconds, unix millis, or ISO string ─── */
+  function toUnix(v) {
+    if (v == null || v === '') return 0;
+    if (typeof v === 'number') return v > 1e12 ? Math.floor(v / 1000) : v;
+    var t = Date.parse(v);
+    return isNaN(t) ? 0 : Math.floor(t / 1000);
+  }
+
+  /* ─── Feed field tolerance ───────────────────────────────────────────────
+   * The n8n workflow lives outside this repo and its output shape has drifted
+   * between camelCase and snake_case; normalize once at load so render code
+   * reads a single shape. Unknown fields pass through untouched. */
+  var FIELD_ALIASES = {
+    epWatched:    ['ep_watched', 'watchedEpisodes', 'watched_episodes', 'completed'],
+    epTotal:      ['ep_total', 'totalEpisodes', 'total_episodes', 'airedEpisodes', 'aired_episodes'],
+    watchedAt:    ['watched_at'],
+    updatedAt:    ['updated_at'],
+    episodeTitle: ['episode_title'],
+    noteDate:     ['note_date'],
+    noteSpoiler:  ['note_spoiler', 'spoiler'],
+    imdbUrl:      ['imdb_url'],
+    traktUrl:     ['trakt_url'],
+    isAnime:      ['is_anime']
+  };
+  function normalizeEntry(e) {
+    if (!e || typeof e !== 'object') return e;
+    for (var key in FIELD_ALIASES) {
+      if (e[key] == null) {
+        var names = FIELD_ALIASES[key];
+        for (var i = 0; i < names.length; i++) {
+          if (e[names[i]] != null) { e[key] = e[names[i]]; break; }
+        }
+      }
+    }
+    if (e.watchedAt != null) e.watchedAt = toUnix(e.watchedAt);
+    if (e.updatedAt != null) e.updatedAt = toUnix(e.updatedAt);
+    return e;
+  }
+
   /* ─── Relative time (unix seconds) ─── */
   function relTime(unixSec) {
     if (!unixSec) return '';
@@ -356,6 +395,12 @@
             '<button class="dks-tab active" data-r="favorites">Favorites</button>' +
             '<button class="dks-tab" data-r="toprated">Top Rated</button>' +
           '</div>' +
+        '</div>' +
+        '<div class="dks-filters" id="dks-fav-filters">' +
+          '<button class="dks-chip active" data-f="all">All</button>' +
+          '<button class="dks-chip" data-f="anime">Anime</button>' +
+          '<button class="dks-chip" data-f="tv">TV Shows</button>' +
+          '<button class="dks-chip" data-f="movies">Movies</button>' +
         '</div>' +
         '<div class="dks-strip" id="dks-fav-strip"></div>' +
         '<div class="dks-zone" id="dks-fav-zone">' +
@@ -613,15 +658,47 @@
   var TRAKT_HISTORY_URL = 'https://app.trakt.tv/profile/' + TRAKT_USER + '?mode=media';
   var stripState = { watch: { idx: 0, entries: [], mode: 'watching' }, fav: { idx: 0, entries: [], mode: 'favorites' } };
 
+  /* ─── Best Of category filter (All / Anime / TV Shows / Movies) ──────────
+   * Categories intentionally overlap: an anime film (e.g. Perfect Blue) shows
+   * under both Anime and Movies; TV Shows means non-anime series only. */
+  var favFilter = 'all';
+  var FAV_FILTER_EMPTY = { anime: 'anime', tv: 'TV shows', movies: 'movies' };
+  function matchesFavFilter(e) {
+    if (favFilter === 'all') return true;
+    var kind = String(e.kind || '').toUpperCase();
+    var isMovie = e.type === 'movie' || kind.indexOf('FILM') !== -1 || kind.indexOf('MOVIE') !== -1;
+    if (favFilter === 'anime')  return !!e.isAnime;
+    if (favFilter === 'movies') return isMovie;
+    return !isMovie && !e.isAnime; /* tv */
+  }
+
   /* Recent watch progress — how far through the series this watch sits, so a
      viewer can read "finished" (full bar) vs "dropped" (partial + stale time).
-     Movies are a single sitting, so they carry no episode bar. Returns known:
-     false when the feed didn't send episode totals (graceful — bar is hidden). */
+     Movies are a single sitting, so they carry no episode bar. When the feed
+     didn't send series totals on the recent entry, borrow them from the
+     Watching feed (loaded at init) if the same show is there; otherwise the
+     bar is hidden gracefully (known: false). */
+  function findWatchingMatch(title) {
+    var list = dataCache['feed_watching'];
+    if (!list || !title) return null;
+    var t = String(title).toLowerCase();
+    for (var i = 0; i < list.length; i++) {
+      if (String(list[i].title || '').toLowerCase() === t) return list[i];
+    }
+    return null;
+  }
+
   function recentProgress(e) {
     if (!e || e.type === 'movie') return { known: false };
-    if (!e.epTotal) return { known: false };
-    var pct = Math.max(0, Math.min(100, Math.round((e.epWatched / e.epTotal) * 100)));
-    return { known: true, pct: pct, done: (e.epWatched || 0) >= e.epTotal };
+    var watched = e.epWatched, total = e.epTotal;
+    if (!total) {
+      var w = findWatchingMatch(e.title);
+      if (w && w.epTotal) { watched = w.epWatched; total = w.epTotal; }
+    }
+    if (!total) return { known: false };
+    watched = watched || 0;
+    var pct = Math.max(0, Math.min(100, Math.round((watched / total) * 100)));
+    return { known: true, pct: pct, watched: watched, total: total, done: watched >= total };
   }
 
   function caretUpdate(kind) {
@@ -665,10 +742,71 @@
     d.querySelector('.dks-d-ep').textContent = epText;
     if (prog.known) d.querySelector('.dks-bar-fill').style.width = prog.pct + '%';
     var meta = [e.kind || 'SERIES'];
-    if (prog.known) meta.push((e.epWatched || 0) + ' / ' + e.epTotal + ' EP' + (prog.done ? ' · FINISHED' : ''));
+    if (prog.known) meta.push(prog.watched + ' / ' + prog.total + ' EP' + (prog.done ? ' · FINISHED' : ''));
     meta.push(relTime(e.watchedAt) || 'recently');
     d.querySelector('.dks-d-meta').textContent = meta.join(' · ');
     fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
+  }
+
+  /* Reviews marked sensitive on Trakt ("contains spoilers" → noteSpoiler)
+     blur in full; review text can also carry inline [spoiler]…[/spoiler]
+     tags, which blur per-segment. Click (or Enter/Space) reveals. */
+  var SPOILER_TAG_RE = /\[spoiler\]([\s\S]*?)\[\/spoiler\]/gi;
+  function renderNote(noteEl, hintEl, e) {
+    var note = e.note || '';
+    noteEl.innerHTML = '';
+    noteEl.classList.toggle('dks-hide', !note);
+    var spoilerEls = [];
+
+    function syncHint() {
+      var pending = false;
+      for (var i = 0; i < spoilerEls.length; i++) {
+        if (!spoilerEls[i].classList.contains('revealed')) { pending = true; break; }
+      }
+      hintEl.textContent = pending ? 'Spoiler — click blurred text to reveal' : '';
+      hintEl.classList.toggle('dks-hide', !pending);
+    }
+
+    function addText(text) {
+      if (text) noteEl.appendChild(document.createTextNode(text));
+    }
+    function addSpoiler(text) {
+      if (!text) return;
+      var s = document.createElement('span');
+      s.className = 'dks-spoiler';
+      s.textContent = text;
+      s.setAttribute('role', 'button');
+      s.setAttribute('tabindex', '0');
+      s.title = 'Spoiler — click to reveal';
+      s.setAttribute('aria-label', 'Spoiler — press to reveal');
+      function toggle() { s.classList.toggle('revealed'); syncHint(); }
+      s.addEventListener('click', function (ev) { ev.stopPropagation(); toggle(); });
+      s.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') { ev.preventDefault(); toggle(); }
+      });
+      spoilerEls.push(s);
+      noteEl.appendChild(s);
+    }
+
+    if (note) {
+      SPOILER_TAG_RE.lastIndex = 0;
+      if (e.noteSpoiler) {
+        /* whole review is sensitive — strip inline tags, blur everything */
+        addSpoiler(note.replace(SPOILER_TAG_RE, '$1'));
+      } else if (SPOILER_TAG_RE.test(note)) {
+        SPOILER_TAG_RE.lastIndex = 0;
+        var last = 0, m;
+        while ((m = SPOILER_TAG_RE.exec(note))) {
+          addText(note.slice(last, m.index));
+          addSpoiler(m[1]);
+          last = m.index + m[0].length;
+        }
+        addText(note.slice(last));
+      } else {
+        addText(note);
+      }
+    }
+    syncHint();
   }
 
   function fillFavDetail(e) {
@@ -677,6 +815,7 @@
       '<div class="dks-d-row1"><span class="dks-d-title"></span><span class="dks-d-score"></span></div>' +
       '<div class="dks-d-meta fav"></div>' +
       '<div class="dks-d-note"></div>' +
+      '<div class="dks-spoiler-hint dks-hide"></div>' +
       '<div class="dks-d-notedate"></div>' +
       '<div class="dks-btns"></div>';
     d.querySelector('.dks-d-title').textContent = e.title;
@@ -687,9 +826,7 @@
       d.querySelector('.dks-d-score').textContent = '—';
     }
     d.querySelector('.dks-d-meta').textContent = e.meta || (e.kind || '');
-    var noteEl = d.querySelector('.dks-d-note');
-    noteEl.textContent = e.note || '';
-    noteEl.classList.toggle('dks-hide', !e.note);
+    renderNote(d.querySelector('.dks-d-note'), d.querySelector('.dks-spoiler-hint'), e);
     var dateEl = d.querySelector('.dks-d-notedate');
     var showDate = e.note && e.noteDate;
     dateEl.textContent = showDate ? 'Reviewed ' + e.noteDate : '';
@@ -715,6 +852,8 @@
     var st = stripState[kind];
     st.mode = mode || (kind === 'fav' ? 'favorites' : 'watching');
     var all = entries || [];
+    var hadAny = all.length > 0;
+    if (kind === 'fav') all = all.filter(matchesFavFilter);
     /* Recent caps at the 10 most recent; a "see more" tile (below) links to the
        full Trakt history whenever it's the active tab and there's anything to show. */
     var isRecent = kind === 'watch' && st.mode === 'recent';
@@ -729,7 +868,9 @@
       var empty = document.createElement('div');
       empty.className = 'dks-empty';
       empty.style.width = '100%';
-      empty.textContent = (N8N_TRAKT_FEED_WEBHOOK || MOCK) ? 'Nothing here yet' : 'Trakt webhook not configured yet';
+      empty.textContent = (kind === 'fav' && favFilter !== 'all' && hadAny)
+        ? 'No ' + FAV_FILTER_EMPTY[favFilter] + ' in this list yet'
+        : ((N8N_TRAKT_FEED_WEBHOOK || MOCK) ? 'Nothing here yet' : 'Trakt webhook not configured yet');
       strip.appendChild(empty);
       zone.classList.add('dks-hide');
       return;
@@ -837,7 +978,7 @@
     fetch(N8N_TRAKT_FEED_WEBHOOK + '?range=' + range + '&t=' + Date.now())
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (d) {
-        var entries = (d && d.entries) || [];
+        var entries = ((d && d.entries) || []).map(normalizeEntry);
         dataCache[cacheKey] = entries;
         if (!activeRange[kind] || range === activeRange[kind]) renderStrip(kind, entries, range);
       })
@@ -861,6 +1002,19 @@
   /* ▤ On Screen → Watching | Recent, and ★ Best Of → Favorites | Top Rated */
   bindStripTabs('dks-watch-tabs', 'watch');
   bindStripTabs('dks-fav-tabs', 'fav');
+
+  /* Best Of category chips re-render the active tab from cache */
+  el('dks-fav-filters').addEventListener('click', function (e) {
+    var f = e.target.dataset && e.target.dataset.f;
+    if (!f || f === favFilter) return;
+    var chips = el('dks-fav-filters').querySelectorAll('.dks-chip');
+    for (var i = 0; i < chips.length; i++) chips[i].classList.remove('active');
+    e.target.classList.add('active');
+    favFilter = f;
+    var cached = dataCache['feed_' + activeRange.fav];
+    if (cached) renderStrip('fav', cached, activeRange.fav);
+    /* no cache yet → a fetch is in flight; it renders with the new filter */
+  });
 
   /* ═══ MOCK FIXTURES (sandbox only — ?mock=1) ══════════════════════════════ */
   var MOCK_LIVE = qp('live') || 'video';
@@ -890,14 +1044,17 @@
     if (range === 'toprated') return [
       { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', noteDate: '14 Mar 2026', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', traktUrl: '', imdbUrl: '' }
     ];
     if (range === 'recent') return [
       { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', epWatched: 18, epTotal: 28, watchedAt: nowSec - 3 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, type: 'episode', season: 9, number: 2, episodeTitle: 'Rick, Bts, Sev...', epWatched: 82, epTotal: 82, watchedAt: nowSec - 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 2 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 12, episodeTitle: 'Let’s Go to the Cursed House', epWatched: 12, epTotal: 12, watchedAt: nowSec - 4 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', epWatched: 3, epTotal: 10, watchedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      /* Severance ships no totals here on purpose — exercises the fallback that
+         borrows series progress from the Watching feed (4/10 there). */
+      { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', epWatched: null, epTotal: null, watchedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'One Piece', kind: 'ANIME', isAnime: true, type: 'episode', season: 21, number: 1088, episodeTitle: 'The Battle Ends', epWatched: 1088, epTotal: null, watchedAt: nowSec - 8 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'The Bear', kind: 'SERIES', isAnime: false, type: 'episode', season: 3, number: 6, episodeTitle: 'Napkins', epWatched: 24, epTotal: 28, watchedAt: nowSec - 10 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Perfect Blue', kind: 'FILM', isAnime: true, type: 'movie', watchedAt: nowSec - 12 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
@@ -908,8 +1065,8 @@
     ];
     if (range === 'favorites') return [
       { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', noteDate: '9 Feb 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me.', noteDate: '21 Nov 2025', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me — and that ending broke me.', noteDate: '21 Nov 2025', noteSpoiler: true, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', note: '', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', noteDate: '30 Dec 2025', poster: '', traktUrl: '', imdbUrl: '' }
     ];
