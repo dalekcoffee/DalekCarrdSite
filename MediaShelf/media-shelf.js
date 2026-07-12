@@ -12,7 +12,10 @@
    * Trakt feed (fill in after importing the "Carrd Trakt Feed" workflow — README):
    *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=now'        → live session
    *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=watching'   → { entries: [...] }
+   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=recent'     → { entries: [...] }
    *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=favorites'  → { entries: [...] }
+   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=toprated'   → { entries: [...] }
+   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=rated'      → { entries: [...] }  (ALL ratings, low ones included)
    *
    * Leave the Trakt URL empty to run music-only (video sections show empty states).
    */
@@ -390,10 +393,11 @@
       '</div>' +
       '<div class="dks-section">' +
         '<div class="dks-sec-head">' +
-          '<span class="dks-sec-label">★ Best Of</span>' +
+          '<span class="dks-sec-label">★ Ratings &amp; Reviews</span>' +
           '<div class="dks-tabs" id="dks-fav-tabs">' +
             '<button class="dks-tab active" data-r="favorites">Favorites</button>' +
             '<button class="dks-tab" data-r="toprated">Top Rated</button>' +
+            '<button class="dks-tab" data-r="rated">All</button>' +
           '</div>' +
         '</div>' +
         '<div class="dks-filters" id="dks-fav-filters">' +
@@ -674,10 +678,9 @@
 
   /* Recent watch progress — how far through the series this watch sits, so a
      viewer can read "finished" (full bar) vs "dropped" (partial + stale time).
-     Movies are a single sitting, so they carry no episode bar. When the feed
-     didn't send series totals on the recent entry, borrow them from the
-     Watching feed (loaded at init) if the same show is there; otherwise the
-     bar is hidden gracefully (known: false). */
+     When the feed didn't send series totals on the recent entry, borrow them
+     from the Watching feed (loaded at init) if the same show is there;
+     otherwise the bar is hidden gracefully (known: false). */
   function findWatchingMatch(title) {
     var list = dataCache['feed_watching'];
     if (!list || !title) return null;
@@ -689,7 +692,11 @@
   }
 
   function recentProgress(e) {
-    if (!e || e.type === 'movie') return { known: false };
+    if (!e) return { known: false };
+    /* A movie in Recent history is always a finished sitting (Trakt only logs
+       it once the scrobble completes) — full bar, same visual as a finished
+       series. */
+    if (e.type === 'movie') return { known: true, pct: 100, done: true, movie: true };
     var watched = e.epWatched, total = e.epTotal;
     if (!total) {
       var w = findWatchingMatch(e.title);
@@ -742,7 +749,8 @@
     d.querySelector('.dks-d-ep').textContent = epText;
     if (prog.known) d.querySelector('.dks-bar-fill').style.width = prog.pct + '%';
     var meta = [e.kind || 'SERIES'];
-    if (prog.known) meta.push(prog.watched + ' / ' + prog.total + ' EP' + (prog.done ? ' · FINISHED' : ''));
+    if (prog.movie) meta.push('WATCHED');
+    else if (prog.known) meta.push(prog.watched + ' / ' + prog.total + ' EP' + (prog.done ? ' · FINISHED' : ''));
     meta.push(relTime(e.watchedAt) || 'recently');
     d.querySelector('.dks-d-meta').textContent = meta.join(' · ');
     fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
@@ -855,8 +863,11 @@
     var hadAny = all.length > 0;
     if (kind === 'fav') all = all.filter(matchesFavFilter);
     /* Recent caps at the 10 most recent; a "see more" tile (below) links to the
-       full Trakt history whenever it's the active tab and there's anything to show. */
+       full Trakt history whenever it's the active tab and there's anything to
+       show. Sort by watch time first — don't trust the feed to be newest-first,
+       or the cap could silently drop the newest watches instead of the oldest. */
     var isRecent = kind === 'watch' && st.mode === 'recent';
+    if (isRecent) all = all.slice().sort(function (a, b) { return (b.watchedAt || 0) - (a.watchedAt || 0); });
     st.entries = isRecent ? all.slice(0, RECENT_LIMIT) : all;
     st.idx = 0;
     var strip = el('dks-' + kind + '-strip');
@@ -1046,6 +1057,15 @@
       { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', traktUrl: '', imdbUrl: '' }
+    ];
+    if (range === 'rated') return [
+      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone.', noteDate: '14 Mar 2026', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, score: 7, meta: 'SERIES · 82 EP', note: 'Still funny, but it peaked three seasons ago.', noteDate: '5 Jun 2026', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'The Witcher', kind: 'SERIES', isAnime: false, score: 5, meta: 'SERIES · 24 EP', note: 'The timeline gymnastics buried a decent story.', noteDate: '11 Apr 2026', poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Ex-Arm', kind: 'ANIME', isAnime: true, score: 2, meta: 'ANIME · 12 EP', note: 'Watched it so you don’t have to. Don’t.', noteDate: '1 Apr 2026', poster: '', traktUrl: '', imdbUrl: '' }
     ];
     if (range === 'recent') return [
       { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', epWatched: 18, epTotal: 28, watchedAt: nowSec - 3 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
