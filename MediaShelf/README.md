@@ -23,12 +23,31 @@ when happy.
    the feed), so a full bar reads "finished" and a partial + stale timestamp
    reads "dropped"; movies and shows with no known total omit the bar. The 11th
    Recent tile is a **See More** card linking to your Trakt history
-   (`trakt.tv/users/<user>/history`).
+   (`trakt.tv/users/<user>/history`). If a recent entry arrives without
+   `epTotal`, the card borrows series progress from the Watching feed when the
+   same show is there, so the bar still renders.
 5. **Best Of** — two tabs: **Favorites** (Trakt's heart-icon Favorites list,
    in your curated order) and **Top Rated** (everything rated ≥ `favMinRating`,
-   highest score then most recently rated). Detail panel shows literal star
-   glyphs (Trakt's 5-star half-step scale), meta, and a note row (up to 4
-   lines) fed by your Trakt notes or reviews.
+   highest score then most recently rated). A chip row filters either tab by
+   category — **All / Anime / TV Shows / Movies** (anime films count as both
+   Anime and Movies; TV Shows means non-anime series). Detail panel shows
+   literal star glyphs (Trakt's 5-star half-step scale), meta, and a note row
+   (up to 4 lines) fed by your Trakt notes or reviews. Reviews marked
+   **"contains spoilers"** on Trakt (feed field `noteSpoiler` / `spoiler`)
+   render blurred with a "click to reveal" hint; inline `[spoiler]…[/spoiler]`
+   tags in review text blur just those segments.
+
+### Feed field notes
+
+Entry fields are normalized at load, so the n8n workflow may emit either
+camelCase or snake_case (`epWatched`/`ep_watched`, `epTotal`/`ep_total`,
+`watchedAt`/`watched_at`, `noteSpoiler`/`note_spoiler`/`spoiler`, …);
+timestamps may be unix seconds, unix millis, or ISO strings. For Recent
+progress bars to be exact for shows no longer in Watching (finished or
+dropped), the feed's `recent` entries should include `epWatched`/`epTotal`
+(watched vs. aired episode counts). For spoiler blurring, `favorites`/
+`toprated` entries should pass the Trakt comment's spoiler flag through as
+`noteSpoiler`.
 
 Anime is detected from Trakt genre tags; anime items add a Crunchyroll button
 to the media set (YouTube · IMDb · Trakt). Accent color is a single CSS var
