@@ -25,7 +25,10 @@ when happy.
    Recent tile is a **See More** card linking to your Trakt history
    (`trakt.tv/users/<user>/history`). If a recent entry arrives without
    `epTotal`, the card borrows series progress from the Watching feed when the
-   same show is there, so the bar still renders. Movies always show a full bar
+   same show is there — and when it *isn't* there, that absence is the signal:
+   Watching lists every show with watched < aired, so a Recent series missing
+   from it is finished and gets a full bar (meta reads FINISHED, episode
+   counts omitted since they're unknown). Movies always show a full bar
    — a Recent history entry means the sitting completed — so full bar reads
    "finished" and a partial bar reads "left off partway" for everything.
 5. **Ratings & Reviews** — three tabs: **Favorites** (Trakt's heart-icon

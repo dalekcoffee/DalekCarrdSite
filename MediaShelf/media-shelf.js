@@ -699,8 +699,17 @@
     if (e.type === 'movie') return { known: true, pct: 100, done: true, movie: true };
     var watched = e.epWatched, total = e.epTotal;
     if (!total) {
+      var watching = dataCache['feed_watching'];
       var w = findWatchingMatch(e.title);
       if (w && w.epTotal) { watched = w.epWatched; total = w.epTotal; }
+      else if (watching && !w) {
+        /* Watching lists every show with watched < aired episodes, so a series
+           in Recent that's absent from it is watched to the end of what's
+           aired — full bar, even though the feed sent no episode counts. Only
+           inferred once the Watching feed has actually loaded (guard above),
+           so a slow/failed fetch can't mark everything finished. */
+        return { known: true, pct: 100, done: true, inferred: true };
+      }
     }
     if (!total) return { known: false };
     watched = watched || 0;
@@ -750,6 +759,7 @@
     if (prog.known) d.querySelector('.dks-bar-fill').style.width = prog.pct + '%';
     var meta = [e.kind || 'SERIES'];
     if (prog.movie) meta.push('WATCHED');
+    else if (prog.inferred) meta.push('FINISHED'); /* complete, but ep counts unknown */
     else if (prog.known) meta.push(prog.watched + ' / ' + prog.total + ' EP' + (prog.done ? ' · FINISHED' : ''));
     meta.push(relTime(e.watchedAt) || 'recently');
     d.querySelector('.dks-d-meta').textContent = meta.join(' · ');
@@ -992,6 +1002,11 @@
         var entries = ((d && d.entries) || []).map(normalizeEntry);
         dataCache[cacheKey] = entries;
         if (!activeRange[kind] || range === activeRange[kind]) renderStrip(kind, entries, range);
+        /* Watching data feeds Recent's progress borrow/inference — if Recent
+           rendered first (fetch race), refresh it now that Watching is here. */
+        if (range === 'watching' && activeRange.watch === 'recent' && dataCache['feed_recent']) {
+          renderStrip('watch', dataCache['feed_recent'], 'recent');
+        }
       })
       .catch(function () { renderStrip(kind, [], range); });
   }
@@ -1079,7 +1094,9 @@
       { title: 'The Bear', kind: 'SERIES', isAnime: false, type: 'episode', season: 3, number: 6, episodeTitle: 'Napkins', epWatched: 24, epTotal: 28, watchedAt: nowSec - 10 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Perfect Blue', kind: 'FILM', isAnime: true, type: 'movie', watchedAt: nowSec - 12 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Jujutsu Kaisen', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 23, episodeTitle: 'Shibuya Incident', epWatched: 47, epTotal: 47, watchedAt: nowSec - 15 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 9, episodeTitle: 'The Dirt Under Your Nails', epWatched: 18, epTotal: 18, watchedAt: nowSec - 18 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      /* Arcane ships no totals AND isn't in the Watching mock — exercises the
+         "absent from Watching means finished" inference (full bar). */
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 9, episodeTitle: 'The Dirt Under Your Nails', epWatched: null, epTotal: null, watchedAt: nowSec - 18 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 4, episodeTitle: 'A Man With No Sword', epWatched: 28, epTotal: 48, watchedAt: nowSec - 21 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
       { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 24 * 86400, poster: '', traktUrl: '', imdbUrl: '' }
     ];
