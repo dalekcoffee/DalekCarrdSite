@@ -863,8 +863,11 @@
     var hadAny = all.length > 0;
     if (kind === 'fav') all = all.filter(matchesFavFilter);
     /* Recent caps at the 10 most recent; a "see more" tile (below) links to the
-       full Trakt history whenever it's the active tab and there's anything to show. */
+       full Trakt history whenever it's the active tab and there's anything to
+       show. Sort by watch time first — don't trust the feed to be newest-first,
+       or the cap could silently drop the newest watches instead of the oldest. */
     var isRecent = kind === 'watch' && st.mode === 'recent';
+    if (isRecent) all = all.slice().sort(function (a, b) { return (b.watchedAt || 0) - (a.watchedAt || 0); });
     st.entries = isRecent ? all.slice(0, RECENT_LIMIT) : all;
     st.idx = 0;
     var strip = el('dks-' + kind + '-strip');
