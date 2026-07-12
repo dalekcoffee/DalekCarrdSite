@@ -25,11 +25,14 @@ when happy.
    Recent tile is a **See More** card linking to your Trakt history
    (`trakt.tv/users/<user>/history`). If a recent entry arrives without
    `epTotal`, the card borrows series progress from the Watching feed when the
-   same show is there, so the bar still renders.
-5. **Best Of** — two tabs: **Favorites** (Trakt's heart-icon Favorites list,
-   in your curated order) and **Top Rated** (everything rated ≥ `favMinRating`,
-   highest score then most recently rated). A chip row filters either tab by
-   category — **All / Anime / TV Shows / Movies** (anime films count as both
+   same show is there, so the bar still renders. Movies always show a full bar
+   — a Recent history entry means the sitting completed — so full bar reads
+   "finished" and a partial bar reads "left off partway" for everything.
+5. **Ratings & Reviews** — three tabs: **Favorites** (Trakt's heart-icon
+   Favorites list, in your curated order), **Top Rated** (everything rated ≥
+   `favMinRating`, highest score then most recently rated), and **All**
+   (`?range=rated` — every rating including the low ones, so the pans show up
+   too). A chip row filters any tab by category — **All / Anime / TV Shows / Movies** (anime films count as both
    Anime and Movies; TV Shows means non-anime series). Detail panel shows
    literal star glyphs (Trakt's 5-star half-step scale), meta, and a note row
    (up to 4 lines) fed by your Trakt notes or reviews. Reviews marked
@@ -60,8 +63,10 @@ to the media set (YouTube · IMDb · Trakt). Accent color is a single CSS var
 | `N8N_NP_WEBHOOK` / `N8N_STATS_WEBHOOK` | unchanged — existing music GET webhook |
 | `N8N_TRAKT_FEED_WEBHOOK` | **fill in** — GET URL of the "Carrd Trakt Feed" workflow |
 
-Feed ranges: `?range=now` (live session) · `?range=watching` · `?range=favorites`.
-Leave the Trakt URL empty and the card runs music-only.
+Feed ranges: `?range=now` (live session) · `?range=watching` · `?range=recent`
+· `?range=favorites` · `?range=toprated` · `?range=rated` (every rating, low
+scores included — feeds the All tab; until the workflow serves it the tab
+shows an empty state). Leave the Trakt URL empty and the card runs music-only.
 
 ## n8n setup (workflows are provided separately — NOT stored in this repo)
 
