@@ -1,0 +1,551 @@
+/* ───────────────────────────── Shell ───────────────────────────── */
+#ofs {
+  all: initial;
+  display: block;
+  --a: #676BF7;
+  --b: #191919;
+}
+#ofs * {
+  box-sizing: border-box;
+  margin: 0;
+}
+#ofs #_c {
+  width: 100%;
+  max-width: 1100px;
+  height: 1175px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0 auto;
+  background: var(--b);
+  color: #e8e8e8;
+  border-radius: 16px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+#ofs ._fb {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ───────────────────────────── Header ──────────────────────────── */
+#ofs ._hd {
+  flex-shrink: 0;
+  position: relative;
+  min-height: 180px;
+  background: #2a2a2a;
+  background-size: cover;
+  background-position: top;
+  display: flex;
+  align-items: flex-end;
+}
+#ofs ._hd::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--b) 0%, rgba(25, 25, 25, .55) 50%, transparent 100%);
+  z-index: 1;
+}
+#ofs ._hc {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 18px 24px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+#ofs ._hl {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#ofs ._av {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, .3);
+  object-fit: cover;
+}
+#ofs ._on,
+#ofs ._nn {
+  font-weight: 700;
+  color: #fff;
+}
+#ofs ._on {
+  font-size: 20px;
+}
+#ofs ._oh {
+  font-size: 13px;
+  color: rgba(255, 255, 255, .45);
+}
+#ofs ._bt {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(103, 107, 247, .38);
+  color: #d8d8ff;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 7px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  border: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  backdrop-filter: blur(2px);
+}
+
+/* ──────────────────────── Section label ─────────────────────────── */
+#ofs ._lb {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .6);
+  padding: 14px 28px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#ofs ._ld {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--a);
+}
+#ofs ._ti {
+  padding: 0 20px;
+}
+
+/* ────────────────────────────── Note ───────────────────────────── */
+#ofs ._no {
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  padding: 14px 8px;
+}
+#ofs ._bb {
+  font-size: 13px;
+  color: var(--a);
+  font-weight: 700;
+  padding-bottom: 8px;
+  padding-left: 48px;
+}
+#ofs ._nr {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+#ofs ._na {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, .1);
+}
+#ofs ._nb {
+  flex: 1;
+  min-width: 0;
+}
+#ofs ._nt {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 4px;
+  flex-wrap: wrap;
+}
+#ofs ._nn {
+  font-size: 18px;
+}
+#ofs ._nh,
+#ofs ._ts {
+  font-size: 13px;
+}
+#ofs ._nh {
+  color: rgba(255, 255, 255, .35);
+}
+#ofs ._ts {
+  color: rgba(255, 255, 255, .3);
+  white-space: nowrap;
+  margin-left: auto;
+}
+/* Per-post "New" pill — set on posts made since the visitor's last visit (see
+   captureFreshness in the JS). margin-left:auto parks it with the timestamp at the
+   right of the row ("New  3h"); align-self centers it against the baseline row. */
+#ofs ._nnew {
+  margin-left: auto;
+  align-self: center;
+  padding: 1px 7px;
+  border-radius: 20px;
+  background: rgba(103, 107, 247, .22);
+  border: 1px solid rgba(103, 107, 247, .5);
+  color: #c9cbff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+/* When the pill is present it owns the auto-margin; drop the timestamp's own so
+   the two cluster together at the right ("New  3h") instead of splitting the gap. */
+#ofs ._nnew + ._ts {
+  margin-left: 0;
+}
+#ofs ._nx {
+  font-size: 18px;
+  color: #ddd;
+  word-break: break-word;
+  line-height: 1.7;
+}
+#ofs ._nx a {
+  color: var(--a);
+  text-decoration: none;
+}
+
+/* ──────────────────────────── MFM markup ───────────────────────── */
+#ofs code {
+  font-family: monospace;
+  font-size: .9em;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+#ofs pre {
+  margin: 8px 0;
+  padding: 10px 12px;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+#ofs pre code {
+  border: none;
+  padding: 0;
+  background: none;
+}
+#ofs blockquote {
+  margin: 8px 0;
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--a);
+  color: rgba(255, 255, 255, .6);
+}
+/* <small> matches the native Misskey/Sharkey look: smaller + dimmer.
+   Set explicitly so the host page's CSS reset can't neutralize it. */
+#ofs small {
+  font-size: .8em;
+  opacity: .7;
+}
+/* MFM function-tag animations ($[spin] etc.). */
+#ofs ._fx {
+  display: inline-block;
+}
+#ofs ._fx-spin    { animation: _ofsSpin 1.5s linear infinite; }
+#ofs ._fx-rainbow { animation: _ofsRainbow 1.5s linear infinite; }
+#ofs ._fx-jelly   { animation: _ofsJelly 1s infinite; }
+#ofs ._fx-shake   { animation: _ofsShake .5s infinite; }
+#ofs ._fx-tada    { animation: _ofsTada 1s infinite; }
+#ofs ._fx-bounce  { animation: _ofsBounce .75s infinite; }
+#ofs ._fx-jump    { animation: _ofsJump .75s infinite; }
+@keyframes _ofsSpin    { to { transform: rotate(360deg); } }
+@keyframes _ofsRainbow { to { filter: hue-rotate(360deg); } }
+@keyframes _ofsJelly {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1.25, .75); }
+  40% { transform: scale(.75, 1.25); }
+  50% { transform: scale(1.15, .85); }
+  65% { transform: scale(.95, 1.05); }
+  75% { transform: scale(1.05, .95); }
+}
+@keyframes _ofsShake {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  25% { transform: translate(-2px, 2px) rotate(-4deg); }
+  50% { transform: translate(2px, -1px) rotate(4deg); }
+  75% { transform: translate(-1px, 1px) rotate(-2deg); }
+}
+@keyframes _ofsTada {
+  0% { transform: scale(1) rotate(0); }
+  15% { transform: scale(.9) rotate(-3deg); }
+  30%, 50%, 70% { transform: scale(1.1) rotate(3deg); }
+  40%, 60% { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes _ofsBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes _ofsJump {
+  0%, 50%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-16px); }
+  75% { transform: translateY(-8px); }
+}
+
+/* ──────────────────────── Content warning ──────────────────────── */
+/* Summary shows as plain post text; a full-width bar reveals the body —
+   matching the native Misskey/Sharkey "Show content (N characters)" style. */
+#ofs ._cwt {
+  font-size: 18px;
+  color: #ddd;
+  line-height: 1.7;
+  word-break: break-word;
+}
+#ofs ._cwb {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, .07);
+  border: none;
+  border-radius: 8px;
+  color: #d4d4d4;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: background .15s;
+}
+#ofs ._cwb:hover {
+  background: rgba(255, 255, 255, .12);
+}
+#ofs ._cwn {
+  font-weight: 400;
+  color: rgba(255, 255, 255, .4);
+}
+#ofs ._cwx {
+  display: none;
+}
+#ofs ._cwx._cwv {
+  display: block;
+  margin-top: 12px;
+}
+
+/* ────────────────────────────── Quote ──────────────────────────── */
+#ofs ._qt {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 8px;
+  background: #222;
+}
+#ofs ._qh {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, .4);
+  margin-bottom: 3px;
+  text-decoration: none;
+}
+
+/* ────────────────────────────── Media ──────────────────────────── */
+#ofs ._md {
+  position: relative;
+  margin-top: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .07);
+  background: #111;
+}
+#ofs ._md img,
+#ofs ._md video {
+  width: 100%;
+  display: block;
+  max-height: 520px;
+  /* contain (not cover) so tall/portrait images show in full — letterboxed
+     against the #111 backdrop — instead of having their tops and bottoms
+     cropped off. */
+  object-fit: contain;
+}
+/* Multiple attachments: peek carousel — one centred slide, neighbours peeking
+   at the edges (~8% each). Clicking a neighbour navigates (see JS). */
+#ofs ._md._mc {
+  border: none;
+  background: none;
+  border-radius: 0;
+}
+#ofs ._mt {
+  display: flex;
+  width: 100%;
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+  touch-action: pan-y;
+}
+#ofs ._ms {
+  position: relative;
+  flex: 0 0 84%;
+  padding: 0 4px;
+  cursor: grab;
+  user-select: none;
+}
+#ofs ._ms img,
+#ofs ._ms video {
+  height: 340px;
+  max-height: none;
+  /* Match the single-tile behaviour: portrait slides stay whole rather than
+     being cropped to fill the fixed-height slide. */
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .07);
+  background: #111;
+}
+
+/* ───────────────── Sensitive media + alt text ──────────────────── */
+#ofs ._sens {
+  overflow: hidden;
+  border-radius: 10px;
+  filter: blur(22px);
+}
+#ofs ._sens._seen {
+  filter: none;
+}
+#ofs ._sx {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .55);
+  color: rgba(255, 255, 255, .85);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+#ofs ._alt {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 1;
+  padding: 2px 7px;
+  background: rgba(0, 0, 0, .6);
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+#ofs ._altcap {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  max-height: 50%;
+  overflow-y: auto;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, .82);
+  color: #ddd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+#ofs ._altcap._altv {
+  display: block;
+}
+
+/* ──────────────────────────── Reactions ────────────────────────── */
+#ofs ._rs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+#ofs ._rc {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, .7);
+  font-weight: 700;
+}
+
+/* ──────────────────────────── Note footer ──────────────────────── */
+#ofs ._ft {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+#ofs ._st {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, .35);
+  font-weight: 700;
+}
+#ofs ._op {
+  color: var(--a);
+  text-decoration: none;
+  font-size: 13px;
+  opacity: .7;
+}
+
+/* ─────────────────── Complex MFM fallback ──────────────────────── */
+/* Shown when MFM nesting is too deep for the parser to resolve. */
+#ofs ._mfm-msg {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, .35);
+}
+
+/* ──────────────────────── Load more / empty ────────────────────── */
+#ofs ._lw {
+  padding: 10px 20px 20px;
+  margin-top: auto;
+}
+#ofs ._lm {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, .08);
+  color: rgba(255, 255, 255, .4);
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 8px;
+}
+#ofs ._os {
+  padding: 40px;
+  text-align: center;
+  color: rgba(255, 255, 255, .2);
+  font-size: 12px;
+}
+
+/* ──────────────────────────── Responsive ───────────────────────── */
+@media (max-width: 640px) {
+  #ofs #_c {
+    height: 100vh;
+  }
+  #ofs ._hc {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 18px;
+  }
+  #ofs ._ti,
+  #ofs ._lw {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}

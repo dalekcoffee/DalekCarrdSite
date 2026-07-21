@@ -1,0 +1,45 @@
+# MOTD source for the dalek.coffee header embed.
+# One message per line. Blank lines and lines starting with # are ignored.
+# Custom Sharkey emoji: use :shortcode: (e.g. :blobcat:) — pulled live from oshi.social.
+#
+# Sections: a line that is exactly [name] starts a pool. Lines before any section
+# are treated as [global]. A random line is picked on every page load from
+# [global] PLUS the pool matching my current status:
+#   [working] — shown when I'm at work
+#   [online]  — shown when I'm online, busy/DND, or live
+#   [away]    — shown when I'm idle, offline, or status can't be read
+# [rare] is a status-independent easter-egg pool: 1% chance per load to override
+# the normal pick. Leave a section empty until you have lines for it.
+
+[global]
+Good morning! :nkoHappy:
+Mao mao :catPlay:
+Let's get some cofe :nkoCoffee:
+Pspsps :catPlay:
+Makin cofe brb.. ☕:tiredkitty:
+Welcome in! :nkoPat:
+Plotting things :nkoEvil:
+Stop!, you're under arrest! :nkoGun: :nkoJail:
+This is fine :nkoFine:
+:kyuFire: Doom :kyuFire:
+
+[working]
+At the long day factory :bugcatWork: :tiredkitty:
+make it stop, make it stoppppp :msTeams: :NOOO:
+Idk man, I just work here :nkoSus:
+
+[online]
+Walkies? :happyPuppy:
+:PeepoHacker: COMPUTA, explode whoever reads this :nkoSus: :boomb:
+Verified :pawified: Coffee Wolf :ahwooCoffee:
+I 💖 :protoflux:
+I 💖 :blender:
+I 💖 :booth: babes
+Biggest Lasyusha simp :nkoBlush:
+
+[away]
+Is it nap time? :nkoSleep:
+Probably sleeping :nkoSleep:
+:kyuRun: Escaped the nursing home :PeepoRun:
+
+[rare]

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "001",
+    "slug": "001-get-oauth-case-study",
+    "title": "GET-OAUTH — A Case Study in OAuth Token Exposure & Tenant Scoping",
+    "date": "2026-02-05",
+    "tags": ["security", "disclosure"],
+    "color": "#FFEEA0",
+    "platform": "getlate.dev (now zernio.com)",
+    "platform_url": "https://zernio.com/",
+    "summary": "Under certain tenant configurations, authenticated users received responses containing OAuth access_token and refresh_token values for all profiles in a tenant — including those outside their access scope."
+  }
+]

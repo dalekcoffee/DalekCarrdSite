@@ -1,0 +1,512 @@
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --t:   0.2s;
+  --bg:  #0d0d0d;
+  --bg3: #191919;
+  --b1:  #1a1a1a;
+  --b2:  #111;
+  --amz: #ff9900;
+  --cof: #c8956c;
+  --pur: #7c83ff;
+}
+
+body {
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--bg);
+  border-top: 2px solid #fff;
+  border-bottom: 1px solid var(--b2);
+  /* Reserve space on first paint so the embed doesn't jump from a tiny
+     skeleton to full size once the panels are injected. Floor is sized to
+     roughly cover the default (Merch) tab; tune if the jump persists. */
+  min-height: 640px;
+}
+
+/* ── INTRO DESCRIPTION ── */
+.intro-bar {
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--b1);
+  background: #0a0a0a;
+}
+.intro-text {
+  font-size: 15px;
+  color: #fff;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+  text-transform: uppercase;
+}
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--b1);
+  background: #0c0c0c;
+}
+.tab {
+  flex: 1; padding: 13px 5px; text-align: center;
+  font-size: 9px; text-transform: uppercase; font-weight: 700;
+  letter-spacing: 0.1em; color: rgba(255,255,255,.35);
+  cursor: pointer; background: none; border: none;
+  border-right: 1px solid var(--b1);
+  font-family: 'Space Mono', monospace;
+  transition: color var(--t), background var(--t);
+}
+.tab:last-child { border-right: none; }
+.tab.active { background: #141414; border-bottom: 2px solid; }
+.tab:hover:not(.active) { color: rgba(255,255,255,.65); }
+.tab:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+
+/* per-tab accent colours */
+.tab:nth-child(1).active        { color: var(--cof);  border-bottom-color: var(--cof); }
+.tab:nth-child(2).active        { color: var(--cof); border-bottom-color: var(--cof); }
+.tab:nth-child(3).active        { color: var(--pur); border-bottom-color: var(--pur); }
+.tab:nth-child(1):focus-visible { outline-color: var(--cof); }
+.tab:nth-child(2):focus-visible { outline-color: var(--cof); }
+.tab:nth-child(3):focus-visible { outline-color: var(--pur); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── SECTION HEADER ── */
+.sec-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--b1);
+  background: #0c0c0c;
+}
+.sec-head h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase; color: #fff;
+}
+.sec-tag {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+  color: #fff;
+}
+
+/* ── SHIMMER ── */
+.shimmer {
+  position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  animation: wipe 1.6s infinite linear;
+}
+@keyframes wipe { 0%{left:-100%} 100%{left:100%} }
+
+/* ════════════════════════════
+   MERCH — big grid
+════════════════════════════ */
+.merch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--b1);
+}
+.merch-item {
+  display: flex; flex-direction: column;
+  text-decoration: none; color: #fff;
+  border-right: 1px solid var(--b1);
+  border-bottom: 1px solid var(--b1);
+  transition: background var(--t);
+  position: relative;
+}
+.merch-item:nth-child(3n) { border-right: none; }
+.merch-item:nth-last-child(-n+3) { border-bottom: none; }
+.merch-item:hover, .merch-item:active { background: var(--bg3); }
+.merch-item:focus-visible { outline: 2px solid var(--cof); outline-offset: -2px; }
+.merch-item::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--cof); opacity: 0; transition: opacity var(--t);
+}
+.merch-item:hover::before, .merch-item:active::before { opacity: 1; }
+
+.merch-img-wrap {
+  position: relative; width: 100%; aspect-ratio: 1/1;
+  background: #111; overflow: hidden;
+}
+.merch-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: opacity var(--t);
+}
+.merch-img-wrap img.loading { opacity: 0; }
+
+.merch-info {
+  padding: 12px 14px; flex: 1;
+  display: flex; flex-direction: column; gap: 3px;
+  border-top: 1px solid var(--b1);
+}
+.merch-sub {
+  font-size: 15px; color: rgba(255,255,255,.3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  transition: color var(--t);
+}
+.merch-name {
+  font-size: 20px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; line-height: 1.4; color: #fff;
+}
+.merch-desc {
+  font-size: 15px; color: rgba(255,255,255,.28);
+  letter-spacing: 0.04em; line-height: 1.45;
+}
+.merch-cta {
+  margin-top: 6px; display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #fff; transition: color var(--t);
+}
+.merch-item:hover .merch-sub,
+.merch-item:active .merch-sub { color: var(--cof); }
+.merch-item:hover .merch-cta,
+.merch-item:active .merch-cta { color: #fff; }
+
+/* ════════════════════════════
+   COFFEE — stacked grid layout
+════════════════════════════ */
+.coffee-beans-grid,
+.gear-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--b1);
+}
+.coffee-beans-grid { grid-template-columns: repeat(4, 1fr); }
+.gear-grid         { grid-template-columns: repeat(4, 1fr); }
+
+.coffee-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  text-decoration: none; color: #fff;
+  background: var(--bg);
+  transition: background var(--t);
+}
+.coffee-card:hover, .coffee-card:active { background: var(--bg3); }
+.coffee-card:focus-visible { outline: 2px solid var(--cof); outline-offset: -2px; }
+.coffee-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--cof); opacity: 0; transition: opacity var(--t);
+}
+.coffee-card:hover::before, .coffee-card:active::before { opacity: 1; }
+.coffee-card.no-link { cursor: default; }
+.coffee-card.no-link::before { display: none; }
+
+.coffee-card-img {
+  position: relative;
+  width: 100%; aspect-ratio: 1/1;
+  background: #111; overflow: hidden;
+}
+.coffee-card-img img {
+  width: 100%; height: 100%; object-fit: contain;
+  display: block; position: absolute; top: 0; left: 0;
+  padding: 8px;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.coffee-card-img img.loaded { opacity: 1; }
+.coffee-card-img .ph-icon {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.coffee-card-img .ph-icon svg { opacity: 0.18; }
+
+.coffee-card-info {
+  padding: 12px 14px; flex: 1;
+  display: flex; flex-direction: column; gap: 4px;
+  border-top: 1px solid var(--b1);
+}
+.coffee-card-label {
+  font-size: 15px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,.3);
+  transition: color var(--t);
+}
+.coffee-card-name {
+  font-size: 20px; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: #fff; line-height: 1.3;
+}
+.coffee-card-desc {
+  font-size: 15px; color: rgba(255,255,255,.28);
+  letter-spacing: 0.03em; line-height: 1.45;
+}
+.coffee-card:hover .coffee-card-label,
+.coffee-card:active .coffee-card-label { color: var(--cof); }
+.coffee-card.no-link:hover .coffee-card-label { color: rgba(255,255,255,.3); }
+
+/* ════════════════════════════
+   COMPACT ROWS (setup)
+════════════════════════════ */
+.dual-col {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  border-bottom: 1px solid var(--b1);
+  align-items: start;
+}
+.dual-col-side { border-right: 1px solid var(--b1); }
+.dual-col-side:last-child { border-right: none; }
+
+/* group label */
+.col-group {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 20px 12px;
+  border-bottom: 1px solid var(--b1);
+  background: #0a0a0a;
+}
+.col-group-icon { font-size: 22px; line-height: 1; opacity: 1; flex-shrink: 0; display: flex; align-items: center; }
+.col-group-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* compact row */
+.c-row {
+  display: flex; align-items: center; gap: 18px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--b1);
+  text-decoration: none; color: #fff;
+  transition: background var(--t); position: relative;
+  --accent: var(--pur);
+}
+.c-row:last-child { border-bottom: none; }
+.c-row:hover, .c-row:active { background: var(--bg3); }
+.c-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.c-row::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; bottom: 0; width: 2px;
+  background: var(--accent); opacity: 0; transition: opacity var(--t);
+}
+.c-row:hover::before, .c-row:active::before { opacity: 1; }
+.c-row.no-link { cursor: default; }
+.c-row.no-link::before { display: none; }
+
+/* thumbnail */
+.c-thumb {
+  position: relative;
+  width: 135px; height: 135px;
+  flex-shrink: 0;
+  background: #111;
+  overflow: hidden;
+}
+.c-thumb img {
+  width: 100%; height: 100%; object-fit: contain;
+  display: none; position: absolute; top: 0; left: 0;
+  padding: 6px;
+}
+.c-thumb img.loaded { display: block; }
+.c-thumb .ph-icon {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.c-thumb .ph-icon svg { opacity: 0.18; }
+
+.c-text { flex: 1; min-width: 0; }
+.c-label {
+  font-size: 17px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,.3);
+  margin-bottom: 4px; transition: color var(--t);
+}
+.c-name {
+  font-size: 22px; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: #fff; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.c-desc {
+  font-size: 17px; color: rgba(255,255,255,.22);
+  letter-spacing: 0.03em; line-height: 1.35;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 3px;
+}
+.c-row:hover .c-label, .c-row:active .c-label { color: var(--accent); }
+.c-row.no-link:hover .c-label { color: rgba(255,255,255,.3); }
+
+.c-arrow {
+  color: rgba(255,255,255,.12); flex-shrink: 0;
+  transition: color var(--t), transform var(--t);
+}
+.c-row:hover .c-arrow, .c-row:active .c-arrow {
+  color: var(--accent); transform: translateX(2px);
+}
+
+/* coffee accent override */
+.c-row.coffee-accent { --accent: var(--cof); }
+
+/* ── FAVORITE OVERLAY (coffee card image, top-left) ── */
+.coffee-fav {
+  position: absolute;
+  top: 7px; left: 7px;
+  z-index: 2;
+  display: flex; align-items: center; gap: 4px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--cof);
+  pointer-events: none;
+}
+.coffee-fav-star { font-size: 17px; line-height: 1; }
+
+/* ── DISCONTINUED BADGE ── */
+.disc-badge {
+  display: inline-block;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  border: 1px solid rgba(255,255,255,.2);
+  padding: 2px 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* ── ALT PICK BADGE ── */
+.alt-badge {
+  display: inline-block;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,153,0,0.7);
+  border: 1px solid rgba(255,153,0,0.7);
+  padding: 2px 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  vertical-align: middle;
+  align-self: flex-start;
+  position: relative;
+  cursor: help;
+}
+.alt-badge::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 360px;
+  background: #1c1c1c;
+  border: 1px solid #2a2a2a;
+  border-top: 2px solid var(--amz);
+  color: rgba(255,255,255,.75);
+  font-size: 15px; font-weight: 400;
+  letter-spacing: 0.03em; line-height: 1.6;
+  text-transform: none;
+  padding: 9px 11px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 20;
+  white-space: normal;
+  font-family: 'Space Mono', monospace;
+}
+.alt-badge:hover::after { opacity: 1; }
+
+/* ── PER-TAB DISCLAIMER ── */
+.tab-footer {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--b1);
+  background: #0a0a0a;
+}
+.tab-footer p {
+  font-size: 15px;
+  font-weight: 400;
+  color: rgba(255,255,255,.75);
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+}
+.tab-footer-alt {
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.tab-footer-alt .alt-badge { flex-shrink: 0; margin-top: 3px; }
+
+/* ── CARD FOOTER ── */
+.footer-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 20px;
+  border-top: 1px solid var(--b1);
+  background: #0a0a0a;
+}
+.footer-note {
+  font-size: 9px; color: #fff;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.footer-note a {
+  color: #fff; text-decoration: none; transition: color var(--t);
+}
+.footer-note a:hover { color: #fff; }
+.footer-badges { display: flex; gap: 8px; align-items: center; }
+.badge {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 4px 8px; border: 1px solid;
+  opacity: 0.4; transition: opacity var(--t);
+}
+.badge:hover { opacity: 1; }
+.badge-pf  { color: var(--cof); border-color: var(--cof); }
+.badge-amz { color: var(--amz); border-color: var(--amz); }
+
+/* ════════════════════════════
+   RESPONSIVE — mobile / narrow
+════════════════════════════ */
+@media (max-width: 1280px) {
+
+  /* ── Smaller min-height floor for narrow screens ── */
+  .card { min-height: 480px; }
+
+  /* ── Grids: 4-col → 2-col ── */
+  .coffee-beans-grid,
+  .gear-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── Merch: 3-col → 2-col ── */
+  .merch-grid { grid-template-columns: 1fr 1fr; }
+  .merch-item:nth-child(3n)       { border-right: 1px solid var(--b1); }
+  .merch-item:nth-child(even)     { border-right: none; }
+  .merch-item:nth-last-child(-n+3){ border-bottom: 1px solid var(--b1); }
+  .merch-item:nth-last-child(-n+2){ border-bottom: none; }
+
+  /* ── Setup: 2-col → 1-col stack ── */
+  .dual-col { grid-template-columns: 1fr; }
+  .dual-col-side { border-right: none !important; border-bottom: 1px solid var(--b1); }
+  .dual-col-side:last-child { border-bottom: none; }
+
+  /* ── Coffee card text ── */
+  .coffee-card-label { font-size: 11px; }
+  .coffee-card-name  { font-size: 14px; }
+  .coffee-card-desc  { font-size: 11px; }
+  .coffee-card-info  { padding: 10px 10px; }
+
+  /* ── Merch text ── */
+  .merch-sub  { font-size: 11px; }
+  .merch-name { font-size: 14px; }
+  .merch-desc { font-size: 11px; }
+  .merch-cta  { font-size: 8px; }
+  .merch-info { padding: 10px 10px; }
+
+  /* ── Setup row text + thumb ── */
+  .c-thumb { width: 72px; height: 72px; }
+  .c-label  { font-size: 12px; }
+  .c-name   { font-size: 15px; white-space: normal; }
+  .c-desc   { font-size: 12px; white-space: normal; }
+  .c-row    { padding: 14px 16px; gap: 12px; align-items: flex-start; }
+
+  /* ── Global text ── */
+  .intro-text      { font-size: 9px; }
+  .col-group-label { font-size: 14px; }
+  .tab-footer p    { font-size: 9px; }
+  .sec-head h2     { font-size: 18px; }
+  .sec-tag         { font-size: 9px; }
+
+  /* ── Tooltip: keep readable but constrain width ── */
+  .alt-badge::after { width: 260px; font-size: 11px; left: 0; transform: none; }
+
+  /* ── Alt badge: expanded tap target (8px halo around the badge) ── */
+  .alt-badge::before {
+    content: '';
+    position: absolute;
+    top: -8px; right: -8px; bottom: -8px; left: -8px;
+  }
+
+  /* ── Footer ── */
+  .footer-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .tab-footer { flex-direction: column; }
+  .tab-footer-alt { flex-direction: column; }
+
+  /* ── Favorite overlay — keep current size on mobile ── */
+  .coffee-fav      { font-size: 8.5px; }
+  .coffee-fav-star { font-size: 11px; }
+}

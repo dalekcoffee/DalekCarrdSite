@@ -1,0 +1,172 @@
+/* ═══ Dalek's Shelf — hi-fi design tokens from design_handoff_media_embed ═══ */
+:root{--dks-accent:#ffffff;--dks-card:#0d0d0f;--dks-tile:#161618;--dks-border:rgba(255,255,255,0.09)}
+
+#dks-shelf{width:100%;display:flex;justify-content:center}
+.dks-card{width:100%;max-width:720px;background:var(--dks-card);border:1px solid var(--dks-border);color:#f0f0f2}
+.dks-card *{box-sizing:border-box}
+
+/* thin scrollbars */
+.dks-card ::-webkit-scrollbar{height:8px;width:8px}
+.dks-card ::-webkit-scrollbar-track{background:transparent}
+.dks-card ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12)}
+
+/* ── type helpers ── */
+.dks-mono{font-family:'Space Mono',monospace}
+.dks-cond{font-family:'Saira Condensed',sans-serif}
+
+/* ── Header ── */
+.dks-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--dks-border)}
+.dks-title{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:3px;color:#e9e9ec;text-transform:uppercase}
+.dks-src{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#5f5f66;text-transform:uppercase}
+.dks-src-link{color:inherit;text-decoration:none;transition:color .12s}
+.dks-src-link:hover,.dks-src-link:focus-visible{color:#e9e9ec}
+.dks-src-link:focus-visible{outline:1px solid var(--dks-accent);outline-offset:1px}
+
+/* ── Now Playing ── */
+.dks-np{border-bottom:1px solid var(--dks-border)}
+.dks-np-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;cursor:pointer}
+.dks-np.idle .dks-np-head{cursor:default;padding:13px 18px}
+.dks-np-left{display:flex;align-items:center;gap:8px;min-width:0}
+.dks-np-dot{width:7px;height:7px;border-radius:50%;background:var(--dks-accent);animation:dksPulse 1.6s ease-in-out infinite;flex:0 0 auto}
+.dks-np.idle .dks-np-dot{background:#3a3a40;animation:none}
+@keyframes dksPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.dks-np-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#e9e9ec;text-transform:uppercase;white-space:nowrap}
+.dks-np.idle .dks-np-label{color:#5f5f66}
+.dks-np-sub{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:#6c6c72;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dks-np-chev{font-family:'Space Mono',monospace;font-size:11px;color:#7a7a7f;flex:0 0 auto}
+/* Slides open like the original music embed (max-height + opacity ease);
+   bottom padding rides the transition so the collapsed state is truly 0px */
+.dks-np-body{padding:0 18px;max-height:0;opacity:0;overflow:hidden;transition:max-height .6s cubic-bezier(.4,0,.2,1),opacity .4s ease,padding-bottom .6s cubic-bezier(.4,0,.2,1)}
+.dks-np-body.open{max-height:160px;opacity:1;padding-bottom:15px}
+.dks-np-grid{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center}
+.dks-np-title{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:21px;letter-spacing:.4px;color:#f0f0f2;text-transform:uppercase;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dks-np-artist{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#7c7c82;text-transform:uppercase;margin-top:4px}
+.dks-np-btns{margin-top:11px}
+
+/* ── Hatch art tiles (placeholder for missing art; img overlays when loaded) ── */
+.dks-tile{position:relative;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(135deg,rgba(255,255,255,0.03) 0 5px,transparent 5px 10px),var(--dks-tile);border:1px solid rgba(255,255,255,0.07);font-family:'Saira Condensed',sans-serif;font-weight:700;color:rgba(255,255,255,0.26);overflow:hidden;flex:0 0 auto}
+.dks-tile-64{width:64px;height:64px;font-size:18px}
+.dks-tile-60{width:60px;height:60px;font-size:17px}
+.dks-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+
+/* ── Sections ── */
+.dks-section{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.dks-section:last-child{border-bottom:0}
+.dks-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.dks-sec-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#8a8a90;text-transform:uppercase}
+.dks-sec-label.dks-mb{margin-bottom:12px;display:block}
+
+/* ── Top Listens tabs ── */
+.dks-tabs{display:flex;gap:2px}
+.dks-tab{position:relative;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;cursor:pointer;color:#7a7a7f;background:none;border:none;transition:color .12s}
+.dks-tab.active{color:#f0f0f2}
+.dks-tab.active::after{content:'';position:absolute;left:6px;right:6px;bottom:0;height:2px;background:var(--dks-accent)}
+.dks-tab:focus-visible{outline:1px solid var(--dks-accent);outline-offset:-1px}
+
+/* ── Best Of category chips (All / Anime / TV Shows / Movies) ── */
+.dks-filters{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 12px}
+.dks-chip{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:4px 9px;cursor:pointer;color:#7a7a7f;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);transition:all .12s}
+.dks-chip:hover{color:#c4c4c9;border-color:rgba(255,255,255,0.25)}
+.dks-chip.active{color:var(--dks-card);background:var(--dks-accent);border-color:var(--dks-accent)}
+.dks-chip:focus-visible{outline:1px solid var(--dks-accent);outline-offset:1px}
+
+/* ── Top Listens list ── */
+/* min-height = max-height so the card renders full-size before data arrives */
+.dks-list{min-height:516px;max-height:516px;overflow-y:auto;scrollbar-gutter:stable;margin:0 -4px;padding:0 4px}
+.dks-row{display:grid;grid-template-columns:30px 60px 1fr auto;gap:16px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.dks-rank{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:22px;color:#3a3a40;text-align:center}
+.dks-row-info{min-width:0}
+.dks-row-title{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.4px;color:#f0f0f2;text-transform:uppercase;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dks-row-artist{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#7c7c82;text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dks-row-btns{margin-top:9px;transition:opacity .28s ease,transform .28s ease;opacity:0;transform:translateY(3px);pointer-events:none}
+.dks-row:hover .dks-row-btns{opacity:1;transform:translateY(0);pointer-events:auto}
+.dks-plays{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:22px;color:#5f5f66;text-align:right}
+
+/* ── Poster strips (Currently Watching / Favorites) ── */
+.dks-strip{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;min-height:186px}
+.dks-poster-wrap{flex:0 0 104px;cursor:pointer}
+.dks-poster{position:relative;width:104px;height:146px;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(135deg,rgba(255,255,255,0.03) 0 6px,transparent 6px 12px),var(--dks-tile);border:1px solid rgba(255,255,255,0.08);font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:32px;color:rgba(255,255,255,0.24);overflow:hidden;transition:box-shadow .2s ease,border-color .2s ease}
+.dks-poster.ring{border-color:var(--dks-accent);box-shadow:0 0 0 2px var(--dks-accent)}
+.dks-poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.dks-poster-ol{position:absolute;left:0;right:0;bottom:0;padding:7px 8px;background:linear-gradient(to top,rgba(8,8,10,0.94),transparent);z-index:2}
+.dks-ol-row{display:flex;justify-content:space-between;margin-bottom:4px}
+.dks-ol-ep{font-family:'Space Mono',monospace;font-size:8px;color:#c4c4c9}
+.dks-ol-pct{font-family:'Space Mono',monospace;font-size:8px;color:var(--dks-accent)}
+.dks-bar{height:3px;background:rgba(255,255,255,0.16)}
+.dks-bar-fill{height:100%;width:0%;background:var(--dks-accent);transition:width .28s ease}
+.dks-badge{position:absolute;top:0;left:0;background:var(--dks-card);border:1px solid var(--dks-accent);font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--dks-accent);padding:1px 6px;z-index:2}
+.dks-poster-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5px;color:#9a9aa0;text-transform:uppercase;margin-top:8px;line-height:1.3;min-height:24px}
+
+/* ── "See more" tile (Recent → full Trakt history) ── */
+.dks-seemore-box{width:104px;height:146px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:var(--dks-tile);border:1px dashed rgba(255,255,255,0.14);color:#8a8a90;text-decoration:none;transition:border-color .2s ease,color .2s ease}
+.dks-seemore-box:hover,.dks-seemore-box:focus-visible{border-color:var(--dks-accent);color:#f0f0f2;outline:none}
+.dks-seemore-arrow{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1}
+.dks-seemore-txt{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase}
+
+/* ── Detail zone (caret + prompt + panel) ── */
+.dks-zone{position:relative;height:104px;margin-top:12px}
+.dks-caret{position:absolute;top:-7px;left:45px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid var(--dks-accent);transition:left .28s ease;z-index:2}
+.dks-prompt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(255,255,255,0.09);transition:opacity .28s ease;opacity:1}
+.dks-prompt span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#5f5f66;text-transform:uppercase;text-align:center;padding:0 12px}
+.dks-detail{position:absolute;inset:0;padding:13px 15px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);transition:opacity .28s ease;opacity:0;pointer-events:none}
+.dks-zone.live .dks-prompt{opacity:0}
+.dks-zone.live .dks-detail{opacity:1;pointer-events:auto}
+.dks-zone.live .dks-caret{display:block}
+.dks-zone .dks-caret{display:none}
+.dks-d-row1{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:9px}
+.dks-d-title{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:18px;color:#eaeaec;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dks-d-ep{font-family:'Space Mono',monospace;font-size:11px;color:var(--dks-accent);white-space:nowrap}
+.dks-d-score{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:18px;color:var(--dks-accent);white-space:nowrap}
+.dks-d-score small{font-size:11px;color:#5f5f66;font-weight:700}
+.dks-d-bar{height:3px;background:rgba(255,255,255,0.08);margin-bottom:11px}
+.dks-d-meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+/* Detail-panel platform buttons reveal on section hover (like Top Listens rows) */
+.dks-detail .dks-btns{opacity:0;transform:translateY(3px);transition:opacity .28s ease,transform .28s ease;pointer-events:none}
+.dks-section:hover .dks-detail .dks-btns{opacity:1;transform:translateY(0);pointer-events:auto}
+.dks-d-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:#7c7c82;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dks-d-meta.fav{letter-spacing:1.5px;margin-bottom:8px;white-space:normal}
+.dks-d-note{font-family:'Space Grotesk',sans-serif;font-size:13px;line-height:1.5;color:#c4c4c9;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.dks-d-notedate{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:#5f5f66;margin-bottom:9px}
+/* Spoiler-marked reviews (Trakt "contains spoilers" or inline [spoiler] tags)
+   render blurred and unreadable until clicked; keyboard reachable via role=button */
+.dks-spoiler{filter:blur(6px);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .25s ease}
+.dks-spoiler:not(.revealed):hover{filter:blur(5px)}
+.dks-spoiler.revealed{filter:none;cursor:auto;user-select:text;-webkit-user-select:text}
+.dks-spoiler:focus-visible{outline:1px solid var(--dks-accent);outline-offset:2px}
+.dks-spoiler-hint{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dks-accent);opacity:.75;margin-bottom:7px}
+/* Favorites zone carries up to 4 lines of note text + spoiler hint + review date */
+#dks-fav-zone{height:214px}
+/* Literal star glyphs in the detail panel */
+.dks-d-score .dks-star{color:var(--dks-accent);letter-spacing:1px}
+/* Half star: a dim full glyph with an accent left-half overlaid — same glyph,
+   same box, so it stays vertically aligned with the full stars (the old clip
+   approach shifted the inline-block baseline via overflow:hidden) */
+.dks-d-score .dks-star-half{position:relative;display:inline-block;letter-spacing:1px;color:rgba(255,255,255,0.18);vertical-align:baseline}
+.dks-d-score .dks-star-half::before{content:'\2605';position:absolute;left:0;top:0;width:50%;height:100%;overflow:hidden;color:var(--dks-accent)}
+
+/* ── Platform buttons ── */
+.dks-btns{display:flex;flex-wrap:wrap;gap:6px}
+.dks-btn{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:#9a9aa0;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);padding:5px 9px;cursor:pointer;transition:all .12s;text-decoration:none !important}
+.dks-btn img{width:10px;height:10px;display:block;transition:filter .12s}
+.dks-btn:hover,.dks-btn:active{background:var(--bb);border-color:var(--bb);color:var(--bt)}
+.dks-btn:hover img,.dks-btn:active img{filter:var(--bi)}
+.dks-btn:focus-visible{outline:1px solid var(--dks-accent);outline-offset:1px}
+
+/* ── Loading placeholders (skeleton keeps the card full-size pre-data) ── */
+.dks-ph-line{height:10px;background:rgba(255,255,255,0.05)}
+.dks-ph-line.sub{height:7px;background:rgba(255,255,255,0.035);margin-top:7px}
+
+/* ── Empty state ── */
+.dks-empty{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;color:#5f5f66;text-transform:uppercase;padding:18px 0;text-align:center}
+.dks-hide{display:none !important}
+
+/* ── Touch devices: hover never fires, keep buttons reachable ── */
+@media (hover: none){
+  .dks-row-btns,.dks-detail .dks-btns{opacity:1;transform:none;pointer-events:auto}
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce){
+  .dks-np-dot{animation:none}
+  .dks-caret,.dks-prompt,.dks-detail,.dks-bar-fill,.dks-row-btns,.dks-poster,.dks-btn,.dks-tab,.dks-np-body,.dks-detail .dks-btns,.dks-chip,.dks-spoiler{transition:none}
+}

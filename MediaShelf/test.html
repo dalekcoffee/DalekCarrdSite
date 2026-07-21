@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Dalek's Shelf — Sandbox Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@400;500&display=swap">
+  <link rel="stylesheet" href="media-shelf.css">
+  <style>
+    body { margin: 0; padding: 28px; background: #070708; }
+    #sandbox-status {
+      max-width: 720px; margin: 0 auto 14px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+      color: #555; line-height: 1.8;
+    }
+    #sandbox-status span { color: #888; }
+  </style>
+</head>
+<body>
+
+  <div id="sandbox-status">
+    Sandbox mode &mdash; params:
+    <span>?mock=1</span> (fixtures, no network) &middot;
+    <span>&amp;live=video|music|both|none</span> &middot;
+    <span>&amp;newer=video|music</span> (winner when both live)<br>
+    real endpoints: <span>?trakt=&lt;feed-url&gt;</span> &middot; <span>&amp;music=&lt;url&gt;</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!--  Carrd paste: this div + the two includes (css above, js below).   -->
+  <!--  The script renders the whole shelf into #dks-shelf.               -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <div id="dks-shelf"></div>
+
+  <script src="media-shelf.js"></script>
+</body>
+</html>

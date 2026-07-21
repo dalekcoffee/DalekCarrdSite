@@ -1,0 +1,340 @@
+(function () {
+  'use strict';
+
+  var BASE = 'https://dalekcoffee.github.io/DalekCarrdSite/HeaderStatus';
+  var MOTD_URL = BASE + '/MOTD.txt';
+  var INSTANCE = 'https://oshi.social';
+  var MAIN_ID = '252367431274725377';
+  var WORK_ID = '1476219861289144394';
+
+  /* ── MOUNT ── */
+  var mount = document.getElementById('hs-root');
+  if (!mount) {
+    mount = document.createElement('div');
+    mount.id = 'hs-root';
+    (document.currentScript && document.currentScript.parentNode || document.body).appendChild(mount);
+  }
+
+  /* ── STYLES ── */
+  if (!document.getElementById('hs-style')) {
+    var st = document.createElement('style');
+    st.id = 'hs-style';
+    st.textContent = [
+      '#hs-container{display:flex;justify-content:center;width:100%;box-sizing:border-box;padding:0.5rem 0}',
+      '#hs-wrapper{display:flex;flex-direction:column;align-items:center;font-family:\'Inter\',sans-serif;font-weight:900;text-transform:uppercase;color:#fff;-webkit-text-stroke:3.5px #000;paint-order:stroke fill;font-variant-numeric:tabular-nums;font-size:16px;letter-spacing:0.15em;line-height:1.35;white-space:nowrap}',
+      '#hs-clock{width:100%;text-align:center;margin-bottom:4px}',
+      '.hs-row{display:flex;align-items:center;justify-content:center;width:100%;gap:8px;margin-bottom:4px}',
+      '#hs-status,#hs-activity{display:inline-flex;align-items:center;gap:6px;padding:3px 14px;border-radius:999px;border:2px solid currentColor;box-shadow:0 0 0 2px #000;font-size:0.8em;font-weight:800;background:rgba(0,0,0,0.75);-webkit-text-stroke:0 transparent !important;text-shadow:none !important}',
+      '.hs-icon{font-style:normal !important;display:inline-block;line-height:1}',
+      '.hs-emoji{display:inline-block;-webkit-text-stroke:0 transparent;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,-2px 0 0 #000,2px 0 0 #000,0 -2px 0 #000,0 2px 0 #000}',
+      '.hs-cemoji{height:1.47em;width:auto;vertical-align:-0.3em;display:inline-block;filter:drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000)}',
+      '#hs-status[data-status="online"]{color:#43b581}',
+      '#hs-status[data-status="idle"]{color:#faa81a}',
+      '#hs-status[data-status="dnd"]{color:#f04747}',
+      '#hs-status[data-status="offline"]{color:#bbb}',
+      '#hs-status[data-status="live"]{color:#9146FF}',
+      '#hs-status[data-status="live"] .hs-icon{font-size:0;width:10px;height:10px;background:#ff3333;border-radius:50%;align-self:center;animation:hs-live-pulse 1.5s infinite}',
+      '@keyframes hs-live-pulse{0%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(255,51,51,0.7)}70%{transform:scale(1);box-shadow:0 0 0 8px rgba(255,51,51,0)}100%{transform:scale(0.95);box-shadow:0 0 0 0 rgba(255,51,51,0)}}',
+      '#hs-activity{color:#fff;border-color:#fff}',
+      '#hs-motd-text{display:inline-block}',
+      '.hs-blink{animation:hs-pulse 1s step-end infinite}',
+      '@keyframes hs-pulse{0%,100%{opacity:1}50%{opacity:0}}',
+      '.hs-hidden{display:none !important}',
+      '@media screen and (max-width:768px){',
+        '#hs-wrapper{font-size:12px;-webkit-text-stroke:2.5px #000}',
+        '.hs-row{gap:6px}',
+        '#hs-status,#hs-activity{padding:2px 10px;border-width:1.5px;box-shadow:0 0 0 1.5px #000}',
+        '#hs-status[data-status="live"] .hs-icon{width:8px;height:8px}',
+        '.hs-emoji{text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,-1.5px 0 0 #000,1.5px 0 0 #000,0 -1.5px 0 #000,0 1.5px 0 #000}',
+        '.hs-cemoji{height:1.96em;filter:drop-shadow(1.5px 0 0 #000) drop-shadow(-1.5px 0 0 #000) drop-shadow(0 1.5px 0 #000) drop-shadow(0 -1.5px 0 #000)}',
+      '}'
+    ].join('');
+    document.head.appendChild(st);
+  }
+
+  /* ── MARKUP ── */
+  mount.innerHTML =
+    '<div id="hs-container"><div id="hs-wrapper">' +
+      '<div id="hs-clock">MY TIME: --<span class="hs-blink">:</span>-- --- ---</div>' +
+      '<div class="hs-row">' +
+        '<span id="hs-status" data-status="offline">' +
+          '<i class="hs-icon" data-role="status-icon">○</i>' +
+          '<span data-role="status-text">···</span>' +
+        '</span>' +
+        '<span id="hs-activity" class="hs-hidden">' +
+          '<i class="hs-icon" data-role="activity-icon">🎮</i>' +
+          '<span data-role="activity-text"></span>' +
+        '</span>' +
+      '</div>' +
+      '<div id="hs-motd-row" class="hs-row hs-hidden">' +
+        '<span id="hs-motd-text"></span>' +
+      '</div>' +
+    '</div></div>';
+
+  var clockEl    = mount.querySelector('#hs-clock');
+  var statusEl   = mount.querySelector('#hs-status');
+  var statusIcon = statusEl.querySelector('[data-role="status-icon"]');
+  var statusText = statusEl.querySelector('[data-role="status-text"]');
+  var actEl      = mount.querySelector('#hs-activity');
+  var actIcon    = actEl.querySelector('[data-role="activity-icon"]');
+  var actText    = actEl.querySelector('[data-role="activity-text"]');
+  var motdRow    = mount.querySelector('#hs-motd-row');
+  var motdText   = mount.querySelector('#hs-motd-text');
+
+  /* ── CLOCK ── */
+  var STATUS_MAP = {
+    live:    { icon: '●',  label: 'LIVE NOW' },
+    online:  { icon: '●',  label: 'ONLINE' },
+    idle:    { icon: '🌙', label: 'IDLE' },
+    dnd:     { icon: '⛔', label: 'BUSY' },
+    offline: { icon: '○',  label: 'OFFLINE' }
+  };
+
+  var chicagoFormatter = new Intl.DateTimeFormat('en-US', {
+    hour: '2-digit', minute: '2-digit',
+    hour12: true, timeZone: 'America/Chicago', timeZoneName: 'short'
+  });
+
+  function renderClock() {
+    var parts = chicagoFormatter.formatToParts(new Date());
+    var h = '', m = '', tz = '', ampm = '';
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      if (p.type === 'hour') h = p.value;
+      else if (p.type === 'minute') m = p.value;
+      else if (p.type === 'timeZoneName') tz = p.value;
+      else if (p.type === 'dayPeriod') ampm = p.value;
+    }
+    clockEl.innerHTML = 'MY TIME: ' + h + '<span class="hs-blink">:</span>' + m + ' ' + ampm + ' ' + tz;
+  }
+  renderClock();
+  setInterval(renderClock, 1000);
+
+  /* ── STATUS + ACTIVITY ── */
+  function applyStatus(raw) {
+    var key = STATUS_MAP[raw] ? raw : 'offline';
+    var info = STATUS_MAP[key];
+    statusEl.dataset.status = key;
+    statusIcon.textContent = info.icon;
+    statusText.textContent = info.label;
+  }
+
+  // Activity pill registry — maps a Discord activity name to a pill icon/color.
+  // Entries are tested top-to-bottom and the FIRST whose `match` substring appears
+  // in the (lowercased) activity name wins, so list specific names before generic
+  // ones and avoid short ambiguous tokens (e.g. 'art' would also hit "Smartass").
+  //   match:   [substrings] to look for in the activity name (required)
+  //   icon:    pill emoji (optional, defaults to DEFAULT_ICON)
+  //   color:   pill border color (optional, defaults to white)
+  //   rainbow: gradient border (optional, overrides color)
+  var DEFAULT_ICON = '🎮';
+  var APP_MAP = [
+    { match: ['plex'], icon: '🍿', color: '#e5a00d' },
+    { match: ['blender'], icon: '🎨', color: '#EA7600' },
+    { match: ['davinci', 'resolve'], icon: '🎬' },
+    { match: ['figma'], icon: '✏️' },
+    { match: ['vs code', 'vscode', 'visual studio code'], icon: '💻' },
+    { match: ['visual studio'], icon: '💻' },
+    { match: ['discord'], icon: '💬' },
+    { match: ['fortnite'], color: '#4799ed' },
+    { match: ['the finals'], color: '#D21F3C' },
+    { match: ['resonite'], icon: '🔮', rainbow: true }
+  ];
+
+  function appStyle(name) {
+    var lower = name.toLowerCase();
+    for (var i = 0; i < APP_MAP.length; i++) {
+      var entry = APP_MAP[i];
+      for (var j = 0; j < entry.match.length; j++) {
+        if (lower.indexOf(entry.match[j]) !== -1) {
+          return { icon: entry.icon || DEFAULT_ICON, color: entry.color || null, rainbow: entry.rainbow || false };
+        }
+      }
+    }
+    return { icon: DEFAULT_ICON, color: null };
+  }
+
+  function findStream(activities) {
+    if (!activities) return null;
+    for (var i = 0; i < activities.length; i++) {
+      if (activities[i].type === 1) return activities[i];
+    }
+    return null;
+  }
+
+  function showActivity(name, style) {
+    actText.textContent = name;
+    actIcon.textContent = style.icon;
+    actEl.style.color = '';
+    if (style.rainbow) {
+      actEl.style.borderColor = 'transparent';
+      actEl.style.background = 'linear-gradient(#2B2B2B,#2B2B2B) padding-box,linear-gradient(135deg,#ff6666,#f80,#ff0,#0c0,#08f,#cc88ff) border-box';
+    } else {
+      actEl.style.borderColor = style.color || '';
+      actEl.style.background = '';
+    }
+    actEl.classList.remove('hs-hidden');
+  }
+  function hideActivity() {
+    actEl.classList.add('hs-hidden');
+    actEl.style.color = '';
+    actEl.style.borderColor = '';
+    actEl.style.background = '';
+  }
+
+  function applyActivity(activities) {
+    for (var i = 0; i < activities.length; i++) {
+      var a = activities[i];
+      if (a.type === 0 || a.type === 3) {
+        showActivity(a.name, appStyle(a.name));
+        return;
+      }
+    }
+    hideActivity();
+  }
+
+  function fetchLanyard(id) {
+    return fetch('https://api.lanyard.rest/v1/users/' + id)
+      .then(function (r) { return r.json(); })
+      .then(function (j) { return j.data; });
+  }
+
+  function refresh() {
+    Promise.all([fetchLanyard(WORK_ID), fetchLanyard(MAIN_ID)]).then(function (results) {
+      var workData = results[0];
+      var mainData = results[1];
+      var stream   = findStream(mainData.activities);
+
+      if (stream) {
+        applyStatus('live');
+        applyActivity(mainData.activities || []);
+        setMotdCategory('online');
+        return;
+      }
+      if (workData.discord_status === 'online') {
+        applyStatus('dnd');
+        showActivity('At Work', { icon: '💼', color: null });
+        setMotdCategory('working');
+        return;
+      }
+      var s = mainData.discord_status;
+      applyStatus(s);
+      if (s === 'idle') {
+        hideActivity();
+      } else {
+        applyActivity(mainData.activities || []);
+      }
+      setMotdCategory(s === 'online' || s === 'dnd' ? 'online' : 'away');
+    }).catch(function () {
+      applyStatus('offline');
+      hideActivity();
+      setMotdCategory('away');
+    });
+  }
+  refresh();
+  setInterval(refresh, 60000);
+
+  /* ── MOTD ── */
+  var SHORTCODE_RE = /:([a-zA-Z0-9_.@-]+):/g;
+
+  function nk(n) { return n.replace(/@[^@]*$/, '').toLowerCase(); }
+
+  function loadEmojis() {
+    return fetch(INSTANCE + '/api/emojis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}'
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var map = {};
+        (j.emojis || []).forEach(function (e) { if (e.name && e.url) map[nk(e.name)] = e.url; });
+        return map;
+      })
+      .catch(function () { return {}; });
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function renderMotd(str, map) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    var html = div.innerHTML; // HTML-escaped
+    // Custom Sharkey shortcodes → <img>. Unknown shortcode → hide (render nothing),
+    // never show the raw :name:. If the image 404s at load time, remove it.
+    html = html.replace(SHORTCODE_RE, function (m, name) {
+      var url = map[nk(name)];
+      if (!url) return '';
+      return '<img class="hs-cemoji" src="' + escapeHtml(url) + '" alt="' + name + '" onerror="this.remove()">';
+    });
+    // Unicode emoji → outlined span.
+    html = html.replace(/(\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic})*)/gu,
+      '<span class="hs-emoji">$1</span>');
+    return html;
+  }
+
+  function parseMotd(text) {
+    var pools = { global: [], working: [], online: [], away: [], rare: [] };
+    var current = 'global';
+    text.split('\n').forEach(function (raw) {
+      var l = raw.trim();
+      if (!l || l.charAt(0) === '#') return;
+      var m = l.match(/^\[([a-z]+)\]$/i);
+      if (m && pools[m[1].toLowerCase()]) { current = m[1].toLowerCase(); return; }
+      pools[current].push(l);
+    });
+    return pools;
+  }
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function pickMotd(pools, category) {
+    if (pools.rare.length && Math.random() < 0.01) return pick(pools.rare);
+    var bucket = pools.global.concat(pools[category] || []);
+    return bucket.length ? pick(bucket) : null;
+  }
+
+  function showMotd(line) {
+    if (!line) return;
+    function show(map) {
+      motdText.innerHTML = renderMotd(line, map || {});
+      motdRow.classList.remove('hs-hidden');
+    }
+    // Only hit the emoji API when this line actually uses a shortcode.
+    if (/:[a-zA-Z0-9_.@-]+:/.test(line)) {
+      loadEmojis().then(show);
+    } else {
+      show({});
+    }
+  }
+
+  // Fetch + parse once; selection waits until the first status resolves so the
+  // right pool is used. The Lanyard failure path sets category 'away' as fallback.
+  var motdPools = null;
+  var motdShown = false;
+  var motdCategory = null;
+
+  function maybeShowMotd() {
+    if (motdShown || !motdPools || motdCategory === null) return;
+    motdShown = true;
+    showMotd(pickMotd(motdPools, motdCategory));
+  }
+
+  function setMotdCategory(category) {
+    if (motdCategory === null) motdCategory = category;
+    maybeShowMotd();
+  }
+
+  fetch(MOTD_URL, { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.text() : ''; })
+    .then(function (text) {
+      if (!text) return;
+      motdPools = parseMotd(text);
+      maybeShowMotd();
+    })
+    .catch(function () { /* leave hidden on failure */ });
+})();

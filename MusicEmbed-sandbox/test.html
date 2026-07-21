@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Music Embed — Sandbox Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="music-embed.css">
+  <style>
+    body { margin: 0; padding: 20px; background: #050505; display: flex; justify-content: center; }
+    .wrap { width: 100%; max-width: 560px; }
+    /* Sandbox status bar */
+    #sandbox-status {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; letter-spacing: .12em; text-transform: uppercase;
+      color: #555; padding: 8px 0 14px;
+    }
+    #sandbox-status span { color: #888; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="sandbox-status">
+    Sandbox mode &mdash;
+    n8n webhook: <span id="sb-webhook-url">not set (using direct LB)</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <!--  Music embed card — identical markup to production embed           -->
+  <!-- ═══════════════════════════════════════════════════════════════════ -->
+  <div id="dkt-card">
+
+    <!-- Header -->
+    <div class="dkt-strip">
+      <span class="dkt-heading">Top Listens</span>
+    </div>
+
+    <!-- Now Playing strip -->
+    <div class="dkt-np-strip">
+      <div class="dkt-np-dot" id="dkt-np-dot"></div>
+      <div class="dkt-np-label" id="dkt-np-label">Nothing Playing</div>
+    </div>
+
+    <!-- Now Playing expandable body -->
+    <div class="dkt-np-body" id="dkt-np-body">
+      <div class="dkt-np-inner">
+        <!-- Art -->
+        <div class="dkt-art" id="dkt-np-art">
+          <div class="dkt-wipe" id="dkt-np-wipe"></div>
+          <img class="dkt-main-img" id="dkt-np-img" alt="">
+        </div>
+        <!-- Info -->
+        <div class="dkt-np-info">
+          <div class="dkt-np-title" id="dkt-np-title"></div>
+          <div class="dkt-np-artist" id="dkt-np-artist"></div>
+          <div class="dkt-np-btns" id="dkt-np-btns"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="dkt-tabs" id="dkt-tab-container">
+      <button class="dkt-tab active" data-r="this_month">Month</button>
+      <button class="dkt-tab" data-r="this_year">Year</button>
+      <button class="dkt-tab" data-r="all_time">All Time</button>
+      <button class="dkt-tab" data-r="recent">Recent</button>
+    </div>
+
+    <!-- Table header -->
+    <div class="dkt-table-head">
+      <div class="dkt-h-rank">#</div>
+      <div class="dkt-h-track">Track</div>
+      <div class="dkt-h-plays"><span id="dkt-h-plays-label">Plays</span></div>
+    </div>
+
+    <!-- Track list -->
+    <div id="dkt-list"></div>
+
+    <!-- Footer -->
+    <div id="dkt-footer">
+      <a class="dkt-foot-link" href="https://listenbrainz.org/user/Dalek.coffee" target="_blank" rel="noopener noreferrer">
+        View on ListenBrainz
+      </a>
+    </div>
+
+  </div><!-- /#dkt-card -->
+
+</div><!-- /.wrap -->
+
+<script src="music-embed.js"></script>
+<script>
+  /* Show the current webhook URL in the status bar after JS runs */
+  (function() {
+    /* Access the webhook URL — it's inside the IIFE so we re-read from the
+       comment in the source for display purposes only */
+    var statusEl = document.getElementById('sb-webhook-url');
+    /* If the embed wrote data via n8n the list will be populated the same way */
+    statusEl.textContent = 'see N8N_STATS_WEBHOOK in music-embed.js';
+  })();
+</script>
+</body>
+</html>

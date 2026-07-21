@@ -1,0 +1,111 @@
+{
+  "intro": "Items for our lovely cafe community - please check out our merch, Dalek's coffee picks, and Dalek's setup!",
+  "merch": {
+    "heading": "Dalek Shop",
+    "tag": "Printify",
+    "items": [
+      { "name": "15oz Insulated Tumbler", "sub": "Drinkware", "desc": "Keep your brew hot all stream long.", "url": "https://shop.dalek.coffee/product/29027031", "img": "Images/Merch/15oz-insulated-tumbler-dalek-dark-red-gothic B.png" },
+      { "name": "", "sub": "", "desc": "", "url": "https://shop.dalek.coffee/", "img": "" },
+      { "name": "", "sub": "", "desc": "", "url": "https://shop.dalek.coffee/", "img": "" }
+    ]
+  },
+  "coffee": {
+    "heading": "What I Brew",
+    "tag": "Amazon",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like!\n\nAmazon links are Amazon affiliate links.\n\nAlt Picks are alternatives Dalek found after his original item if his current items are no longer available for purchase. These are the items he would probably buy next. Compatibility between items has not been verified.",
+    "left": {
+      "label": "Beans I Like",
+      "icon": "☕",
+      "items": [
+        { "label": "Whole Bean", "name": "Lavazza Crema E Aroma",    "desc": "Most ordered - rich, smooth Italian espresso blend.", "url": "https://amzn.to/41byfJY", "img": "Images/Coffee/Lavazza Crema E Aroma.png", "favorite": true },
+        { "label": "Whole Bean", "name": "Good Vibes Brazil",        "desc": "Easy-drinking Brazilian roast — smooth and mellow.", "url": "https://amzn.to/4tH6HYK", "img": "Images/Coffee/Good Vibes - Brazil.png", "favorite": true },
+        { "label": "Whole Bean", "name": "Stumptown Holler Mountain", "desc": "Bright, fruity medium roast with citrus notes.",      "url": "https://amzn.to/3NIs1OI", "img": "Images/Coffee/Stumptown Coffee - Holler Mountain.png" },
+        { "label": "Whole Bean", "name": "Stumptown Hair Bender",     "desc": "Complex blend with dark fruit and chocolate.",        "url": "https://amzn.to/4bXzZeA", "img": "Images/Coffee/Stumptown Hair Bender.png" },
+        { "label": "Whole Bean", "name": "Lavazza Espresso",          "desc": "Classic Italian espresso - bold and aromatic.",       "url": "https://amzn.to/4cr1S08", "img": "Images/Coffee/Lavazza Espresso Whole Bean Coffee.png" }
+      ]
+    },
+    "right": {
+      "label": "Gear",
+      "icon": "⚙️",
+      "items": [
+        { "label": "Espresso Machine",   "name": "De'Longhi 15-Bar Pump",       "desc": "Dalek's daily driver for espresso shots. It's not the fanciest out there, but it gets the job done!",                                    "url": "https://amzn.to/4toHdiT", "img": "Images/Coffee/De'Longhi 15-Bar Pump Espresso Machine.png" },
+        { "label": "Portafilter",        "name": "KOFIKOFI 51mm Bottomless",    "desc": "2-ear bottomless portafilter.",                                               "url": "https://amzn.to/4v6kBp3", "img": "Images/Coffee/KOFIKOFI 51mm 2-Ears Bottomless Portafilter.png",  "alt": true },
+        { "label": "Grinder",            "name": "AMZCHEF Single Dose",         "desc": "Single dose burr grinder - burr grinding is critical for even extraction.",                                         "url": "https://amzn.to/4cfT10e", "img": "Images/Coffee/AMZCHEF Single Dose Coffee Grinder.png",          "alt": true },
+        { "label": "Storage",            "name": "Fellow Atmos Canister",       "desc": "Vacuum-sealed to keep beans fresh longer.",                                   "url": "https://amzn.to/3O8XY2B", "img": "Images/Coffee/Fellow Atmos Vacuum Coffee Canister.png" },
+        { "label": "Dosing Funnel",      "name": "Normcore 51mm Magnetic",      "desc": "Magnetic ring keeps grounds in the basket.",                                  "url": "https://amzn.to/4shzEK3", "img": "Images/Coffee/Normcore 51mm Dosing Funnel.png",                  "alt": true },
+        { "label": "WDT Tool",           "name": "MHW-3BOMBER WDT",             "desc": "Breaks up clumps for even extraction.",                                       "url": "https://amzn.to/41NC741", "img": "Images/Coffee/MHW-3BOMBER WDT Tool.png",                         "alt": true },
+        { "label": "Tamper",             "name": "Normcore 51mm Tamper",        "desc": "Consistent tamp pressure every time.",                                        "url": "https://amzn.to/4t0JZeI", "img": "Images/Coffee/Normcore 51mm Espresso Tamper.png" },
+        { "label": "Tamping Station",    "name": "Normcore Tamping Station",    "desc": "Keeps the workflow tidy and stable.",                                         "url": "https://amzn.to/41jiT6b", "img": "Images/Coffee/Normcore Espresso Tamping Station.png",            "alt": true },
+        { "label": "Basket",              "name": "HUGH Leverpresso 51mm",       "desc": "Increased perforation density for higher precision.",                          "url": "https://amzn.to/4dvEXSl", "img": "Images/Coffee/HUGH Leverpresso 51mm.png" },
+        { "label": "Puck Screen",        "name": "Normcore 51mm Puck Screen",   "desc": "Keeps the shower screen clean between shots.",                                "url": "https://amzn.to/4mk54y8", "img": "Images/Coffee/Normcore 51mm Puck Screen.png" },
+        { "label": "Scale",              "name": "MHW-3BOMBER Mini Scale",      "desc": "Precision scale for dialing in shots.",                                       "url": "https://amzn.to/48tFRLH", "img": "Images/Coffee/MHW-3BOMBER Mini Coffee Scale.png",                "alt": true },
+        { "label": "Knock Box",          "name": "Bincoo Espresso Knock Box",   "desc": "Solid and compact puck disposal.",                                            "url": "https://amzn.to/4dqBAw0", "img": "Images/Coffee/Bincoo Espresso Knock Box.png",                    "alt": true },
+        { "label": "Frothing Pitcher",   "name": "ZRODEN Milk Frothing Pitcher", "desc": "For steaming and frothing milk.",                                                          "url": "https://amzn.to/48iZbeD", "img": "Images/Coffee/ZRODEN Milk Frothing Pitcher.png" },
+        { "label": "Coffee Filters",    "name": "Prudiut 200 Cone Filters",    "desc": "Cone filters for pour over brewing.",                                                     "url": "https://amzn.to/4meX6WW", "img": "Images/Coffee/Prudiut 200 Cone Coffee Filters.png" },
+        { "label": "Cold Brew",          "name": "Cold Brew Maker 34oz",        "desc": "Easy cold brew for hot days.",                                                "url": "https://amzn.to/3NIsjFi", "img": "Images/Coffee/Cold Brew Iced Coffee Maker 34oz.png" },
+        { "label": "Pour Over",          "name": "COSORI Pour Over Maker",      "desc": "Clean, precise pour over brewing.",                                           "url": "https://amzn.to/4e3VX2c", "img": "Images/Coffee/COSORI Pour Over Coffee Maker.png" },
+        { "label": "Kettle",             "name": "Ulcreigo Gooseneck Kettle",   "desc": "Electric gooseneck for slow, controlled pours.",                              "url": "https://amzn.to/4txLFw0", "img": "Images/Coffee/Ulcreigo Gooseneck Electric Kettle.png" },
+        { "label": "Pour Over Caddy",    "name": "HEXNUB Pour Over Caddy",      "desc": "Keeps your pour over kit tidy on the counter.",                               "url": "https://amzn.to/4t4kjgU", "img": "Images/Coffee/HEXNUB – Pour Over Caddy.png" },
+        { "label": "Grinder Brush",      "name": "VSGO Magnetic Grinder Brush", "desc": "Magnetic handle for easy grinder cleanup.",                                   "url": "https://amzn.to/4crNvbS", "img": "Images/Coffee/VSGO Magnetic Handle Coffee Grinder Brush.png",   "alt": true },
+        { "label": "Descaler",           "name": "De'Longhi EcoDecalk",         "desc": "Keep the machine running clean and healthy.",                                  "url": "https://amzn.to/4e3vYrK", "img": "Images/Coffee/De'Longhi EcoDecalk Descaler.png" },
+        { "label": "Ultrasonic Cleaner", "name": "Miorcols Ultrasonic Cleaner", "desc": "Essential for cleaning puck screens; works great for other small parts too.", "url": "https://amzn.to/4toM2bZ", "img": "Images/Coffee/Miorcols Ultrasonic Cleaner.png",                  "alt": true }
+      ]
+    }
+  },
+  "setup": {
+    "heading": "My Setup",
+    "tag": "Amazon · Steam · AliExpress",
+    "disclaimer": "Dalek's picks of items he loves or uses daily. Some may be great for you, others may not be the best - look around and see what you like!\n\nAmazon links are Amazon affiliate links.\n\nAlt Picks are alternatives Dalek found after his original item if his current items are no longer available for purchase. These are the items he would probably buy next. Compatibility between items has not been verified.",
+    "left": [
+      {
+        "group": "Main PC - Gaming · Editing",
+        "icon": "🖥",
+        "items": [
+          { "label": "CPU",         "name": "Ryzen 9 9950X3D",       "desc": "AMD flagship for gaming & streaming.",             "url": "https://amzn.to/3Z9mNNH", "img": "Images/Setup/ryzen 9 9950x3d.png" },
+          { "label": "RAM",         "name": "G.SKILL Flare X5 32GB", "desc": "Fast DDR5 tuned for Ryzen performance.",           "url": "https://amzn.to/4aPTB5J", "img": "Images/Setup/G.SKILL Flare X5 Series DDR5 RAM.png" },
+          { "label": "MOBO",        "name": "X870E Aorus Elite",      "desc": "Feature-rich AM5 board with solid VRMs.",         "url": "https://amzn.to/3L9Xacy", "img": "Images/Setup/GIGABYTE X870E AORUS Elite WIFI7.png" },
+          { "label": "GPU",         "name": "Radeon RX 9070 XT",      "desc": "Beefy card that handles anything thrown at it.",  "url": "https://amzn.to/4xJA53E", "img": "Images/Setup/GIGABYTE Radeon RX 9070 XT.png" },
+          { "label": "SSD · Windows",   "name": "WD_BLACK SN850X 1TB",   "desc": "Fast NVMe boot drive.",                           "url": "https://amzn.to/4jtRWF2", "img": "Images/Setup/WD_BLACK SN850X 1TB NVMe SSD.png" },
+          { "label": "SSD · Linux", "name": "T-Force Vulcan Z 1TB",  "desc": "Reliable drive for the Linux side.",              "url": "https://amzn.to/4jtyg4a", "img": "Images/Setup/TEAMGROUP T-FORCE VULCAN Z.png" }
+        ]
+      },
+      {
+        "group": "Secondary PC - Streaming · Recording",
+        "icon": "📹",
+        "items": [
+          { "label": "CPU",           "name": "Ryzen 7 2700",       "desc": "Solid 8-core workhorse for encoding.",              "url": "https://amzn.to/49eqGXQ", "img": "Images/Setup/AMD Ryzen 7 2700.png" },
+          { "label": "MOBO",          "name": "ASUS Prime B550M-A", "desc": "Compact and dependable AM4 board.",                 "url": "https://amzn.to/452Usw8", "img": "Images/Setup/ASUS Prime B550M-A WiFi II.png" },
+          { "label": "GPU",           "name": "RTX 3060 Ti XC",    "desc": "Handles stream output without breaking a sweat.",   "url": "https://amzn.to/3NkDR0B", "img": "Images/Setup/EVGA GeForce RTX 3060 Ti XC.png" },
+          { "label": "SSD · Win",     "name": "PNY CS900 1TB",      "desc": "Budget-friendly and reliable OS drive.",            "url": "https://amzn.to/45KBjiF", "img": "Images/Setup/PNY CS900.png" },
+          { "label": "SSD · Rec",     "name": "Kingston A400 120GB","desc": "Small, fast scratch drive for recordings.",         "url": "https://amzn.to/4bkLUEI", "img": "Images/Setup/Kingston 240GB A400.png" },
+          { "label": "HDD ×4 · RAID 5", "name": "BarraCuda 2TB",      "desc": "Reliable bulk storage across the RAID array.",     "url": "https://amzn.to/451ywBB", "img": "Images/Setup/Seagate BarraCuda.png" }
+        ]
+      }
+    ],
+    "right": [
+      {
+        "group": "VR - Wireless · Full Body",
+        "icon": "🥽",
+        "items": [
+          { "label": "HMD",          "name": "Meta Quest Pro",            "desc": "Standalone wireless headset.",                                        "url": "",                                                                    "img": "Images/Setup/Quest Pro.png", "discontinued": true },
+          { "label": "Headset",      "name": "Valve Index",               "desc": "Used as dongles for the controllers only.",                                             "url": "https://store.steampowered.com/app/1059530/Valve_Index_Headset/",     "img": "Images/Setup/ValveIndex.png" },
+          { "label": "Controllers",  "name": "Index Controllers",         "desc": "Precise finger-tracking SteamVR controllers.",                        "url": "https://store.steampowered.com/app/1059550/Valve_Index_Controllers/", "img": "Images/Setup/ValveIndexControllers.png" },
+          { "label": "Trackers ×4",  "name": "Vive Tracker 3.0",          "desc": "Full-body tracking pucks.",                                            "url": "https://amzn.to/49QHqDF",                                            "img": "Images/Setup/ViveTracker.png" },
+          { "label": "Base Sta. ×3", "name": "Index Base Station",        "desc": "Lighthouse tracking stations for SteamVR.",                           "url": "https://store.steampowered.com/app/1059570/Valve_Index_Base_Station/","img": "Images/Setup/Valve Index BaseStation.png" },
+          { "label": "USB-C Cable",  "name": "CableCreation 3.3FT USB-C", "desc": "Has a power delivery display - great for monitoring charge while in VR.", "url": "https://amzn.to/483obGT",                                         "img": "Images/Setup/CableCreation 3.3FT USB C to USB C Cable.png" },
+          { "label": "Mag. Adapter", "name": "USB-C Magnetic Adapter",    "desc": "Protects the headset port when the cable gets yanked.",                "url": "https://amzn.to/3NOj2eS",                                            "img": "Images/Setup/USB C Magnetic Adapter.png" },
+          { "label": "Power Bank",   "name": "UGREEN 100W Power Bank",    "desc": "Keeps the headset running through long sessions.",                     "url": "https://amzn.to/41hGTXn",                                            "img": "Images/Setup/UGREEN 100W Power Bank Bundle.png", "alt": true }
+        ]
+      },
+      {
+        "group": "Audio",
+        "icon": "🎙",
+        "items": [
+          { "label": "Microphone", "name": "Hollyland Lark M2", "desc": "Compact wireless lav for clear voice pickup.",        "url": "https://amzn.to/4syimtl",                                                        "img": "Images/Setup/Hollyland Lark M2 USBC.png" },
+          { "label": "IEMs",       "name": "GK KUNTEN",         "desc": "Budget in-ears with solid staging.",                  "url": "https://www.aliexpress.us/w/wholesale-GK-KUNTEN.html?spm=a2g0o.detail.search.0","img": "Images/Setup/GK KUNTEN.png" },
+          { "label": "Wireless IEM", "name": "Melonare PM-2",     "desc": "Wireless IEM transmitter for cable-free monitoring.", "url": "https://amzn.to/3NZZKD2",                                                        "img": "Images/Setup/PM-2 Portable Wireless in Ear Monitor System.png" }
+        ]
+      }
+    ]
+  }
+}
