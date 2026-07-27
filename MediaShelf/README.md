@@ -33,9 +33,9 @@ when happy.
    "finished" and a partial bar reads "left off partway" for everything.
 5. **Ratings & Reviews** — three tabs: **Favorites** (Trakt's heart-icon
    Favorites list, in your curated order), **Top Rated** (everything rated ≥
-   `favMinRating`, highest score then most recently rated), and **All**
-   (`?range=rated` — every rating including the low ones, so the pans show up
-   too). A chip row filters any tab by category — **All / Anime / TV Shows / Movies** (anime films count as both
+   `favMinRating`, highest score then most recently rated), and **All Others**
+   (`?range=rated` — the ratings that don't make the Top Rated cut, so the pans
+   show up too). A chip row filters any tab by category — **All / Anime / TV Shows / Movies** (anime films count as both
    Anime and Movies; TV Shows means non-anime series). Detail panel shows
    literal star glyphs (Trakt's 5-star half-step scale), meta, and a note row
    (up to 4 lines) fed by your Trakt notes or reviews. Reviews marked
@@ -67,9 +67,9 @@ to the media set (YouTube · IMDb · Trakt). Accent color is a single CSS var
 | `N8N_TRAKT_FEED_WEBHOOK` | **fill in** — GET URL of the "Carrd Trakt Feed" workflow |
 
 Feed ranges: `?range=now` (live session) · `?range=watching` · `?range=recent`
-· `?range=favorites` · `?range=toprated` · `?range=rated` (every rating, low
-scores included — feeds the All tab; until the workflow serves it the tab
-shows an empty state). Leave the Trakt URL empty and the card runs music-only.
+· `?range=favorites` · `?range=toprated` · `?range=rated` (the lower-scored
+ratings the Top Rated cut leaves out — feeds the All Others tab; until the
+workflow serves it the tab shows an empty state). Leave the Trakt URL empty and the card runs music-only.
 
 ## n8n setup (workflows are provided separately — NOT stored in this repo)
 

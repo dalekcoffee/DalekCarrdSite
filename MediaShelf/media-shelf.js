@@ -15,7 +15,7 @@
    *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=recent'     → { entries: [...] }
    *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=favorites'  → { entries: [...] }
    *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=toprated'   → { entries: [...] }
-   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=rated'      → { entries: [...] }  (ALL ratings, low ones included)
+   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=rated'      → { entries: [...] }  (the ratings below the Top Rated cut)
    *
    * Leave the Trakt URL empty to run music-only (video sections show empty states).
    */
@@ -397,7 +397,7 @@
           '<div class="dks-tabs" id="dks-fav-tabs">' +
             '<button class="dks-tab active" data-r="favorites">Favorites</button>' +
             '<button class="dks-tab" data-r="toprated">Top Rated</button>' +
-            '<button class="dks-tab" data-r="rated">All</button>' +
+            '<button class="dks-tab" data-r="rated">All Others</button>' +
           '</div>' +
         '</div>' +
         '<div class="dks-filters" id="dks-fav-filters">' +
