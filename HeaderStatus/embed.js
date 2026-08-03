@@ -138,6 +138,7 @@
     { match: ['discord'], icon: '💬' },
     { match: ['fortnite'], color: '#4799ed' },
     { match: ['the finals'], color: '#D21F3C' },
+    { match: ['palworld'], icon: '🥚', color: '#81CEFF' },
     { match: ['resonite'], icon: '🔮', rainbow: true }
   ];
 
