@@ -5,6 +5,24 @@ Sandbox implementation of the hi-fi "Dalek's Shelf" design (from the
 (`MusicEmbed/`) is untouched — test here first, then replace the Carrd embed
 when happy.
 
+## ⚠️ Video sections temporarily disabled
+
+Trakt's API went VIP-only, so the public endpoints the feed reads no longer
+return complete data and the live card was showing inaccurate progress,
+ratings, and now-watching info. `VIDEO_ENABLED = false` at the top of
+`media-shelf.js` keeps the video half off the page until the feed is rebuilt on
+another provider.
+
+**Off right now:** Now Watching (the live row is music-only), the **On Screen**
+section, the **Ratings & Reviews** section, and the Trakt link in the header.
+**Still live:** Now Playing and Top Listens.
+
+Nothing was deleted — all the markup, render code, and fixtures below still
+exist and still work. Flipping the flag back to `true` restores the full card
+as documented; the sandbox `?mock=1&live=video` params come back with it. When
+the replacement provider lands, re-point `N8N_TRAKT_FEED_WEBHOOK` at the new
+feed and flip the flag.
+
 ## Sections (one 720px card, top to bottom)
 
 1. **Header** — "Dalek's Shelf" · "Trakt · ListenBrainz".

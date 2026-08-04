@@ -24,6 +24,18 @@
   var N8N_TRAKT_FEED_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/trakt-scrobbling-feed';
 
   /*
+   * ─── TEMPORARY: video half disabled ────────────────────────────────────────
+   * Trakt's API went VIP-only, so the public endpoints the feed reads no longer
+   * return complete data — progress bars, ratings and Now Watching were showing
+   * stale or wrong info on the live card. Everything below stays wired up; this
+   * flag just keeps it off the page until the feed is rebuilt on another
+   * provider. Flip to true to bring back: Now Watching, the "On Screen" section
+   * (Watching / Recent), the "Ratings & Reviews" section, and the Trakt link in
+   * the header. Music (Now Playing + Top Listens) is unaffected either way.
+   */
+  var VIDEO_ENABLED = false;
+
+  /*
    * ─── Sandbox overrides (test.html only; inert on Carrd) ────────────────────
    *   ?mock=1&live=video|music|both|none&newer=video|music
    *   ?trakt=<feed-url>&music=<url>
@@ -335,47 +347,9 @@
     mount.id = 'dks-shelf';
     (document.currentScript && document.currentScript.parentNode || document.body).appendChild(mount);
   }
-  mount.innerHTML =
-    '<div class="dks-card">' +
-      '<div class="dks-header">' +
-        '<span class="dks-title">Dalek’s Shelf</span>' +
-        '<span class="dks-src">' +
-          '<a class="dks-src-link" href="https://trakt.tv/users/dalekcoffee" target="_blank" rel="noopener noreferrer">Trakt</a>' +
-          ' · ' +
-          '<a class="dks-src-link" href="https://listenbrainz.org/user/Dalek.coffee/stats/?range=year" target="_blank" rel="noopener noreferrer">ListenBrainz</a>' +
-        '</span>' +
-      '</div>' +
-      '<div class="dks-np idle" id="dks-np">' +
-        '<div class="dks-np-head" id="dks-np-head">' +
-          '<div class="dks-np-left">' +
-            '<span class="dks-np-dot"></span>' +
-            '<span class="dks-np-label" id="dks-np-label">Nothing Playing</span>' +
-            '<span class="dks-np-sub dks-hide" id="dks-np-sub"></span>' +
-          '</div>' +
-          '<span class="dks-np-chev dks-hide" id="dks-np-chev">▾</span>' +
-        '</div>' +
-        '<div class="dks-np-body" id="dks-np-body">' +
-          '<div class="dks-np-grid">' +
-            '<div class="dks-tile dks-tile-64" id="dks-np-tile"><span id="dks-np-code"></span><img id="dks-np-img" alt=""></div>' +
-            '<div style="min-width:0">' +
-              '<div class="dks-np-title" id="dks-np-title"></div>' +
-              '<div class="dks-np-artist" id="dks-np-artist"></div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="dks-np-btns dks-btns" id="dks-np-btns"></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="dks-section">' +
-        '<div class="dks-sec-head">' +
-          '<span class="dks-sec-label">♪ Top Listens</span>' +
-          '<div class="dks-tabs" id="dks-tabs">' +
-            '<button class="dks-tab" data-r="this_month">Month</button>' +
-            '<button class="dks-tab active" data-r="this_year">Year</button>' +
-            '<button class="dks-tab" data-r="all_time">All Time</button>' +
-          '</div>' +
-        '</div>' +
-        '<div class="dks-list" id="dks-list"></div>' +
-      '</div>' +
+  /* The two Trakt-backed sections; omitted from the card while VIDEO_ENABLED
+     is false so nothing renders a stale or empty video panel. */
+  var VIDEO_SECTIONS_HTML =
       '<div class="dks-section">' +
         '<div class="dks-sec-head">' +
           '<span class="dks-sec-label">▤ On Screen</span>' +
@@ -412,7 +386,51 @@
           '<div class="dks-prompt"><span>Hover a poster for rating + platform links</span></div>' +
           '<div class="dks-detail" id="dks-fav-detail"></div>' +
         '</div>' +
+      '</div>';
+
+  mount.innerHTML =
+    '<div class="dks-card">' +
+      '<div class="dks-header">' +
+        '<span class="dks-title">Dalek’s Shelf</span>' +
+        '<span class="dks-src">' +
+          (VIDEO_ENABLED
+            ? '<a class="dks-src-link" href="https://trakt.tv/users/' + TRAKT_USER + '" target="_blank" rel="noopener noreferrer">Trakt</a> · '
+            : '') +
+          '<a class="dks-src-link" href="https://listenbrainz.org/user/Dalek.coffee/stats/?range=year" target="_blank" rel="noopener noreferrer">ListenBrainz</a>' +
+        '</span>' +
       '</div>' +
+      '<div class="dks-np idle" id="dks-np">' +
+        '<div class="dks-np-head" id="dks-np-head">' +
+          '<div class="dks-np-left">' +
+            '<span class="dks-np-dot"></span>' +
+            '<span class="dks-np-label" id="dks-np-label">Nothing Playing</span>' +
+            '<span class="dks-np-sub dks-hide" id="dks-np-sub"></span>' +
+          '</div>' +
+          '<span class="dks-np-chev dks-hide" id="dks-np-chev">▾</span>' +
+        '</div>' +
+        '<div class="dks-np-body" id="dks-np-body">' +
+          '<div class="dks-np-grid">' +
+            '<div class="dks-tile dks-tile-64" id="dks-np-tile"><span id="dks-np-code"></span><img id="dks-np-img" alt=""></div>' +
+            '<div style="min-width:0">' +
+              '<div class="dks-np-title" id="dks-np-title"></div>' +
+              '<div class="dks-np-artist" id="dks-np-artist"></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="dks-np-btns dks-btns" id="dks-np-btns"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="dks-section">' +
+        '<div class="dks-sec-head">' +
+          '<span class="dks-sec-label">♪ Top Listens</span>' +
+          '<div class="dks-tabs" id="dks-tabs">' +
+            '<button class="dks-tab" data-r="this_month">Month</button>' +
+            '<button class="dks-tab active" data-r="this_year">Year</button>' +
+            '<button class="dks-tab" data-r="all_time">All Time</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="dks-list" id="dks-list"></div>' +
+      '</div>' +
+      (VIDEO_ENABLED ? VIDEO_SECTIONS_HTML : '') +
     '</div>';
 
   function el(id) { return document.getElementById(id); }
@@ -558,6 +576,7 @@
     updateLiveStrip();
   }
   function pollNowWatching() {
+    if (!VIDEO_ENABLED) return;
     if (MOCK) { applyVideoNW(mockVideoLive()); return; }
     if (!N8N_TRAKT_FEED_WEBHOOK) return;
     fetch(N8N_TRAKT_FEED_WEBHOOK + '?range=now&t=' + Date.now())
@@ -983,9 +1002,11 @@
   }
 
   /* keep the caret glued to its poster while the strip scrolls (bound once) */
-  ['watch', 'fav'].forEach(function (kind) {
-    el('dks-' + kind + '-strip').addEventListener('scroll', function () { caretUpdate(kind); }, { passive: true });
-  });
+  if (VIDEO_ENABLED) {
+    ['watch', 'fav'].forEach(function (kind) {
+      el('dks-' + kind + '-strip').addEventListener('scroll', function () { caretUpdate(kind); }, { passive: true });
+    });
+  }
 
   /* which range is currently selected per strip, so a slow fetch from an
      inactive tab can't clobber the active one */
@@ -1026,21 +1047,23 @@
   }
 
   /* ▤ On Screen → Watching | Recent, and ★ Best Of → Favorites | Top Rated */
-  bindStripTabs('dks-watch-tabs', 'watch');
-  bindStripTabs('dks-fav-tabs', 'fav');
+  if (VIDEO_ENABLED) {
+    bindStripTabs('dks-watch-tabs', 'watch');
+    bindStripTabs('dks-fav-tabs', 'fav');
 
-  /* Best Of category chips re-render the active tab from cache */
-  el('dks-fav-filters').addEventListener('click', function (e) {
-    var f = e.target.dataset && e.target.dataset.f;
-    if (!f || f === favFilter) return;
-    var chips = el('dks-fav-filters').querySelectorAll('.dks-chip');
-    for (var i = 0; i < chips.length; i++) chips[i].classList.remove('active');
-    e.target.classList.add('active');
-    favFilter = f;
-    var cached = dataCache['feed_' + activeRange.fav];
-    if (cached) renderStrip('fav', cached, activeRange.fav);
-    /* no cache yet → a fetch is in flight; it renders with the new filter */
-  });
+    /* Best Of category chips re-render the active tab from cache */
+    el('dks-fav-filters').addEventListener('click', function (e) {
+      var f = e.target.dataset && e.target.dataset.f;
+      if (!f || f === favFilter) return;
+      var chips = el('dks-fav-filters').querySelectorAll('.dks-chip');
+      for (var i = 0; i < chips.length; i++) chips[i].classList.remove('active');
+      e.target.classList.add('active');
+      favFilter = f;
+      var cached = dataCache['feed_' + activeRange.fav];
+      if (cached) renderStrip('fav', cached, activeRange.fav);
+      /* no cache yet → a fetch is in flight; it renders with the new filter */
+    });
+  }
 
   /* ═══ MOCK FIXTURES (sandbox only — ?mock=1) ══════════════════════════════ */
   var MOCK_LIVE = qp('live') || 'video';
@@ -1164,14 +1187,18 @@
 
   /* ═══ INIT ═════════════════════════════════════════════════════════════════ */
   renderListPlaceholders();
-  renderStripPlaceholders('watch');
-  renderStripPlaceholders('fav');
+  if (VIDEO_ENABLED) {
+    renderStripPlaceholders('watch');
+    renderStripPlaceholders('fav');
+  }
   setTimeout(function () {
     pollNowPlaying();
-    pollNowWatching();
     loadMusic(currentRange);
-    loadFeedRange('watching', 'watch');
-    loadFeedRange('favorites', 'fav');
+    if (VIDEO_ENABLED) {
+      pollNowWatching();
+      loadFeedRange('watching', 'watch');
+      loadFeedRange('favorites', 'fav');
+    }
   }, 50);
 
 })();
