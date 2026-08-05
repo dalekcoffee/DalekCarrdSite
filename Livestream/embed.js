@@ -61,7 +61,20 @@
       /* body */
       '.ls-body{display:flex;flex-direction:column;overflow:hidden;max-height:0;opacity:0;background:var(--bg);transition:max-height .8s cubic-bezier(.4,0,.2,1),opacity .6s ease}',
       '#ls-card.ls-open .ls-body{max-height:3000px;opacity:1}',
-      '.ls-banner{padding:10px 20px;border-bottom:1px solid var(--bg2);font-size:11px;letter-spacing:.05em;color:#fff;background:var(--bg)}',
+      '.ls-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--bg2);font-size:11px;letter-spacing:.05em;color:#fff;background:var(--bg)}',
+
+      /* Twitch view-count opt-in — off by default. When on, the Twitch player runs */
+      /* muted behind Beam so the viewer still counts toward the Twitch viewer count. */
+      '.ls-vc{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;padding:5px 9px;background:none;border:1px solid var(--b1);color:rgba(255,255,255,.65);font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;--brand:#a970ff;transition:background .2s,color .2s,border-color .2s,box-shadow .2s}',
+      '.ls-vc:hover,.ls-vc:active{background:var(--bg3);color:#fff;border-color:var(--brand)}',
+      '.ls-vc:hover,.ls-vc:active{box-shadow:0 0 10px rgba(169,112,255,.2)}',
+      '.ls-vc:hover,.ls-vc:active{box-shadow:0 0 10px color-mix(in srgb,var(--brand) 20%,transparent)}',
+      '.ls-vc:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}',
+      '.ls-vc[aria-checked="true"]{color:#fff;border-color:var(--brand)}',
+      '.ls-vc-box{position:relative;display:block;flex-shrink:0;width:12px;height:12px;border:1px solid rgba(255,255,255,.35);transition:background .2s,border-color .2s}',
+      '.ls-vc:hover .ls-vc-box,.ls-vc:active .ls-vc-box{border-color:var(--brand)}',
+      '.ls-vc[aria-checked="true"] .ls-vc-box{background:var(--brand);border-color:var(--brand)}',
+      '.ls-vc[aria-checked="true"] .ls-vc-box::after{content:"";position:absolute;top:0;left:3px;width:3px;height:7px;border-right:2px solid #000;border-bottom:2px solid #000;transform:rotate(45deg)}',
       /* --lsChatW = the chat column's resting width, so hiding never resizes the */
       /* control strip. Mirrors the 3.5:1 flex ratio (clamped to a 350px minimum). */
       '.ls-embeds{display:flex;flex-direction:row;position:relative;--lsChatW:max(350px,calc(100% / 4.5))}',
@@ -235,7 +248,14 @@
         '</div>' +
       '</div>' +
       '<div class="ls-body">' +
-        '<div class="ls-banner">Enjoy this stream, ad-free with Twitch chat! :3</div>' +
+        '<div class="ls-banner">' +
+          '<span>Enjoy this stream, ad-free with Twitch chat! :3</span>' +
+          '<button class="ls-vc" id="ls-vc" type="button" role="switch" aria-checked="false"' +
+          ' title="Runs the Twitch player muted behind Beam so you still count toward the Twitch viewer count. Costs a bit of bandwidth.">' +
+            '<span class="ls-vc-box" aria-hidden="true"></span>' +
+            '<span>Count my Twitch view</span>' +
+          '</button>' +
+        '</div>' +
         '<div class="ls-embeds">' +
           '<div class="ls-main">' +
             '<div class="ls-vtabs" id="ls-vtabs">' +
@@ -280,6 +300,13 @@
   var currentlyLive = false;
   var iframesLoaded = false;
   var activeTab     = 'beam';
+
+  /* Twitch view-count opt-in. Off by default: the background player is a second live
+     video decode + its own bandwidth, which starves Beam's low-latency buffer. Read
+     here (not at the toggle wiring below) so loadIframes() can never run ahead of it. */
+  var VC_KEY = 'ls-twitch-viewcount';
+  var viewCountOn = false;
+  try { viewCountOn = localStorage.getItem(VC_KEY) === '1'; } catch (e) {}
 
   /* ── PLATFORM BUTTONS ── */
   btnsEl.innerHTML = PLATFORMS.filter(function (p) { return p.enabled; }).map(function (p) {
@@ -414,7 +441,8 @@
     }
   }
 
-  /* ── PLAYERS — Option B: Twitch stays loaded + muted behind Beam ── */
+  /* ── PLAYERS — Twitch loads on demand: when its tab is selected, or when the
+     viewer opts into the background view-count player (see TWITCH VIEW-COUNT below). ── */
   function makeIframe(src) {
     var f = document.createElement('iframe');
     f.setAttribute('allowfullscreen', '');
@@ -426,6 +454,8 @@
   /* Twitch via its JS API so we can mute/unmute and drop quality in the background. */
   var twitchPlayer = null;
   var twitchRequested = false;   /* guards against double-creation during the async API load */
+  var twitchWanted = false;      /* false once destroyed — cancels an API load already in flight */
+  var twitchQualityTimer = null;
   function loadTwitchAPI(cb) {
     if (window.Twitch && window.Twitch.Player) { cb(); return; }
     var s = document.getElementById('ls-twitch-api');
@@ -437,9 +467,13 @@
     document.head.appendChild(s);
   }
   function ensureTwitch() {
+    twitchWanted = true;
     if (twitchPlayer || twitchRequested) return;
     twitchRequested = true;
     loadTwitchAPI(function () {
+      /* The viewer can flip the toggle back off (or leave the Twitch tab) while the
+         embed API is still downloading — don't build a player nobody asked for. */
+      if (!twitchWanted) { twitchRequested = false; return; }
       twitchPlayer = new Twitch.Player('ls-twitch', {
         channel: TWITCH_CHANNEL, width: '100%', height: '100%',
         muted: true, autoplay: true, parent: PARENTS
@@ -458,6 +492,38 @@
     if (!twitchPlayer) return;
     try { if (twitchPlayer.play) twitchPlayer.play(); } catch (e) {}
   }
+  /* Tear the player down completely so its decode + bandwidth actually stop. */
+  function destroyTwitch() {
+    twitchWanted = false;
+    stopQualityWatch();
+    if (twitchPlayer) {
+      try { if (twitchPlayer.destroy) twitchPlayer.destroy(); } catch (e) {}
+      twitchPlayer = null;
+    }
+    twitchRequested = false;
+    var el = mount.querySelector('#ls-twitch');
+    if (el) el.innerHTML = '';
+  }
+
+  function stopQualityWatch() {
+    if (twitchQualityTimer) { clearInterval(twitchQualityTimer); twitchQualityTimer = null; }
+  }
+  /* Twitch orders qualities high→low, so the last non-auto group is the cheapest. */
+  function lowestQuality() {
+    try {
+      var qs = twitchPlayer && twitchPlayer.getQualities ? twitchPlayer.getQualities() : null, low = null, i;
+      if (qs) for (i = 0; i < qs.length; i++) { if (qs[i].group && qs[i].group !== 'auto') low = qs[i].group; }
+      return low;
+    } catch (e) { return null; }
+  }
+  /* Returns true once there's nothing left to do (applied, or no longer wanted). */
+  function applyLowQuality() {
+    if (!twitchPlayer || activeTab === 'twitch') return true;
+    var low = lowestQuality();
+    if (!low) return false;
+    try { twitchPlayer.setQuality(low); } catch (e) {}
+    return true;
+  }
   /* Background: muted + lowest quality (keeps it streaming cheaply behind Beam). */
   function twitchBackground() {
     if (!twitchPlayer) return;
@@ -467,13 +533,20 @@
       /* If the viewer paused Twitch while watching it, resume it (muted) when they flip
          back to Beam — a paused player stops counting toward Twitch's live viewers. */
       if (twitchPlayer.isPaused && twitchPlayer.isPaused()) twitchPlayer.play();
-      var qs = twitchPlayer.getQualities ? twitchPlayer.getQualities() : null, low = null, i;
-      if (qs) for (i = 0; i < qs.length; i++) { if (qs[i].group && qs[i].group !== 'auto') low = qs[i].group; }
-      if (low) twitchPlayer.setQuality(low);
     } catch (e) {}
+    /* getQualities() is usually still empty at PLAY time, so a single attempt here
+       silently no-opped and the background player kept pulling source quality.
+       Poll until the manifest populates it (bounded to ~10s). */
+    stopQualityWatch();
+    if (applyLowQuality()) return;
+    var tries = 0;
+    twitchQualityTimer = setInterval(function () {
+      if (applyLowQuality() || ++tries > 20) stopQualityWatch();
+    }, 500);
   }
   /* Foreground: audible + auto quality (user swapped over to watch it). */
   function twitchForeground() {
+    stopQualityWatch();
     if (!twitchPlayer) return;
     try { twitchPlayer.play(); twitchPlayer.setQuality('auto'); twitchPlayer.setMuted(false); twitchPlayer.setVolume(0.5); } catch (e) {}
   }
@@ -497,8 +570,10 @@
   function loadIframes() {
     if (iframesLoaded) return;
     iframesLoaded = true;
-    ensureTwitch();                         /* Twitch loads once and stays muted behind Beam */
-    if (activeTab === 'beam') loadBeam();
+    /* Twitch only loads if it's the selected tab, or the viewer opted into the
+       background view-count player. Otherwise Beam gets the pipe to itself. */
+    if (activeTab === 'twitch') ensureTwitch();
+    else { loadBeam(); if (viewCountOn) ensureTwitch(); }
     applyVideoStack();
     var cf = makeIframe(CHAT_SRC);
     cf.addEventListener('load', function () {
@@ -520,8 +595,9 @@
       tabs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
     }
     if (!iframesLoaded) return;
-    if (which === 'twitch') { unloadBeam(); twitchForeground(); }
-    else { loadBeam(); twitchBackground(); }
+    if (which === 'twitch') { unloadBeam(); ensureTwitch(); twitchForeground(); }
+    else if (viewCountOn) { loadBeam(); twitchBackground(); }
+    else { loadBeam(); destroyTwitch(); }   /* not opted in — Twitch only exists on its own tab */
     applyVideoStack();
   }
 
@@ -534,11 +610,41 @@
      Permissive browsers (Chrome/Edge/Firefox desktop) start the muted background Twitch player on
      load, so it counts a viewer while someone watches Beam. Safari/iOS won't autoplay without a
      user gesture, and the widget auto-opens with none — so on the first press anywhere in the card,
-     make sure Twitch is loaded and playing. */
-  card.addEventListener('pointerdown', function () {
+     make sure Twitch is loaded and playing.
+     Only fires when Twitch is actually wanted, otherwise any tap on the card would load the
+     player the viewer opted out of. Not {once:true} for the same reason — it has to stay armed
+     until there's something to unlock. */
+  var gestureUnlocked = false;
+  function unlockOnGesture() {
+    if (gestureUnlocked || (activeTab !== 'twitch' && !viewCountOn)) return;
+    gestureUnlocked = true;
+    card.removeEventListener('pointerdown', unlockOnGesture);
     ensureTwitch();
     nudgeTwitchPlay();
-  }, { once: true });
+  }
+  card.addEventListener('pointerdown', unlockOnGesture);
+
+  /* ── TWITCH VIEW-COUNT OPT-IN ──
+     Off by default. When enabled, the Twitch player runs muted at the lowest quality behind
+     Beam so the viewer still counts toward the Twitch viewer count while watching ad-free.
+     The choice persists across visits. */
+  var vcBtn = mount.querySelector('#ls-vc');
+  function applyViewCount(on) {
+    viewCountOn = on;
+    if (vcBtn) vcBtn.setAttribute('aria-checked', on ? 'true' : 'false');
+    try { localStorage.setItem(VC_KEY, on ? '1' : '0'); } catch (e) {}
+    if (!iframesLoaded) return;
+    if (on) ensureTwitch();
+    else if (activeTab !== 'twitch') destroyTwitch();
+  }
+  if (vcBtn) {
+    vcBtn.setAttribute('aria-checked', viewCountOn ? 'true' : 'false');
+    vcBtn.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      applyViewCount(!viewCountOn);
+      unlockOnGesture();   /* the click itself is the gesture Safari needs to start playback */
+    });
+  }
 
   /* ── POINTS CTA PULSE ── */
   var ptsBtn = mount.querySelector('.ls-points');
