@@ -112,6 +112,27 @@ that: a series in Recent that is *absent* from Watching is treated as finished
 and gets a full bar. If Watching is partial, finished shows will read as
 "unknown progress" instead.
 
+## n8n workflows
+
+Both workflows change; rewritten copies are in [`n8n/`](n8n/) with every secret
+replaced by a `REPLACE-WITH-*` placeholder.
+
+| Old | New | What happened |
+| --- | --- | --- |
+| `Plex to Trakt Scrobbler` | [`Plex_Live_Session.json`](n8n/Plex_Live_Session.json) | Stops writing to any tracker — Plex posts straight to Simkl's webhook. Now only tracks the live session and flushes caches. |
+| `Carrd Trakt Feed` | [`Carrd_Media_Feed.json`](n8n/Carrd_Media_Feed.json) | Every range re-sourced from Simkl; `?range=now` becomes push-driven. |
+
+The one structurally new piece: **n8n static data is per-workflow**, so the live
+session the Plex workflow tracks can't be read by the feed workflow directly.
+The Plex workflow now POSTs its session state to the feed webhook, which stores
+it and serves it at `?range=now` — the same fire-and-forget pattern the existing
+cache flush already uses.
+
+Dropped along the way: the Trakt OAuth credential, the `/scrobble/*` HTTP node,
+the `extended=progress` / `extended=full` fallback dance on watched shows, and
+the per-show genre lookup that anime detection needed (Simkl keeps anime as its
+own type, so `isAnime` comes free).
+
 ## Simkl setup
 
 1. Create an app at Simkl's developer settings → note the **client id** and
@@ -124,8 +145,11 @@ and gets a full bar. If Watching is partial, finished shows will read as
 4. Add the **Plex webhook** from `simkl.com/apps/plex/` to your Plex webhooks
    list (requires Plex Pass, which you already have — Plex webhooks are a Pass
    feature). Keep your existing n8n webhook alongside it; Plex supports several.
-5. Point `N8N_MEDIA_FEED_WEBHOOK` at the new feed workflow's **production** GET
-   URL.
+5. Import both workflows from `n8n/`, fill in the `REPLACE-WITH-*` values, and
+   repoint Plex's existing n8n webhook at `/plex-live-session`.
+6. Point `N8N_MEDIA_FEED_WEBHOOK` at the new feed workflow's **production** GET
+   URL. Both flush calls inside `Plex_Live_Session.json` hardcode that same URL
+   — update them together.
 
 > Endpoint paths and exact response shapes live at **api.simkl.org** — that host
 > was unreachable from the machine this was built on, so the n8n side needs to be
@@ -137,10 +161,10 @@ and gets a full bar. If Watching is partial, finished shows will read as
 - **Live row needs the Plex webhook path kept alive.** If you retire the n8n
   scrobbler entirely, Now Watching goes permanently idle and the card silently
   falls back to music-only. It won't error — it just never lights up.
-- **Plex `viewOffset`** is present in webhook payloads but is reportedly
-  unreliable on replay-from-start (reads as a resume). The live row doesn't
-  render a progress bar today, so this doesn't bite — but don't build one on
-  `viewOffset` alone without checking.
+- **Plex sends no usable `viewOffset`.** The scrobbler estimates progress from
+  wall-clock watch time vs duration, which is seek-blind. `progressPct` rides
+  along in the live payload but the embed doesn't render it — don't build a
+  live progress bar on it without checking the numbers first.
 - **Simkl brand hex** on the media button is a placeholder near-black
   (`#111827`); confirm against Simkl's current brand color before production.
 - **Anime detection** moves from Trakt genre tags to Simkl's type/genre data —
