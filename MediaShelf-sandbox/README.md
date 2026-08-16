@@ -114,13 +114,15 @@ and gets a full bar. If Watching is partial, finished shows will read as
 
 ## n8n workflows
 
-Both workflows change; rewritten copies are in [`n8n/`](n8n/) with every secret
-replaced by a `REPLACE-WITH-*` placeholder.
+Both workflows change. **The workflow JSON is deliberately not stored in this
+repo** — it lives only in n8n, same as the Trakt-era workflows it replaces. What
+follows is the design they implement, which is what the embed actually depends
+on; the feed contract above is the real interface between the two.
 
 | Old | New | What happened |
 | --- | --- | --- |
-| `Plex to Trakt Scrobbler` | [`Plex_Live_Session.json`](n8n/Plex_Live_Session.json) | Stops writing to any tracker — Plex posts straight to Simkl's webhook. Now only tracks the live session and flushes caches. |
-| `Carrd Trakt Feed` | [`Carrd_Media_Feed.json`](n8n/Carrd_Media_Feed.json) | Every range re-sourced from Simkl; `?range=now` becomes push-driven. |
+| `Plex to Trakt Scrobbler` | `Plex Live Session` | Stops writing to any tracker — Plex posts straight to Simkl's webhook. Now only tracks the live session and expires the feed cache. |
+| `Carrd Trakt Feed` | `Carrd Media Feed` | Every range re-sourced from Simkl; `?range=now` becomes push-driven. |
 
 The one structurally new piece: **n8n static data is per-workflow**, so the
 live session the Plex workflow tracks can't be written into the feed workflow's
@@ -151,12 +153,12 @@ all three internal HTTP calls and the Wait node, the `extended=progress` /
 that anime detection needed (Simkl keeps anime as its own type, so `isAnime`
 comes free from which array the row arrived in).
 
-### After importing
+### Wiring the two together
 
-The Execute Workflow nodes reference the feed workflow by an ID your n8n
-instance assigns, so it can't be baked into the file. Open **Push Live Session**
-and **Expire Feed Cache** in the Plex workflow and pick *Carrd Media Feed* from
-the dropdown. Import the feed first so it exists to be picked.
+The Execute Workflow nodes reference the feed workflow by an ID each n8n
+instance assigns, so it can never be baked into an export. In the Plex workflow,
+open **Push Live Session** and **Expire Feed Cache** and pick *Carrd Media Feed*
+from the dropdown — the feed workflow has to exist first.
 
 ## How the feed talks to Simkl
 
@@ -210,8 +212,8 @@ card's blur — the same field the old Trakt comment spoiler flag fed.
 4. Add the **Plex webhook** from `simkl.com/apps/plex/` to your Plex webhooks
    list (requires Plex Pass, which you already have — Plex webhooks are a Pass
    feature). Keep your existing n8n webhook alongside it; Plex supports several.
-5. Import both workflows from `n8n/`, fill in the `REPLACE-WITH-*` values, and
-   repoint Plex's existing n8n webhook at `/plex-live-session`.
+5. In n8n, set the feed workflow's Config node (client id, access token, TMDB
+   key) and repoint Plex's existing n8n webhook at `/plex-live-session`.
 6. Point `N8N_MEDIA_FEED_WEBHOOK` at the new feed workflow's **production** GET
    URL.
 
