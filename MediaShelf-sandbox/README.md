@@ -122,16 +122,41 @@ replaced by a `REPLACE-WITH-*` placeholder.
 | `Plex to Trakt Scrobbler` | [`Plex_Live_Session.json`](n8n/Plex_Live_Session.json) | Stops writing to any tracker — Plex posts straight to Simkl's webhook. Now only tracks the live session and flushes caches. |
 | `Carrd Trakt Feed` | [`Carrd_Media_Feed.json`](n8n/Carrd_Media_Feed.json) | Every range re-sourced from Simkl; `?range=now` becomes push-driven. |
 
-The one structurally new piece: **n8n static data is per-workflow**, so the live
-session the Plex workflow tracks can't be read by the feed workflow directly.
-The Plex workflow now POSTs its session state to the feed webhook, which stores
-it and serves it at `?range=now` — the same fire-and-forget pattern the existing
-cache flush already uses.
+The one structurally new piece: **n8n static data is per-workflow**, so the
+live session the Plex workflow tracks can't be written into the feed workflow's
+storage directly. The Plex workflow calls the feed as a **sub-workflow**
+(Execute Workflow node) — running in-process there is what puts it inside the
+feed's static data, which is what `?range=now` reads.
+
+Deliberately not HTTP. An earlier revision POSTed to the feed's own webhook and
+it went wrong in three separate ways: the public domain hung from inside the
+container (NAT hairpinning), loopback needed port 443 rather than the `5678/tcp`
+`docker ps` advertises, and the POST then returned `200` with an empty body
+while storing nothing. A sub-workflow call has no URL, port, proxy, webhook
+method or self-call deadlock to get wrong. Neither workflow makes a single HTTP
+request now.
+
+The feed therefore has two entry points: the **Webhook** (GET, serves the
+embed) and **Called by Plex Live Session** (Execute Workflow trigger). Both feed
+`Config`, and a `mode` check routes sub-workflow calls to `Apply Live Session` —
+which never reaches `Respond`, since there's no HTTP response to send.
+
+`mode` takes two values: `now` stores the current session, and `flush` zeroes
+the derived caches' timestamps after Simkl records a watch, so the next embed
+request re-syncs.
 
 Dropped along the way: the Trakt OAuth credential, the `/scrobble/*` HTTP node,
-the `extended=progress` / `extended=full` fallback dance on watched shows, and
-the per-show genre lookup that anime detection needed (Simkl keeps anime as its
-own type, so `isAnime` comes free from which array the row arrived in).
+all three internal HTTP calls and the Wait node, the `extended=progress` /
+`extended=full` fallback dance on watched shows, and the per-show genre lookup
+that anime detection needed (Simkl keeps anime as its own type, so `isAnime`
+comes free from which array the row arrived in).
+
+### After importing
+
+The Execute Workflow nodes reference the feed workflow by an ID your n8n
+instance assigns, so it can't be baked into the file. Open **Push Live Session**
+and **Expire Feed Cache** in the Plex workflow and pick *Carrd Media Feed* from
+the dropdown. Import the feed first so it exists to be picked.
 
 ## How the feed talks to Simkl
 
@@ -200,17 +225,10 @@ In Docker, a container can't reach a public domain that resolves back to its
 own host — NAT hairpinning. Those requests **hang** rather than fail, which
 makes them easy to misread as something else. It bites twice here:
 
-- **Plex → n8n**: `http://N8n:443/webhook/plex-live-session` — a genuinely
-  different container, reached by name over the shared `webhooks` network.
-- **n8n → n8n**: `feedBaseUrl` in the Plex workflow's Workflow Config, set to
-  `http://localhost:443/webhook/media-feed`. This one is n8n calling *itself*,
-  so loopback is the right address: it can't resolve to anything else, and it
-  survives the container being renamed. (Revisit only if n8n ever moves to
-  queue mode with separate worker containers, where a worker's loopback would
-  not reach the webhook process.)
-
-Neither touches public DNS or NAT, and both survive the reverse proxy being
-down.
+There is now exactly **one** network hop in the whole system: Plex → n8n. Point
+Plex's webhook at `http://N8n:443/webhook/plex-live-session` — container to
+container over the shared `webhooks` network, no public DNS, no NAT, and it
+survives the reverse proxy being down. Everything downstream is in-process.
 
 Two traps worth writing down, since both cost time here:
 
