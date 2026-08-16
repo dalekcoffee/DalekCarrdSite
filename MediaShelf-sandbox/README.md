@@ -188,8 +188,29 @@ card's blur — the same field the old Trakt comment spoiler flag fed.
 5. Import both workflows from `n8n/`, fill in the `REPLACE-WITH-*` values, and
    repoint Plex's existing n8n webhook at `/plex-live-session`.
 6. Point `N8N_MEDIA_FEED_WEBHOOK` at the new feed workflow's **production** GET
-   URL. Both flush calls inside `Plex_Live_Session.json` hardcode that same URL
-   — update them together.
+   URL.
+
+### Container networking
+
+Plex gets **two** webhooks, doing different jobs — Simkl's own
+(`simkl.com/apps/plex/`, records watches) and n8n's `/plex-live-session`
+(drives the live row). The feed URL is never entered into Plex.
+
+In Docker, a container often can't reach a public domain that resolves back to
+its own host — NAT hairpinning. That bites twice here:
+
+- **Plex → n8n**: point Plex's webhook at whatever address Plex can actually
+  reach (often the container name or host IP, e.g.
+  `http://n8n:5678/webhook/plex-live-session`).
+- **n8n → n8n**: the live-session push and the two cache flushes are n8n calling
+  its own webhook. `feedBaseUrl` in the Plex workflow's Workflow Config is the
+  single place that address is set — switch it to the internal one
+  (`http://localhost:5678/webhook/media-feed`) if the public domain doesn't
+  resolve from inside the container.
+
+`Push Now State` deliberately does **not** swallow errors: a silent failure
+there means the Now Watching row stops updating with nothing to show why. The
+two flush nodes stay fire-and-forget — a missed flush only delays a refresh.
 
 > **The token can't live in an n8n credential.** The Simkl calls run inside a
 > Code node via `this.helpers.httpRequest`, and Code nodes can't read n8n's
