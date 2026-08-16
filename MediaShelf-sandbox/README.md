@@ -131,15 +131,55 @@ cache flush already uses.
 Dropped along the way: the Trakt OAuth credential, the `/scrobble/*` HTTP node,
 the `extended=progress` / `extended=full` fallback dance on watched shows, and
 the per-show genre lookup that anime detection needed (Simkl keeps anime as its
-own type, so `isAnime` comes free).
+own type, so `isAnime` comes free from which array the row arrived in).
+
+## How the feed talks to Simkl
+
+Simkl's docs are blunt about bulk syncing:
+
+> Always use `date_from` to sync only small changes. **If you don't follow these
+> rules, your client_id will be suspended.**
+
+So the feed never bulk-refetches. Every request:
+
+1. hits `/sync/activities` — cheap, and the response's `all` timestamp says
+   whether anything moved at all;
+2. if nothing changed, serves the local mirror and stops there (one request);
+3. if it did, pulls only the delta via `/sync/all-items/?date_from=…`;
+4. merges into a mirror held in workflow static data.
+
+All six ranges derive from that one mirror — `/sync/all-items` carries
+`user_rating` and `user_rated_at` per item, so ratings need no separate call.
+A `removed_from_list` change forces one full resync, since deletions can't
+appear in a `date_from` delta.
+
+**Favorites works differently to Trakt.** Simkl has no heart-list, and custom
+lists are still marked *IN DEV* in the API, so the three ratings tabs split the
+scale instead — no overlap, no extra requests:
+
+| Tab | Rule |
+| --- | --- |
+| Favorites | rating = 10 |
+| Top Rated | `favMinRating` … 9 |
+| All Others | rated below `favMinRating` |
+
+Notes come from Simkl **memos** (`memos=yes`), whose spoiler flag drives the
+card's blur — the same field the old Trakt comment spoiler flag fed.
 
 ## Simkl setup
 
-1. Create an app at Simkl's developer settings → note the **client id** and
-   **client secret**.
-2. Authorize once (PIN flow is easiest from n8n) and store the token. Simkl
-   access tokens are long-lived — they advertise a 5-year `expires_in` and in
-   practice stay valid until you revoke the app — so no refresh step is needed.
+1. Create an app at **simkl.com/settings/developer/new/**. Click the app name
+   afterwards to reveal the client id and secret — they're hidden until you do.
+2. Get an access token once, either flow:
+   - **PIN** — `GET /oauth/pin?client_id=…` → enter the code at `simkl.com/pin/`
+     → poll `GET /oauth/pin/{USER_CODE}?client_id=…`. No redirect needed.
+   - **Code** — browse to `simkl.com/oauth/authorize?response_type=code&client_id=…&redirect_uri=…`,
+     then POST `code` / `client_id` / `client_secret` / `redirect_uri` /
+     `grant_type=authorization_code` to `api.simkl.com/oauth/token`.
+
+   The 900s `expires_in` on the PIN is the window to *enter* the code. The
+   resulting **access token never expires** — it's valid until you revoke the
+   app under Connected Apps.
 3. **Import from Trakt** at `simkl.com/apps/import/trakt/` — watch history,
    ratings and watchlist. One-way; do it before switching the write path.
 4. Add the **Plex webhook** from `simkl.com/apps/plex/` to your Plex webhooks
@@ -151,10 +191,11 @@ own type, so `isAnime` comes free).
    URL. Both flush calls inside `Plex_Live_Session.json` hardcode that same URL
    — update them together.
 
-> Endpoint paths and exact response shapes live at **api.simkl.org** — that host
-> was unreachable from the machine this was built on, so the n8n side needs to be
-> mapped against the live docs. Everything above the feed boundary (the JSON
-> contract) is verified against this code; the Simkl-call side is not.
+> **The token can't live in an n8n credential.** The Simkl calls run inside a
+> Code node via `this.helpers.httpRequest`, and Code nodes can't read n8n's
+> credential store — the old Trakt feed had the same constraint. Keep the values
+> in the Config node, or set them as n8n env vars and use
+> `={{ $env.SIMKL_ACCESS_TOKEN }}` so they stay out of the workflow export.
 
 ## Known gaps
 
@@ -167,8 +208,12 @@ own type, so `isAnime` comes free).
   live progress bar on it without checking the numbers first.
 - **Simkl brand hex** on the media button is a placeholder near-black
   (`#111827`); confirm against Simkl's current brand color before production.
-- **Anime detection** moves from Trakt genre tags to Simkl's type/genre data —
-  worth spot-checking that anime films still land in both Anime and Movies.
+- **Anime films** arrive in Simkl's `anime` array, not `movies`, so they read as
+  `ANIME` rather than `FILM` and won't appear under the Movies chip. Simkl marks
+  them with `anime_type: "movie"` if you want them in both.
+- **Recent has no episode titles.** `/sync/all-items` gives `last_watched`
+  (`"S01E18"`) but not the episode's name, so the Recent detail panel shows
+  `E18` with no title. Fetching them would mean a per-show episodes call.
 - **Manual Plex marks don't scrobble.** Plex only fires webhooks on real
   playback; marking watched in the UI syncs nowhere.
 
