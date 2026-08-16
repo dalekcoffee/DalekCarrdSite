@@ -200,13 +200,17 @@ In Docker, a container can't reach a public domain that resolves back to its
 own host — NAT hairpinning. Those requests **hang** rather than fail, which
 makes them easy to misread as something else. It bites twice here:
 
-- **Plex → n8n**: `http://N8n:443/webhook/plex-live-session`
-- **n8n → n8n**: `feedBaseUrl` in the Plex workflow's Workflow Config, already
-  set to `http://N8n:443/webhook/media-feed`
+- **Plex → n8n**: `http://N8n:443/webhook/plex-live-session` — a genuinely
+  different container, reached by name over the shared `webhooks` network.
+- **n8n → n8n**: `feedBaseUrl` in the Plex workflow's Workflow Config, set to
+  `http://localhost:443/webhook/media-feed`. This one is n8n calling *itself*,
+  so loopback is the right address: it can't resolve to anything else, and it
+  survives the container being renamed. (Revisit only if n8n ever moves to
+  queue mode with separate worker containers, where a worker's loopback would
+  not reach the webhook process.)
 
-Both work because the containers share the `webhooks` network, so this is
-direct container-to-container — no public DNS, no NAT, and it survives the
-reverse proxy being down.
+Neither touches public DNS or NAT, and both survive the reverse proxy being
+down.
 
 Two traps worth writing down, since both cost time here:
 
