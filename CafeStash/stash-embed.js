@@ -15,11 +15,11 @@
   }
 
   function shimmerThumb(src) {
-    var imgTag = src
-      ? '<img src="' + esc(src) + '" alt="" ' +
-        'onload="this.classList.add(\'loaded\');var c=this.parentNode;c.querySelector(\'.shimmer\').style.display=\'none\';c.querySelector(\'.ph-icon\').style.display=\'none\';" ' +
-        'onerror="this.parentNode.querySelector(\'.shimmer\').style.display=\'none\';">'
-      : '<img src="" alt="">';
+    /* No image yet: skip the shimmer entirely and leave the photo placeholder. */
+    if (!src) return '<div class="c-thumb">' + PHOTO_ICON + '</div>';
+    var imgTag = '<img src="' + esc(src) + '" alt="" ' +
+      'onload="this.classList.add(\'loaded\');var c=this.parentNode;c.querySelector(\'.shimmer\').style.display=\'none\';c.querySelector(\'.ph-icon\').style.display=\'none\';" ' +
+      'onerror="this.parentNode.querySelector(\'.shimmer\').style.display=\'none\';">';
     return '<div class="c-thumb"><div class="shimmer"></div>' + PHOTO_ICON + imgTag + '</div>';
   }
 
@@ -83,6 +83,16 @@
         return buildCRow(item, rowExtraClass);
       }).join('');
       return colGroup(g.icon, g.group) + rows;
+    }).join('');
+  }
+
+  /* ── Build full-width group: rows sit in a 2-up grid on desktop ── */
+  function buildFullColumn(groups, rowExtraClass) {
+    return groups.map(function (g) {
+      var rows = g.items.map(function (item) {
+        return buildCRow(item, rowExtraClass);
+      }).join('');
+      return colGroup(g.icon, g.group) + '<div class="full-rows">' + rows + '</div>';
     }).join('');
   }
 
@@ -157,12 +167,16 @@
   function renderSetup(data) {
     var s = data.setup;
     var disclaimer = s.disclaimer ? tabFooter(s.disclaimer) : '';
+    var full = (s.full && s.full.length)
+      ? '<div class="full-col">' + buildFullColumn(s.full) + '</div>'
+      : '';
     return '<div class="tab-panel">' +
       secHead(s.heading, s.tag) +
       '<div class="dual-col">' +
         '<div class="dual-col-side">' + buildColumn(s.left)  + '</div>' +
         '<div class="dual-col-side">' + buildColumn(s.right) + '</div>' +
       '</div>' +
+      full +
       disclaimer +
       '</div>';
   }

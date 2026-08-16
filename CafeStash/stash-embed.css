@@ -243,6 +243,15 @@ body {
 .dual-col-side { border-right: 1px solid var(--b1); }
 .dual-col-side:last-child { border-right: none; }
 
+/* full-width group (third setup) — rows in a 2-up grid on desktop */
+.full-rows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+}
+.full-rows .c-row               { border-bottom: 1px solid var(--b1); }
+.full-rows .c-row:nth-child(odd){ border-right: 1px solid var(--b1); }
+
 /* group label */
 .col-group {
   display: flex; align-items: center; gap: 10px;
@@ -461,6 +470,8 @@ body {
 
   /* ── Setup: 2-col → 1-col stack ── */
   .dual-col { grid-template-columns: 1fr; }
+  .full-rows { grid-template-columns: 1fr; }
+  .full-rows .c-row:nth-child(odd) { border-right: none; }
   .dual-col-side { border-right: none !important; border-bottom: 1px solid var(--b1); }
   .dual-col-side:last-child { border-bottom: none; }
 
