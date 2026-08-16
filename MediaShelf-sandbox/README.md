@@ -196,17 +196,37 @@ Plex gets **two** webhooks, doing different jobs — Simkl's own
 (`simkl.com/apps/plex/`, records watches) and n8n's `/plex-live-session`
 (drives the live row). The feed URL is never entered into Plex.
 
-In Docker, a container often can't reach a public domain that resolves back to
-its own host — NAT hairpinning. That bites twice here:
+In Docker, a container can't reach a public domain that resolves back to its
+own host — NAT hairpinning. Those requests **hang** rather than fail, which
+makes them easy to misread as something else. It bites twice here:
 
-- **Plex → n8n**: point Plex's webhook at whatever address Plex can actually
-  reach (often the container name or host IP, e.g.
-  `http://n8n:5678/webhook/plex-live-session`).
-- **n8n → n8n**: the live-session push and the two cache flushes are n8n calling
-  its own webhook. `feedBaseUrl` in the Plex workflow's Workflow Config is the
-  single place that address is set — switch it to the internal one
-  (`http://localhost:5678/webhook/media-feed`) if the public domain doesn't
-  resolve from inside the container.
+- **Plex → n8n**: `http://N8n:443/webhook/plex-live-session`
+- **n8n → n8n**: `feedBaseUrl` in the Plex workflow's Workflow Config, already
+  set to `http://N8n:443/webhook/media-feed`
+
+Both work because the containers share the `webhooks` network, so this is
+direct container-to-container — no public DNS, no NAT, and it survives the
+reverse proxy being down.
+
+Two traps worth writing down, since both cost time here:
+
+- **The port is 443, not 5678.** `N8N_PORT=443`, and the `5678/tcp` that
+  `docker ps` reports is only the image's `EXPOSE` metadata — inert, and not
+  what n8n listens on. Check with
+  `docker exec -it N8n env | grep -i n8n_port`.
+- **The container is `N8n`, capital N.** Read the exact name from `docker ps`.
+
+Confirm any candidate address from inside the calling container before wiring
+it in — a `200` here means both directions will work:
+
+```bash
+docker exec -it plex curl -sS -o /dev/null -w '%{http_code}\n' \
+  http://N8n:443/webhook/media-feed?range=now
+```
+
+Distinguish the failures: *"Could not resolve host"* is a DNS or container-name
+problem, *"Failed to connect"* means DNS worked and the port is wrong, and a
+**hang** is hairpinning.
 
 `Push Now State` deliberately does **not** swallow errors: a silent failure
 there means the Now Watching row stops updating with nothing to show why. The
