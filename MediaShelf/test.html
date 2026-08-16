@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>Dalek's Shelf — Sandbox Test</title>
+  <title>Dalek's Shelf — Test Harness</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&family=Space+Grotesk:wght@400;500&display=swap">
@@ -23,11 +23,13 @@
 <body>
 
   <div id="sandbox-status">
-    Sandbox mode &mdash; params:
+    Test harness &mdash; params:
     <span>?mock=1</span> (fixtures, no network) &middot;
     <span>&amp;live=video|music|both|none</span> &middot;
     <span>&amp;newer=video|music</span> (winner when both live)<br>
-    real endpoints: <span>?trakt=&lt;feed-url&gt;</span> &middot; <span>&amp;music=&lt;url&gt;</span>
+    real endpoints: <span>?feed=&lt;feed-url&gt;</span> &middot; <span>&amp;music=&lt;url&gt;</span><br>
+    video half: <span>Simkl</span> (watching / recent / ratings) &middot;
+    <span>Plex webhook</span> (live now watching)
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════════ -->

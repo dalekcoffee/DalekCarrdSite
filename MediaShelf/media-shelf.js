@@ -2,49 +2,51 @@
   'use strict';
 
   var LB_USER    = 'Dalek.coffee';
-  var TRAKT_USER = 'dalekcoffee';
+  var SIMKL_USER = 'dalekcoffee';
 
   /*
    * ─── n8n webhook URLs ───────────────────────────────────────────────────────
    * Music (unchanged from production MusicEmbed):
    *   GET N8N_STATS_WEBHOOK + '?range=' + (now_playing | this_month | this_year | all_time)
    *
-   * Trakt feed (fill in after importing the "Carrd Trakt Feed" workflow — README):
-   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=now'        → live session
-   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=watching'   → { entries: [...] }
-   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=recent'     → { entries: [...] }
-   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=favorites'  → { entries: [...] }
-   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=toprated'   → { entries: [...] }
-   *   GET N8N_TRAKT_FEED_WEBHOOK + '?range=rated'      → { entries: [...] }  (the ratings below the Top Rated cut)
+   * Media feed (fill in after importing the "Carrd Media Feed" workflow — README):
+   *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=now'        → live session  (Plex webhook state)
+   *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=watching'   → { entries: [...] }  (Simkl)
+   *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=recent'     → { entries: [...] }  (Simkl)
+   *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=favorites'  → { entries: [...] }  (Simkl)
+   *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=toprated'   → { entries: [...] }  (Simkl)
+   *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=rated'      → { entries: [...] }  (the ratings below the Top Rated cut)
    *
-   * Leave the Trakt URL empty to run music-only (video sections show empty states).
+   * Leave the feed URL empty to run music-only (video sections show empty states).
    */
   var N8N_NP_WEBHOOK    = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
   var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
-  var N8N_TRAKT_FEED_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/trakt-scrobbling-feed';
+  var N8N_MEDIA_FEED_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/media-feed';
 
   /*
-   * ─── TEMPORARY: video half disabled ────────────────────────────────────────
-   * Trakt's API went VIP-only, so the public endpoints the feed reads no longer
-   * return complete data — progress bars, ratings and Now Watching were showing
-   * stale or wrong info on the live card. Everything below stays wired up; this
-   * flag just keeps it off the page until the feed is rebuilt on another
-   * provider. Flip to true to bring back: Now Watching, the "On Screen" section
-   * (Watching / Recent), the "Ratings & Reviews" section, and the Trakt link in
-   * the header. Music (Now Playing + Top Listens) is unaffected either way.
+   * ─── Video half: Simkl + Plex ──────────────────────────────────────────────
+   * Trakt limited free accounts to a single connected app, so the feed moved to
+   * Simkl (free, no app limit, TV + film + anime as first-class) for history,
+   * watching, ratings and favorites. The live "Now Watching" row does NOT come
+   * from Simkl — Simkl only records a watch at the 90% mark, which is far too
+   * late to be "live" — it comes straight from the Plex webhook state that n8n
+   * already keeps. Set false to hide the whole video half (Now Watching, "On
+   * Screen", "Ratings & Reviews", and the Simkl link in the header); music is
+   * unaffected either way.
    */
-  var VIDEO_ENABLED = false;
+  var VIDEO_ENABLED = true;
 
   /*
    * ─── Sandbox overrides (test.html only; inert on Carrd) ────────────────────
    *   ?mock=1&live=video|music|both|none&newer=video|music
-   *   ?trakt=<feed-url>&music=<url>
+   *   ?feed=<feed-url>&music=<url>
    */
   var QS = null;
   try { QS = new URLSearchParams(window.location.search); } catch (e) {}
   function qp(k) { return QS ? QS.get(k) : null; }
   var MOCK = qp('mock') === '1';
-  if (qp('trakt')) N8N_TRAKT_FEED_WEBHOOK = qp('trakt');
+  /* ?trakt= kept as an alias so old bookmarked sandbox URLs still work */
+  if (qp('feed') || qp('trakt')) N8N_MEDIA_FEED_WEBHOOK = qp('feed') || qp('trakt');
   if (qp('music')) { N8N_NP_WEBHOOK = qp('music'); N8N_STATS_WEBHOOK = qp('music'); }
   /* preview an accent from the design palette, e.g. ?accent=%23caa27a */
   if (qp('accent')) { try { document.documentElement.style.setProperty('--dks-accent', qp('accent')); } catch (e) {} }
@@ -70,7 +72,10 @@
     var defs = [
       { label: 'YouTube', icon: 'youtube', bb: '#FF0000', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.youtube.com/results?search_query=' + q },
       { label: 'IMDb',    icon: 'imdb',    bb: '#F5C518', bt: '#000000', bi: TO_BLACK, href: item.imdbUrl || ('https://www.imdb.com/find/?q=' + q) },
-      { label: 'Trakt',   icon: 'trakt',   bb: '#9F42C6', bt: '#ffffff', bi: TO_WHITE, href: item.traktUrl || ('https://trakt.tv/search?query=' + q) }
+      /* Simkl's simple-icons glyph is a flat monochrome mark; the chip uses a
+         near-black ground rather than a brand hex — confirm against Simkl's
+         current brand color before this ships to production. */
+      { label: 'Simkl',   icon: 'simkl',   bb: '#111827', bt: '#ffffff', bi: TO_WHITE, href: item.simklUrl || ('https://simkl.com/search/?q=' + q) }
     ];
     if (item.isAnime) defs.push({ label: 'Crunchyroll', icon: 'crunchyroll', bb: '#F47521', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.crunchyroll.com/search?q=' + q });
     return defs;
@@ -93,6 +98,9 @@
         ico.src = 'https://cdn.simpleicons.org/' + d.icon + '/' + ICO_REST;
         ico.alt = '';
         ico.setAttribute('aria-hidden', 'true');
+        /* An unknown simpleicons slug 404s into a broken-image glyph; drop the
+           icon instead so the chip degrades to a clean text-only button. */
+        ico.onerror = function () { if (this.parentNode) this.parentNode.removeChild(this); };
         a.appendChild(ico);
       }
       a.appendChild(document.createTextNode(d.label));
@@ -116,7 +124,8 @@
     return (words[0][0] + words[1][0]).toUpperCase();
   }
 
-  /* ─── Trakt stores ratings as 1-10; its UI shows 5 stars in .5 steps ─── */
+  /* ─── Simkl stores ratings as 1-10, same as Trakt did; the shelf shows
+         5 stars in .5 steps, so the scale carries over with no conversion ─── */
   function stars(score10) {
     var s = Math.round(score10) / 2;
     return (s % 1 === 0) ? String(s) : s.toFixed(1);
@@ -153,7 +162,9 @@
     noteDate:     ['note_date'],
     noteSpoiler:  ['note_spoiler', 'spoiler'],
     imdbUrl:      ['imdb_url'],
-    traktUrl:     ['trakt_url'],
+    /* trakt_url/simklUrl stay in the alias list so a feed still emitting the
+       old field name keeps linking somewhere sensible during the migration. */
+    simklUrl:     ['simkl_url', 'traktUrl', 'trakt_url'],
     isAnime:      ['is_anime']
   };
   function normalizeEntry(e) {
@@ -347,7 +358,7 @@
     mount.id = 'dks-shelf';
     (document.currentScript && document.currentScript.parentNode || document.body).appendChild(mount);
   }
-  /* The two Trakt-backed sections; omitted from the card while VIDEO_ENABLED
+  /* The two Simkl-backed sections; omitted from the card while VIDEO_ENABLED
      is false so nothing renders a stale or empty video panel. */
   var VIDEO_SECTIONS_HTML =
       '<div class="dks-section">' +
@@ -394,7 +405,7 @@
         '<span class="dks-title">Dalek’s Shelf</span>' +
         '<span class="dks-src">' +
           (VIDEO_ENABLED
-            ? '<a class="dks-src-link" href="https://trakt.tv/users/' + TRAKT_USER + '" target="_blank" rel="noopener noreferrer">Trakt</a> · '
+            ? '<a class="dks-src-link" href="https://simkl.com/' + SIMKL_USER + '/" target="_blank" rel="noopener noreferrer">Simkl</a> · '
             : '') +
           '<a class="dks-src-link" href="https://listenbrainz.org/user/Dalek.coffee/stats/?range=year" target="_blank" rel="noopener noreferrer">ListenBrainz</a>' +
         '</span>' +
@@ -435,7 +446,7 @@
 
   function el(id) { return document.getElementById(id); }
 
-  /* ═══ UNIFIED NOW PLAYING (music + Trakt, latest activity wins) ═══════════ */
+  /* ═══ UNIFIED NOW PLAYING (music + Plex, latest activity wins) ════════════ */
   var npOpen = true;
   var liveState = {
     music: { active: false, key: null, track: null, changedAt: 0 },
@@ -556,7 +567,11 @@
       .catch(function () { scheduleNextPoll(); });
   }
 
-  /* ── Trakt now-watching poll (30 s; server caches 20 s) ── */
+  /* ── Now-watching poll (30 s; server caches 20 s) ──────────────────────────
+     Backed by the Plex webhook state n8n holds, not by Simkl: Plex pushes
+     media.play / pause / resume / stop as they happen, so this row goes live
+     the moment playback starts. A Simkl-backed version could only ever light
+     up at the 90% scrobble mark. */
   var nwTimer = null;
   var NW_INTERVAL = 30000;
   function scheduleNextNWPoll(delay) {
@@ -578,8 +593,8 @@
   function pollNowWatching() {
     if (!VIDEO_ENABLED) return;
     if (MOCK) { applyVideoNW(mockVideoLive()); return; }
-    if (!N8N_TRAKT_FEED_WEBHOOK) return;
-    fetch(N8N_TRAKT_FEED_WEBHOOK + '?range=now&t=' + Date.now())
+    if (!N8N_MEDIA_FEED_WEBHOOK) return;
+    fetch(N8N_MEDIA_FEED_WEBHOOK + '?range=now&t=' + Date.now())
       .then(function (r) {
         if (!r.ok) { scheduleNextNWPoll(); return null; }
         scheduleNextNWPoll();
@@ -677,8 +692,8 @@
 
   /* ═══ POSTER STRIPS (Currently Watching / Favorites) ══════════════════════ */
   var POSTER_PITCH = 118; /* 104 poster + 14 gap */
-  var RECENT_LIMIT = 10;  /* Recent shows the 10 most recent; the 11th tile links to Trakt */
-  var TRAKT_HISTORY_URL = 'https://app.trakt.tv/profile/' + TRAKT_USER + '?mode=media';
+  var RECENT_LIMIT = 10;  /* Recent shows the 10 most recent; the 11th tile links to Simkl */
+  var SIMKL_HISTORY_URL = 'https://simkl.com/' + SIMKL_USER + '/';
   var stripState = { watch: { idx: 0, entries: [], mode: 'watching' }, fav: { idx: 0, entries: [], mode: 'favorites' } };
 
   /* ─── Best Of category filter (All / Anime / TV Shows / Movies) ──────────
@@ -712,9 +727,9 @@
 
   function recentProgress(e) {
     if (!e) return { known: false };
-    /* A movie in Recent history is always a finished sitting (Trakt only logs
-       it once the scrobble completes) — full bar, same visual as a finished
-       series. */
+    /* A movie in Recent history is always a finished sitting (Simkl only logs
+       it once the scrobble completes at 90%) — full bar, same visual as a
+       finished series. */
     if (e.type === 'movie') return { known: true, pct: 100, done: true, movie: true };
     var watched = e.epWatched, total = e.epTotal;
     if (!total) {
@@ -785,9 +800,9 @@
     fillBtns(d.querySelector('.dks-btns'), mediaBrandDefs(e));
   }
 
-  /* Reviews marked sensitive on Trakt ("contains spoilers" → noteSpoiler)
-     blur in full; review text can also carry inline [spoiler]…[/spoiler]
-     tags, which blur per-segment. Click (or Enter/Space) reveals. */
+  /* Simkl memos/reviews flagged as containing spoilers (→ noteSpoiler) blur in
+     full; review text can also carry inline [spoiler]…[/spoiler] tags, which
+     blur per-segment. Click (or Enter/Space) reveals. */
   var SPOILER_TAG_RE = /\[spoiler\]([\s\S]*?)\[\/spoiler\]/gi;
   function renderNote(noteEl, hintEl, e) {
     var note = e.note || '';
@@ -892,7 +907,7 @@
     var hadAny = all.length > 0;
     if (kind === 'fav') all = all.filter(matchesFavFilter);
     /* Recent caps at the 10 most recent; a "see more" tile (below) links to the
-       full Trakt history whenever it's the active tab and there's anything to
+       full Simkl history whenever it's the active tab and there's anything to
        show. Sort by watch time first — don't trust the feed to be newest-first,
        or the cap could silently drop the newest watches instead of the oldest. */
     var isRecent = kind === 'watch' && st.mode === 'recent';
@@ -910,7 +925,7 @@
       empty.style.width = '100%';
       empty.textContent = (kind === 'fav' && favFilter !== 'all' && hadAny)
         ? 'No ' + FAV_FILTER_EMPTY[favFilter] + ' in this list yet'
-        : ((N8N_TRAKT_FEED_WEBHOOK || MOCK) ? 'Nothing here yet' : 'Trakt webhook not configured yet');
+        : ((N8N_MEDIA_FEED_WEBHOOK || MOCK) ? 'Nothing here yet' : 'Media feed not configured yet');
       strip.appendChild(empty);
       zone.classList.add('dks-hide');
       return;
@@ -992,11 +1007,11 @@
   function buildSeeMore() {
     var wrap = document.createElement('div'); wrap.className = 'dks-poster-wrap dks-seemore';
     var a = document.createElement('a'); a.className = 'dks-seemore-box';
-    a.href = TRAKT_HISTORY_URL; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.href = SIMKL_HISTORY_URL; a.target = '_blank'; a.rel = 'noopener noreferrer';
     var arrow = document.createElement('span'); arrow.className = 'dks-seemore-arrow'; arrow.textContent = '→';
     var txt = document.createElement('span'); txt.className = 'dks-seemore-txt'; txt.textContent = 'See More';
     a.appendChild(arrow); a.appendChild(txt);
-    var title = document.createElement('div'); title.className = 'dks-poster-title'; title.textContent = 'On Trakt';
+    var title = document.createElement('div'); title.className = 'dks-poster-title'; title.textContent = 'On Simkl';
     wrap.appendChild(a); wrap.appendChild(title);
     return wrap;
   }
@@ -1016,8 +1031,8 @@
     var cacheKey = 'feed_' + range;
     if (dataCache[cacheKey]) { renderStrip(kind, dataCache[cacheKey], range); return; }
     if (MOCK) { dataCache[cacheKey] = mockFeedEntries(range); renderStrip(kind, dataCache[cacheKey], range); return; }
-    if (!N8N_TRAKT_FEED_WEBHOOK) { renderStrip(kind, [], range); return; }
-    fetch(N8N_TRAKT_FEED_WEBHOOK + '?range=' + range + '&t=' + Date.now())
+    if (!N8N_MEDIA_FEED_WEBHOOK) { renderStrip(kind, [], range); return; }
+    fetch(N8N_MEDIA_FEED_WEBHOOK + '?range=' + range + '&t=' + Date.now())
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (d) {
         var entries = ((d && d.entries) || []).map(normalizeEntry);
@@ -1082,7 +1097,7 @@
       watching: true, type: 'episode',
       title: 'Frieren: Beyond Journey’s End', episodeTitle: 'The Land Where Souls Rest',
       season: 1, episode: 18, totalEpisodes: 28, kind: 'ANIME', isAnime: true,
-      poster: '', traktUrl: 'https://trakt.tv/shows/frieren-beyond-journey-s-end',
+      poster: '', simklUrl: 'https://simkl.com/tv/1188266/frieren-beyond-journeys-end',
       imdbUrl: 'https://www.imdb.com/title/tt22248376/',
       updated_at: MOCK_NEWER === 'video' ? Date.now() + 5000 : Date.now() - 600000
     };
@@ -1091,52 +1106,52 @@
   function mockFeedEntries(range) {
     var nowSec = Math.floor(Date.now() / 1000);
     if (range === 'toprated') return [
-      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', noteDate: '14 Mar 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', noteDate: '14 Mar 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', simklUrl: '', imdbUrl: '' }
     ];
     if (range === 'rated') return [
-      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone.', noteDate: '14 Mar 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, score: 7, meta: 'SERIES · 82 EP', note: 'Still funny, but it peaked three seasons ago.', noteDate: '5 Jun 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'The Witcher', kind: 'SERIES', isAnime: false, score: 5, meta: 'SERIES · 24 EP', note: 'The timeline gymnastics buried a decent story.', noteDate: '11 Apr 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Ex-Arm', kind: 'ANIME', isAnime: true, score: 2, meta: 'ANIME · 12 EP', note: 'Watched it so you don’t have to. Don’t.', noteDate: '1 Apr 2026', poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone.', noteDate: '14 Mar 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop.', noteDate: '2 Jan 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, score: 7, meta: 'SERIES · 82 EP', note: 'Still funny, but it peaked three seasons ago.', noteDate: '5 Jun 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'The Witcher', kind: 'SERIES', isAnime: false, score: 5, meta: 'SERIES · 24 EP', note: 'The timeline gymnastics buried a decent story.', noteDate: '11 Apr 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Ex-Arm', kind: 'ANIME', isAnime: true, score: 2, meta: 'ANIME · 12 EP', note: 'Watched it so you don’t have to. Don’t.', noteDate: '1 Apr 2026', poster: '', simklUrl: '', imdbUrl: '' }
     ];
     if (range === 'recent') return [
-      { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', epWatched: 18, epTotal: 28, watchedAt: nowSec - 3 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, type: 'episode', season: 9, number: 2, episodeTitle: 'Rick, Bts, Sev...', epWatched: 82, epTotal: 82, watchedAt: nowSec - 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 2 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 12, episodeTitle: 'Let’s Go to the Cursed House', epWatched: 12, epTotal: 12, watchedAt: nowSec - 4 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 18, episodeTitle: 'Aura the Guillotine', epWatched: 18, epTotal: 28, watchedAt: nowSec - 3 * 3600, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, type: 'episode', season: 9, number: 2, episodeTitle: 'Rick, Bts, Sev...', epWatched: 82, epTotal: 82, watchedAt: nowSec - 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 2 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 12, episodeTitle: 'Let’s Go to the Cursed House', epWatched: 12, epTotal: 12, watchedAt: nowSec - 4 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       /* Severance ships no totals here on purpose — exercises the fallback that
          borrows series progress from the Watching feed (4/10 there). */
-      { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', epWatched: null, epTotal: null, watchedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'One Piece', kind: 'ANIME', isAnime: true, type: 'episode', season: 21, number: 1088, episodeTitle: 'The Battle Ends', epWatched: 1088, epTotal: null, watchedAt: nowSec - 8 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'The Bear', kind: 'SERIES', isAnime: false, type: 'episode', season: 3, number: 6, episodeTitle: 'Napkins', epWatched: 24, epTotal: 28, watchedAt: nowSec - 10 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, type: 'movie', watchedAt: nowSec - 12 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Jujutsu Kaisen', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 23, episodeTitle: 'Shibuya Incident', epWatched: 47, epTotal: 47, watchedAt: nowSec - 15 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
+      { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', epWatched: null, epTotal: null, watchedAt: nowSec - 6 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'One Piece', kind: 'ANIME', isAnime: true, type: 'episode', season: 21, number: 1088, episodeTitle: 'The Battle Ends', epWatched: 1088, epTotal: null, watchedAt: nowSec - 8 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'The Bear', kind: 'SERIES', isAnime: false, type: 'episode', season: 3, number: 6, episodeTitle: 'Napkins', epWatched: 24, epTotal: 28, watchedAt: nowSec - 10 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, type: 'movie', watchedAt: nowSec - 12 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Jujutsu Kaisen', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 23, episodeTitle: 'Shibuya Incident', epWatched: 47, epTotal: 47, watchedAt: nowSec - 15 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       /* Arcane ships no totals AND isn't in the Watching mock — exercises the
          "absent from Watching means finished" inference (full bar). */
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 9, episodeTitle: 'The Dirt Under Your Nails', epWatched: null, epTotal: null, watchedAt: nowSec - 18 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 4, episodeTitle: 'A Man With No Sword', epWatched: 28, epTotal: 48, watchedAt: nowSec - 21 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 24 * 86400, poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 9, episodeTitle: 'The Dirt Under Your Nails', epWatched: null, epTotal: null, watchedAt: nowSec - 18 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 4, episodeTitle: 'A Man With No Sword', epWatched: 28, epTotal: 48, watchedAt: nowSec - 21 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 24 * 86400, poster: '', simklUrl: '', imdbUrl: '' }
     ];
     if (range === 'favorites') return [
-      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', noteDate: '9 Feb 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me — and that ending broke me.', noteDate: '21 Nov 2025', noteSpoiler: true, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', note: '', poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', noteDate: '30 Dec 2025', poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', noteDate: '9 Feb 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me — and that ending broke me.', noteDate: '21 Nov 2025', noteSpoiler: true, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', note: '', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', noteDate: '30 Dec 2025', poster: '', simklUrl: '', imdbUrl: '' }
     ];
     return [
-      { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, epWatched: 18, epTotal: 28, updatedAt: nowSec - 2 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Jujutsu Kaisen', kind: 'ANIME', isAnime: true, epWatched: 15, epTotal: 23, updatedAt: nowSec - 5 * 3600, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, epWatched: 7, epTotal: 12, updatedAt: nowSec - 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'Severance', kind: 'SERIES', isAnime: false, epWatched: 4, epTotal: 10, updatedAt: nowSec - 3 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'One Piece', kind: 'ANIME', isAnime: true, epWatched: 1088, epTotal: null, updatedAt: nowSec - 6 * 86400, poster: '', traktUrl: '', imdbUrl: '' },
-      { title: 'The Bear', kind: 'SERIES', isAnime: false, epWatched: 5, epTotal: 10, updatedAt: nowSec - 7 * 86400, poster: '', traktUrl: '', imdbUrl: '' }
+      { title: 'Frieren: Beyond Journey’s End', kind: 'ANIME', isAnime: true, epWatched: 18, epTotal: 28, updatedAt: nowSec - 2 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Jujutsu Kaisen', kind: 'ANIME', isAnime: true, epWatched: 15, epTotal: 23, updatedAt: nowSec - 5 * 3600, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, epWatched: 7, epTotal: 12, updatedAt: nowSec - 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Severance', kind: 'SERIES', isAnime: false, epWatched: 4, epTotal: 10, updatedAt: nowSec - 3 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'One Piece', kind: 'ANIME', isAnime: true, epWatched: 1088, epTotal: null, updatedAt: nowSec - 6 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'The Bear', kind: 'SERIES', isAnime: false, epWatched: 5, epTotal: 10, updatedAt: nowSec - 7 * 86400, poster: '', simklUrl: '', imdbUrl: '' }
     ];
   }
 
