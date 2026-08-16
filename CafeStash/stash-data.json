@@ -101,7 +101,7 @@
         "group": "Audio",
         "icon": "🎙",
         "items": [
-          { "label": "Microphone", "name": "Hollyland Lark M2", "desc": "Compact wireless lav for clear voice pickup.",        "url": "https://amzn.to/4syimtl",                                                        "img": "Images/Setup/Hollyland Lark M2 USBC.png" },
+          { "label": "Microphone", "name": "Hollyland Lark M2", "desc": "Compact wireless lav for clear voice pickup.",        "url": "https://amzn.to/4syimtl",                                                        "img": "Images/Setup/Hollyland Lark M2 USBC.png", "note": "Doing VR and IRL? The Camera RX + USB-C RX version covers both setups with one mic kit - run the camera receiver on the IRL rig and plug the USB-C receiver into the PC for VR." },
           { "label": "IEMs",       "name": "GK KUNTEN",         "desc": "Budget in-ears with solid staging.",                  "url": "https://www.aliexpress.us/w/wholesale-GK-KUNTEN.html?spm=a2g0o.detail.search.0","img": "Images/Setup/GK KUNTEN.png" },
           { "label": "Wireless IEM", "name": "Melonare PM-2",     "desc": "Wireless IEM transmitter for cable-free monitoring.", "url": "https://amzn.to/3NZZKD2",                                                        "img": "Images/Setup/PM-2 Portable Wireless in Ear Monitor System.png" }
         ]
@@ -115,7 +115,7 @@
           { "label": "Chest Rig",       "name": "BECOJADDE Running Vest",   "desc": "Carries the whole IRL kit hands-free while walking.",                    "url": "https://amzn.to/4wGHxLq", "img": "Images/Setup/BECOJADDE Running Vest.png" },
           { "label": "Camera",          "name": "Xtra Edge Pro",            "desc": "The main IRL action cam - small, tough, easy to mount.",                 "url": "https://amzn.to/4xAbnBO", "img": "Images/Setup/Xtra Edge Pro.png" },
           { "label": "Camera \u00b7 Alt",   "name": "DJI Osmo Action 5 Pro",    "desc": "Basically the same camera as the Xtra Edge Pro, just more expensive.",   "url": "https://amzn.to/4wuJWZe", "img": "Images/Setup/DJI Osmo Action 5 Pro.png", "alt": true },
-          { "label": "Microphone",      "name": "Hollyland Lark M2",        "desc": "Wireless lav kit with both the camera RX and the USB-C RX.",             "url": "https://amzn.to/4wt3ahO", "img": "Images/Setup/Hollyland Lark M2 Camera RX + USB-C RX.png" },
+          { "label": "Microphone",      "name": "Hollyland Lark M2",        "desc": "Wireless lav kit with both the camera RX and the USB-C RX.",             "url": "https://amzn.to/4wt3ahO", "img": "Images/Setup/Hollyland Lark M2 Camera RX + USB-C RX.png", "note": "Doing VR and IRL? The Camera RX + USB-C RX version covers both setups with one mic kit - run the camera receiver on the IRL rig and plug the USB-C receiver into the PC for VR." },
           { "label": "Camera Mount",    "name": "ULANZI MA37",              "desc": "Folding grip and tripod for handheld shots on the go.",                  "url": "https://amzn.to/4zmNgbG", "img": "Images/Setup/ULANZI MA37.png" },
           { "label": "Clip Mount",      "name": "ULANZI CK02",              "desc": "Backpack strap clip that locks the camera onto the vest.",               "url": "https://www.amazon.com/dp/B0F194BNP3", "img": "Images/Setup/ULANZI CK02.png" },
           { "label": "Espresso",        "name": "Fanttik Cafein 11",        "desc": "Portable espresso maker - cafe coffee anywhere.",                        "url": "https://amzn.to/3U2VPIr", "img": "Images/Setup/Fanttik Cafein 11.png" },

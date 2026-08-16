@@ -381,7 +381,26 @@ body {
   position: relative;
   cursor: help;
 }
-.alt-badge::after {
+/* ── NOTE BADGE (cross-setup tips) ── */
+.note-badge {
+  display: inline-block;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(124,131,255,0.75);
+  border: 1px solid rgba(124,131,255,0.75);
+  padding: 2px 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  vertical-align: middle;
+  align-self: flex-start;
+  position: relative;
+  cursor: help;
+}
+.alt-badge + .note-badge, .disc-badge + .note-badge { margin-left: 5px; }
+.note-badge::after { border-top-color: var(--pur); }
+
+.alt-badge::after,
+.note-badge::after {
   content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + 7px);
@@ -403,7 +422,7 @@ body {
   white-space: normal;
   font-family: 'Space Mono', monospace;
 }
-.alt-badge:hover::after { opacity: 1; }
+.alt-badge:hover::after, .note-badge:hover::after { opacity: 1; }
 
 /* ── PER-TAB DISCLAIMER ── */
 .tab-footer {
@@ -503,10 +522,12 @@ body {
   .sec-tag         { font-size: 9px; }
 
   /* ── Tooltip: keep readable but constrain width ── */
-  .alt-badge::after { width: 260px; font-size: 11px; left: 0; transform: none; }
+  .alt-badge::after,
+  .note-badge::after { width: 260px; font-size: 11px; left: 0; transform: none; }
 
   /* ── Alt badge: expanded tap target (8px halo around the badge) ── */
-  .alt-badge::before {
+  .alt-badge::before,
+  .note-badge::before {
     content: '';
     position: absolute;
     top: -8px; right: -8px; bottom: -8px; left: -8px;
