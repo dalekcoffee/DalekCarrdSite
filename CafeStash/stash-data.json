@@ -48,7 +48,9 @@
         { "label": "Pour Over Caddy",    "name": "HEXNUB Pour Over Caddy",      "desc": "Keeps your pour over kit tidy on the counter.",                               "url": "https://amzn.to/4t4kjgU", "img": "Images/Coffee/HEXNUB – Pour Over Caddy.png" },
         { "label": "Grinder Brush",      "name": "VSGO Magnetic Grinder Brush", "desc": "Magnetic handle for easy grinder cleanup.",                                   "url": "https://amzn.to/4crNvbS", "img": "Images/Coffee/VSGO Magnetic Handle Coffee Grinder Brush.png",   "alt": true },
         { "label": "Descaler",           "name": "De'Longhi EcoDecalk",         "desc": "Keep the machine running clean and healthy.",                                  "url": "https://amzn.to/4e3vYrK", "img": "Images/Coffee/De'Longhi EcoDecalk Descaler.png" },
-        { "label": "Ultrasonic Cleaner", "name": "Miorcols Ultrasonic Cleaner", "desc": "Essential for cleaning puck screens; works great for other small parts too.", "url": "https://amzn.to/4toM2bZ", "img": "Images/Coffee/Miorcols Ultrasonic Cleaner.png",                  "alt": true }
+        { "label": "Ultrasonic Cleaner", "name": "Miorcols Ultrasonic Cleaner", "desc": "Essential for cleaning puck screens; works great for other small parts too.", "url": "https://amzn.to/4toM2bZ", "img": "Images/Coffee/Miorcols Ultrasonic Cleaner.png",                  "alt": true },
+        { "label": "Portable Espresso", "name": "Fanttik Cafein 11",       "desc": "Coffee on the go - Dalek takes this one out on IRL streams.",                 "url": "https://amzn.to/3U2VPIr", "img": "Images/Coffee/Fanttik Cafein 11.png" },
+        { "label": "Travel Grinder",    "name": "Rsoilch Coffee Grinder",  "desc": "Coffee on the go - a little awkward to hold since you have to grab it by the top to avoid accidentally changing the grind size, but it works well!", "url": "https://amzn.to/4cGMyw0", "img": "Images/Coffee/Rsoilch Coffee Grinder.png" }
       ]
     }
   },
