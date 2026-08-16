@@ -44,8 +44,9 @@
       '</span><span class="col-group-label">' + esc(label) + '</span></div>';
   }
 
-  function noteBadge(text) {
-    return '<span class="note-badge" data-tooltip="' + esc(text) + '">VR + IRL</span>';
+  function noteBadge(text, label) {
+    return '<span class="note-badge" data-tooltip="' + esc(text) + '">' +
+      esc(label || 'Note') + '</span>';
   }
 
   var ALT_BADGE  = '<span class="alt-badge" data-tooltip="Alt Picks are alternatives Dalek found after his original item if his current items are no longer available for purchase. These are the items he would probably buy next. - Compatibility between items has not been verified.">Alt Pick</span>';
@@ -67,7 +68,7 @@
     var tag   = hasLink ? 'a' : 'div';
     var attrs = hasLink ? ' href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer"' : '';
     var badge = item.alt ? ALT_BADGE : (item.discontinued ? DISC_BADGE : '');
-    if (item.note) badge += noteBadge(item.note);
+    if (item.note) badge += noteBadge(item.note, item.noteLabel);
     var desc  = item.desc ? '<div class="c-desc">' + esc(item.desc) + '</div>' : '';
     return '<' + tag + ' class="' + cls + '"' + attrs + '>' +
       shimmerThumb(imgUrl(item.img)) +
