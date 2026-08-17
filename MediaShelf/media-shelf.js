@@ -124,21 +124,13 @@
     return (words[0][0] + words[1][0]).toUpperCase();
   }
 
-  /* ─── Simkl stores ratings as 1-10, same as Trakt did; the shelf shows
-         5 stars in .5 steps, so the scale carries over with no conversion ─── */
-  function stars(score10) {
-    var s = Math.round(score10) / 2;
+  /* ─── Ratings are shown on Simkl's own 1-10 scale ────────────────────────
+   * The Trakt-era card halved the score into 5 star glyphs, so a 9 rendered
+   * as 4½ stars and didn't match what Simkl shows. Displaying the raw score
+   * keeps the two in agreement and reads unambiguously at tile size. */
+  function scoreText(score10) {
+    var s = Math.round(score10 * 10) / 10;
     return (s % 1 === 0) ? String(s) : s.toFixed(1);
-  }
-
-  /* Literal star glyphs: 9/10 → ★★★★ + half star (clipped glyph) */
-  function starsMarkup(score10) {
-    var s = Math.round(score10) / 2;
-    var full = Math.floor(s);
-    var html = '';
-    for (var i = 0; i < full; i++) html += '<span class="dks-star">★</span>';
-    if (s - full >= 0.5) html += '<span class="dks-star-half">★</span>';
-    return html;
   }
 
   /* ─── Timestamp tolerance: unix seconds, unix millis, or ISO string ─── */
@@ -871,11 +863,14 @@
       '<div class="dks-d-notedate"></div>' +
       '<div class="dks-btns"></div>';
     d.querySelector('.dks-d-title').textContent = e.title;
+    var scoreEl = d.querySelector('.dks-d-score');
     if (e.score) {
-      d.querySelector('.dks-d-score').innerHTML = starsMarkup(e.score);
-      d.querySelector('.dks-d-score').title = stars(e.score) + '/5';
+      scoreEl.innerHTML = '<span class="dks-score-val"></span><span class="dks-score-max">/10</span>';
+      scoreEl.querySelector('.dks-score-val').textContent = scoreText(e.score);
+      scoreEl.title = scoreText(e.score) + ' out of 10';
     } else {
-      d.querySelector('.dks-d-score').textContent = '—';
+      scoreEl.textContent = '—';
+      scoreEl.removeAttribute('title');
     }
     d.querySelector('.dks-d-meta').textContent = e.meta || (e.kind || '');
     renderNote(d.querySelector('.dks-d-note'), d.querySelector('.dks-spoiler-hint'), e);
@@ -983,7 +978,7 @@
         poster.appendChild(ol);
       } else if (e.score) {
         var badge = document.createElement('span'); badge.className = 'dks-badge';
-        badge.textContent = '★' + stars(e.score);
+        badge.textContent = '★' + scoreText(e.score);
         poster.appendChild(badge);
       }
 

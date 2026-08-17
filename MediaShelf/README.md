@@ -54,8 +54,9 @@ weight — keep the webhook receiver (it feeds the live row), drop the Trakt cal
 | "See More" tile | On Trakt | On Simkl |
 | Test param | `?trakt=` | `?feed=` (`?trakt=` still aliased) |
 
-Rating scale is unchanged: Simkl stores 1–10 exactly as Trakt did, and the card
-renders 5 stars in half-steps, so `score` carries over with no conversion.
+Ratings are shown on Simkl's own **1–10** scale — `9/10` in the detail panel,
+`★9` on the poster badge. The Trakt-era card halved the score into five star
+glyphs, so a 9 rendered as 4½ stars and disagreed with what Simkl displays.
 
 Music (Now Playing + Top Listens, ListenBrainz via the existing webhook) is
 untouched.
@@ -86,7 +87,7 @@ All return `{ "entries": [ … ] }`. Fields per entry:
 | Field | Used by | Notes |
 | --- | --- | --- |
 | `title` | all | required |
-| `poster` | all | direct image URL (TMDB); blank → hatch tile |
+| `poster` | all | direct image URL (Simkl art, TMDB fallback); blank → hatch tile |
 | `kind` | all | `ANIME` / `SERIES` / `FILM` — shown in meta |
 | `isAnime` | all | drives the Anime chip + Crunchyroll button |
 | `type` | recent | `movie` or `episode` |
@@ -190,6 +191,18 @@ scale instead — no overlap, no extra requests:
 
 Notes come from Simkl **memos** (`memos=yes`), whose spoiler flag drives the
 card's blur — the same field the old Trakt comment spoiler flag fed.
+
+**Posters come from Simkl's own art**, built as
+`https://wsrv.nl/?url=https://simkl.in/posters/{poster}_ca.webp` (190×279, the
+tile size; Simkl asks that images go via wsrv.nl to spare their servers). Anime
+frequently carries no TMDB id — often just `simkl`/`imdb`/`mal` — which is why a
+TMDB-only lookup left most anime tiles blank. TMDB remains a fallback.
+
+**Anime seasons are grouped into one card.** Simkl's anime database is
+AniDB-derived, so *Mob Psycho 100*, *II* and *III* are three separate titles,
+where Trakt's TVDB nested them as seasons of one show. Grouping merges them on
+the shared TVDB id: episodes sum (32/37), the highest season rating wins, and
+the card links to the show under its base title.
 
 ## Simkl setup
 

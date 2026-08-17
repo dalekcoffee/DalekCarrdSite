@@ -136,13 +136,10 @@
 .dks-spoiler-hint{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dks-accent);opacity:.75;margin-bottom:7px}
 /* Favorites zone carries up to 4 lines of note text + spoiler hint + review date */
 #dks-fav-zone{height:214px}
-/* Literal star glyphs in the detail panel */
-.dks-d-score .dks-star{color:var(--dks-accent);letter-spacing:1px}
-/* Half star: a dim full glyph with an accent left-half overlaid — same glyph,
-   same box, so it stays vertically aligned with the full stars (the old clip
-   approach shifted the inline-block baseline via overflow:hidden) */
-.dks-d-score .dks-star-half{position:relative;display:inline-block;letter-spacing:1px;color:rgba(255,255,255,0.18);vertical-align:baseline}
-.dks-d-score .dks-star-half::before{content:'\2605';position:absolute;left:0;top:0;width:50%;height:100%;overflow:hidden;color:var(--dks-accent)}
+/* Score on Simkl's 1-10 scale: the value carries the accent, the "/10" sits
+   back so the number reads first at a glance */
+.dks-d-score .dks-score-val{color:var(--dks-accent)}
+.dks-d-score .dks-score-max{font-size:11px;color:#5f5f66;margin-left:1px}
 
 /* ── Platform buttons ── */
 .dks-btns{display:flex;flex-wrap:wrap;gap:6px}
