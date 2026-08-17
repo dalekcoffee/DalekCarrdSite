@@ -3,7 +3,6 @@
 # TMDB API key, Plex account id), and a scrubbed copy drifts out of date the
 # moment the real workflow is edited in n8n. The workflows live in n8n; this
 # repo holds the embeds and the feed contract they depend on.
-# See MediaShelf-sandbox/README.md for the design the workflows implement.
 **/n8n/
 Plex_Live_Session.json
 Carrd_Media_Feed.json

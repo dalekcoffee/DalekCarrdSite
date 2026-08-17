@@ -13,7 +13,7 @@
    * Music (unchanged from production MusicEmbed):
    *   GET N8N_STATS_WEBHOOK + '?range=' + (now_playing | this_month | this_year | all_time)
    *
-   * Media feed (fill in after importing the "Carrd Media Feed" workflow — README):
+   * Media feed (the "Carrd Media Feed" workflow in n8n):
    *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=now'        → live session  (Plex webhook state)
    *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=watching'   → { entries: [...] }  (Simkl)
    *   GET N8N_MEDIA_FEED_WEBHOOK + '?range=recent'     → { entries: [...] }  (Simkl)
