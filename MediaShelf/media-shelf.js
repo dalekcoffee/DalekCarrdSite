@@ -2,7 +2,11 @@
   'use strict';
 
   var LB_USER    = 'Dalek.coffee';
-  var SIMKL_USER = 'dalekcoffee';
+  /* Simkl addresses profiles by numeric account id, not by username —
+     simkl.com/dalekcoffee/ does not resolve to the profile. Find yours in the
+     URL of your own dashboard. */
+  var SIMKL_USER_ID = '8848544';
+  var SIMKL_PROFILE_URL = 'https://simkl.com/' + SIMKL_USER_ID + '/dashboard/';
 
   /*
    * ─── n8n webhook URLs ───────────────────────────────────────────────────────
@@ -397,7 +401,7 @@
         '<span class="dks-title">Dalek’s Shelf</span>' +
         '<span class="dks-src">' +
           (VIDEO_ENABLED
-            ? '<a class="dks-src-link" href="https://simkl.com/' + SIMKL_USER + '/" target="_blank" rel="noopener noreferrer">Simkl</a> · '
+            ? '<a class="dks-src-link" href="' + SIMKL_PROFILE_URL + '" target="_blank" rel="noopener noreferrer">Simkl</a> · '
             : '') +
           '<a class="dks-src-link" href="https://listenbrainz.org/user/Dalek.coffee/stats/?range=year" target="_blank" rel="noopener noreferrer">ListenBrainz</a>' +
         '</span>' +
@@ -685,7 +689,7 @@
   /* ═══ POSTER STRIPS (Currently Watching / Favorites) ══════════════════════ */
   var POSTER_PITCH = 118; /* 104 poster + 14 gap */
   var RECENT_LIMIT = 10;  /* Recent shows the 10 most recent; the 11th tile links to Simkl */
-  var SIMKL_HISTORY_URL = 'https://simkl.com/' + SIMKL_USER + '/';
+  var SIMKL_HISTORY_URL = SIMKL_PROFILE_URL;
   var stripState = { watch: { idx: 0, entries: [], mode: 'watching' }, fav: { idx: 0, entries: [], mode: 'favorites' } };
 
   /* ─── Best Of category filter (All / Anime / TV Shows / Movies) ──────────

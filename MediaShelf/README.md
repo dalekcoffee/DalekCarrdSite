@@ -47,7 +47,7 @@ weight — keep the webhook receiver (it feeds the live row), drop the Trakt cal
 | | Trakt (old) | Simkl (now) |
 | --- | --- | --- |
 | Feed constant | `N8N_TRAKT_FEED_WEBHOOK` | `N8N_MEDIA_FEED_WEBHOOK` |
-| User constant | `TRAKT_USER` | `SIMKL_USER` |
+| User constant | `TRAKT_USER` (username) | `SIMKL_USER_ID` (numeric account id) |
 | Entry link field | `traktUrl` | `simklUrl` (old names still accepted) |
 | Media button | Trakt (`#9F42C6`) | Simkl (`#111827`) |
 | Header source | `Trakt · ListenBrainz` | `Simkl · ListenBrainz` |
