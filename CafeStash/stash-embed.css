@@ -251,6 +251,15 @@ body {
 }
 .full-rows .c-row               { border-bottom: 1px solid var(--b1); }
 .full-rows .c-row:nth-child(odd){ border-right: 1px solid var(--b1); }
+/* Never ellipsize in here: copy is kept short, and anything that still
+   runs long wraps to a second line instead of trailing off into dots.
+   Long detail belongs in a note badge tooltip. */
+.full-rows .c-name,
+.full-rows .c-desc {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
 
 /* group label */
 .col-group {
