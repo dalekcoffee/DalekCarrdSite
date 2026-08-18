@@ -257,6 +257,59 @@ body {
   background-color: #fff;
   filter: drop-shadow(-1px 0 0 #ee1d52) drop-shadow(1px 0 0 #69c9d0);
 }
+
+/* ── PALIFY: holographic foil ── */
+.lk-palify .lk-icon-svg,
+.lk-palify .lk-link-text,
+.lk-palify .lk-arrow { position: relative; z-index: 2; }
+
+.lk-palify::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(115deg,
+    rgba(245,197,66,0) 10%,
+    rgba(245,197,66,.15) 25%,
+    rgba(155,214,122,.10) 36%,
+    rgba(255,255,255,.10) 45%,
+    rgba(124,198,240,.17) 55%,
+    rgba(167,139,250,.13) 68%,
+    rgba(245,197,66,.12) 80%,
+    rgba(245,197,66,0) 92%);
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  transition: opacity var(--t);
+}
+
+.lk-palify:hover,
+.lk-palify:active {
+  border-color: transparent;
+  border-image: linear-gradient(115deg,#f5c542,#9bd67a,#7cc6f0,#a78bfa,#f5c542) 1;
+  box-shadow: 0 0 12px rgba(245,197,66,.16), 0 0 22px rgba(124,198,240,.12);
+}
+.lk-palify:hover::before,
+.lk-palify:active::before { background: linear-gradient(180deg,#f5c542,#9bd67a,#7cc6f0,#a78bfa); }
+
+.lk-palify:hover::after,
+.lk-palify:active::after { opacity: 1; animation: pal-foil 2.6s linear infinite; }
+
+@keyframes pal-foil {
+  0%   { background-position: 120% 0; }
+  100% { background-position: -20% 0; }
+}
+
+.lk-palify:hover .lk-icon-svg path,
+.lk-palify:active .lk-icon-svg path { stroke: url(#pal-foil); }
+.lk-palify:hover .lk-icon-svg circle,
+.lk-palify:active .lk-icon-svg circle { fill: url(#pal-foil); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-palify:hover::after,
+  .lk-palify:active::after { animation: none; background-position: 50% 0; }
+}
 </style>
 </head>
 <body>
@@ -346,8 +399,16 @@ body {
       </a>
 
       <!-- Palify -->
-      <a class="lk-link" href="https://palify.org/u/dalek/collection" target="_blank" rel="noopener noreferrer" style="--brand:#f5c542">
+      <a class="lk-link lk-palify" href="https://palify.org/u/dalek/collection" target="_blank" rel="noopener noreferrer" style="--brand:#f5c542">
         <svg class="lk-icon-svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="pal-foil" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="21" y2="21">
+              <stop offset="0" stop-color="#f5c542"/>
+              <stop offset=".35" stop-color="#9bd67a"/>
+              <stop offset=".65" stop-color="#7cc6f0"/>
+              <stop offset="1" stop-color="#a78bfa"/>
+            </linearGradient>
+          </defs>
           <path d="M10.7 6.6A6.4 6.4 0 1 0 13.3 6.6"/>
           <path d="M10.7 6.6C9 3.4 7.6 2.4 5.8 3.1 4.9 4.9 5.4 7.9 6.4 9.8"/>
           <path d="M13.3 6.6C15 3.4 16.4 2.4 18.2 3.1 19.1 4.9 18.6 7.9 17.6 9.8"/>
