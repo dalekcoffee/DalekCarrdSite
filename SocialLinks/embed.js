@@ -141,7 +141,7 @@
     '<circle cx="9.8" cy="13.2" r=".9" fill="currentColor" stroke="none"/>' +
     '<circle cx="14.2" cy="13.2" r=".9" fill="currentColor" stroke="none"/>' +
     '</svg>' +
-    '<span class="lk-link-text">Palify Cards</span><span class="lk-arrow" aria-hidden="true">↗</span></a>' +
+    '<span class="lk-link-text">Palify Collection</span><span class="lk-arrow" aria-hidden="true">↗</span></a>' +
 
     '</div></div>' +
 
