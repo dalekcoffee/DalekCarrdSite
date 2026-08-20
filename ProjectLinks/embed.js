@@ -26,7 +26,7 @@
     '.pj-item.rainbow:hover,.pj-item.rainbow:active{border-color:transparent;border-image:linear-gradient(135deg,#f00,#f80,#ff0,#0c0,#08f,#80f) 1;box-shadow:0 0 14px rgba(100,60,200,.25),0 0 4px rgba(255,100,0,.15)}' +
     '.pj-item.rainbow:hover::before,.pj-item.rainbow:active::before{background:var(--rainbow)}' +
     '.pj-item.rainbow:hover .pj-name,.pj-item.rainbow:active .pj-name{background:linear-gradient(90deg,#f00,#f80,#ff0,#0c0,#08f,#80f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}' +
-    '.pj-arrow{position:absolute;top:10px;right:12px;font-size:14px;color:#2a2a2a;transition:color var(--t),transform var(--t);pointer-events:none}' +
+    '.pj-item .pj-arrow{position:absolute;top:10px;right:12px;font-size:14px;color:#2a2a2a;transition:color var(--t),transform var(--t);pointer-events:none}' +
     '.pj-item:hover .pj-arrow,.pj-item:active .pj-arrow{color:rgba(255,255,255,.3);transform:translate(2px,-2px)}' +
     '@media (max-width:760px){.pj-grid{grid-template-columns:repeat(2,1fr)}}' +
     '@media (max-width:640px){.pj-logo{width:60px;height:60px}.pj-name{font-size:20px}.pj-section{padding:16px}}' +
