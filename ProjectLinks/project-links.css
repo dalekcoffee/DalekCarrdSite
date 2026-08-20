@@ -103,10 +103,19 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-/* ── RESOPAL: gold foil ── */
-.pj-item.foil > * { position: relative; z-index: 2; }
+/* ── FOIL: shared hover treatment ──
+   Tinted per tile by --brand and --brand2 set inline.
+   --b-lt is the light "specular" stop, derived from --brand unless
+   a tile overrides it. Plain fallbacks precede every color-mix. */
+.foil {
+  position: relative;          /* the sheen below is positioned against this */
+  --b-lt: #fff;
+  --b-lt: color-mix(in srgb, var(--brand, #888) 40%, #fff);
+  --b-a2: var(--brand2, var(--brand, #888));
+}
+.foil > * { position: relative; z-index: 2; }
 
-.pj-item.foil::after {
+.foil::after {
   content: '';
   position: absolute;
   top: 0; right: 0; bottom: 0; left: 0;
@@ -114,46 +123,72 @@
   pointer-events: none;
   opacity: 0;
   background: linear-gradient(115deg,
-    rgba(169,129,70,0) 10%,
-    rgba(169,129,70,.17) 25%,
-    rgba(217,184,122,.13) 36%,
+    rgba(255,255,255,0) 10%,
+    rgba(255,255,255,.07) 28%,
     rgba(255,255,255,.10) 45%,
-    rgba(86,216,234,.16) 55%,
-    rgba(169,129,70,.15) 70%,
-    rgba(169,129,70,0) 92%);
+    rgba(255,255,255,.07) 65%,
+    rgba(255,255,255,0) 92%);
+  background: linear-gradient(115deg,
+    transparent 10%,
+    color-mix(in srgb, var(--brand, #888) 17%, transparent) 25%,
+    color-mix(in srgb, var(--b-lt) 13%, transparent) 36%,
+    rgba(255,255,255,.10) 45%,
+    color-mix(in srgb, var(--b-a2) 16%, transparent) 55%,
+    color-mix(in srgb, var(--brand, #888) 15%, transparent) 70%,
+    transparent 92%);
   background-size: 250% 100%;
   background-position: 120% 0;
   transition: opacity var(--t);
 }
 
-.pj-item.foil:hover, .pj-item.foil:active {
+.foil:hover, .foil:active {
   border-color: transparent;
-  border-image: linear-gradient(115deg,#A98146,#D9B87A,#56D8EA,#A98146) 1;
-  box-shadow: 0 0 12px rgba(169,129,70,.22), 0 0 22px rgba(86,216,234,.10);
+  border-image: linear-gradient(115deg, var(--brand, #888), var(--b-lt), var(--b-a2), var(--brand, #888)) 1;
+  box-shadow: 0 0 12px rgba(255,255,255,.12), 0 0 22px rgba(255,255,255,.06);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--brand, #888) 22%, transparent),
+              0 0 22px color-mix(in srgb, var(--b-a2) 10%, transparent);
 }
-.pj-item.foil:hover::before, .pj-item.foil:active::before {
-  background: linear-gradient(180deg,#A98146,#D9B87A,#56D8EA);
+.foil:hover::before, .foil:active::before {
+  background: linear-gradient(180deg, var(--brand, #888), var(--b-lt), var(--b-a2));
 }
-.pj-item.foil:hover::after, .pj-item.foil:active::after {
+.foil:hover::after, .foil:active::after {
   opacity: 1;
-  animation: pj-foil 2.6s linear infinite;
+  animation: foil-sweep 2.6s linear infinite;
 }
-@keyframes pj-foil {
+@keyframes foil-sweep {
   0%   { background-position: 120% 0; }
   100% { background-position: -20% 0; }
 }
 .pj-item.foil:hover .pj-name, .pj-item.foil:active .pj-name {
-  background: linear-gradient(90deg,#A98146,#D9B87A,#56D8EA);
+  background: linear-gradient(90deg, var(--brand, #888), var(--b-lt), var(--b-a2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 @media (prefers-reduced-motion: reduce) {
-  .pj-item.foil:hover::after, .pj-item.foil:active::after {
+  .foil:hover::after, .foil:active::after {
     animation: none;
     background-position: 50% 0;
   }
 }
+
+/* rainbow tiles keep their own six-hue treatment over the foil defaults */
+.pj-item.rainbow.foil::after {
+  background: linear-gradient(115deg,
+    rgba(255,0,0,0) 10%,
+    rgba(255,0,0,.13) 22%,
+    rgba(255,136,0,.13) 33%,
+    rgba(255,255,255,.10) 45%,
+    rgba(0,204,0,.13) 57%,
+    rgba(0,136,255,.13) 68%,
+    rgba(136,0,255,.13) 78%,
+    rgba(136,0,255,0) 92%);
+}
+.pj-item.rainbow.foil:hover, .pj-item.rainbow.foil:active {
+  border-image: linear-gradient(135deg,#f00,#f80,#ff0,#0c0,#08f,#80f) 1;
+  box-shadow: 0 0 14px rgba(100,60,200,.25), 0 0 4px rgba(255,100,0,.15);
+}
+.pj-item.rainbow.foil:hover::before, .pj-item.rainbow.foil:active::before { background: var(--rainbow); }
 
 .pj-arrow {
   position: absolute;
