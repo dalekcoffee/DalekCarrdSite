@@ -190,7 +190,7 @@
 }
 .pj-item.rainbow.foil:hover::before, .pj-item.rainbow.foil:active::before { background: var(--rainbow); }
 
-.pj-arrow {
+.pj-item .pj-arrow {          /* outranks `.foil > *` above */
   position: absolute;
   top: 10px;
   right: 12px;
