@@ -29,7 +29,15 @@
     '.pj-arrow{position:absolute;top:10px;right:12px;font-size:14px;color:#2a2a2a;transition:color var(--t),transform var(--t);pointer-events:none}' +
     '.pj-item:hover .pj-arrow,.pj-item:active .pj-arrow{color:rgba(255,255,255,.3);transform:translate(2px,-2px)}' +
     '@media (max-width:760px){.pj-grid{grid-template-columns:repeat(2,1fr)}}' +
-    '@media (max-width:640px){.pj-logo{width:60px;height:60px}.pj-name{font-size:20px}.pj-section{padding:16px}}';
+    '@media (max-width:640px){.pj-logo{width:60px;height:60px}.pj-name{font-size:20px}.pj-section{padding:16px}}' +
+    '.pj-item.foil > *{position:relative;z-index:2}' +
+    '.pj-item.foil::after{content:\'\';position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;pointer-events:none;opacity:0;background:linear-gradient(115deg,rgba(169,129,70,0) 10%,rgba(169,129,70,.17) 25%,rgba(217,184,122,.13) 36%,rgba(255,255,255,.10) 45%,rgba(86,216,234,.16) 55%,rgba(169,129,70,.15) 70%,rgba(169,129,70,0) 92%);background-size:250% 100%;background-position:120% 0;transition:opacity var(--t)}' +
+    '.pj-item.foil:hover,.pj-item.foil:active{border-color:transparent;border-image:linear-gradient(115deg,#A98146,#D9B87A,#56D8EA,#A98146) 1;box-shadow:0 0 12px rgba(169,129,70,.22),0 0 22px rgba(86,216,234,.10)}' +
+    '.pj-item.foil:hover::before,.pj-item.foil:active::before{background:linear-gradient(180deg,#A98146,#D9B87A,#56D8EA)}' +
+    '.pj-item.foil:hover::after,.pj-item.foil:active::after{opacity:1;animation:pj-foil 2.6s linear infinite}' +
+    '@keyframes pj-foil{0%{background-position:120% 0}100%{background-position:-20% 0}}' +
+    '.pj-item.foil:hover .pj-name,.pj-item.foil:active .pj-name{background:linear-gradient(90deg,#A98146,#D9B87A,#56D8EA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}' +
+    '@media (prefers-reduced-motion:reduce){.pj-item.foil:hover::after,.pj-item.foil:active::after{animation:none;background-position:50% 0}}';
   document.head.appendChild(st);
 
   /* ── GOOGLE FONTS ── */
@@ -72,9 +80,9 @@
     '<div class="pj-desc">A no install web<br>based UIX builder</div>' +
     '</a>' +
 
-    '<a class="pj-item" href="https://resopal.dalek.coffee/" target="_blank" rel="noopener noreferrer" style="--brand:#00A0E9">' +
+    '<a class="pj-item foil" href="https://resopal.dalek.coffee/" target="_blank" rel="noopener noreferrer" style="--brand:#A98146">' +
     '<span class="pj-arrow" aria-hidden="true">↗</span>' +
-    '<img class="pj-logo" src="' + BASE + 'CarrdPlaceholderLogo.png" alt="Resopal logo">' +
+    '<img class="pj-logo" src="' + BASE + 'CarrdResopalLogo.svg" alt="Resopal logo">' +
     '<div class="pj-name">Resopal</div>' +
     '<div class="pj-desc">Palworld deck<br>Importer</div>' +
     '</a>' +
