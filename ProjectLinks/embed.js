@@ -30,14 +30,18 @@
     '.pj-item:hover .pj-arrow,.pj-item:active .pj-arrow{color:rgba(255,255,255,.3);transform:translate(2px,-2px)}' +
     '@media (max-width:760px){.pj-grid{grid-template-columns:repeat(2,1fr)}}' +
     '@media (max-width:640px){.pj-logo{width:60px;height:60px}.pj-name{font-size:20px}.pj-section{padding:16px}}' +
-    '.pj-item.foil > *{position:relative;z-index:2}' +
-    '.pj-item.foil::after{content:\'\';position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;pointer-events:none;opacity:0;background:linear-gradient(115deg,rgba(169,129,70,0) 10%,rgba(169,129,70,.17) 25%,rgba(217,184,122,.13) 36%,rgba(255,255,255,.10) 45%,rgba(86,216,234,.16) 55%,rgba(169,129,70,.15) 70%,rgba(169,129,70,0) 92%);background-size:250% 100%;background-position:120% 0;transition:opacity var(--t)}' +
-    '.pj-item.foil:hover,.pj-item.foil:active{border-color:transparent;border-image:linear-gradient(115deg,#A98146,#D9B87A,#56D8EA,#A98146) 1;box-shadow:0 0 12px rgba(169,129,70,.22),0 0 22px rgba(86,216,234,.10)}' +
-    '.pj-item.foil:hover::before,.pj-item.foil:active::before{background:linear-gradient(180deg,#A98146,#D9B87A,#56D8EA)}' +
-    '.pj-item.foil:hover::after,.pj-item.foil:active::after{opacity:1;animation:pj-foil 2.6s linear infinite}' +
-    '@keyframes pj-foil{0%{background-position:120% 0}100%{background-position:-20% 0}}' +
-    '.pj-item.foil:hover .pj-name,.pj-item.foil:active .pj-name{background:linear-gradient(90deg,#A98146,#D9B87A,#56D8EA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}' +
-    '@media (prefers-reduced-motion:reduce){.pj-item.foil:hover::after,.pj-item.foil:active::after{animation:none;background-position:50% 0}}';
+    '.foil{position:relative;--b-lt:#fff;--b-lt:color-mix(in srgb,var(--brand,#888) 40%,#fff);--b-a2:var(--brand2,var(--brand,#888))}' +
+    '.foil > *{position:relative;z-index:2}' +
+    '.foil::after{content:\'\';position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;pointer-events:none;opacity:0;background:linear-gradient(115deg,rgba(255,255,255,0) 10%,rgba(255,255,255,.07) 28%,rgba(255,255,255,.10) 45%,rgba(255,255,255,.07) 65%,rgba(255,255,255,0) 92%);background:linear-gradient(115deg,transparent 10%,color-mix(in srgb,var(--brand,#888) 17%,transparent) 25%,color-mix(in srgb,var(--b-lt) 13%,transparent) 36%,rgba(255,255,255,.10) 45%,color-mix(in srgb,var(--b-a2) 16%,transparent) 55%,color-mix(in srgb,var(--brand,#888) 15%,transparent) 70%,transparent 92%);background-size:250% 100%;background-position:120% 0;transition:opacity var(--t)}' +
+    '.foil:hover,.foil:active{border-color:transparent;border-image:linear-gradient(115deg,var(--brand,#888),var(--b-lt),var(--b-a2),var(--brand,#888)) 1;box-shadow:0 0 12px rgba(255,255,255,.12),0 0 22px rgba(255,255,255,.06);box-shadow:0 0 12px color-mix(in srgb,var(--brand,#888) 22%,transparent),0 0 22px color-mix(in srgb,var(--b-a2) 10%,transparent)}' +
+    '.foil:hover::before,.foil:active::before{background:linear-gradient(180deg,var(--brand,#888),var(--b-lt),var(--b-a2))}' +
+    '.foil:hover::after,.foil:active::after{opacity:1;animation:foil-sweep 2.6s linear infinite}' +
+    '@keyframes foil-sweep{0%{background-position:120% 0}100%{background-position:-20% 0}}' +
+    '.pj-item.foil:hover .pj-name,.pj-item.foil:active .pj-name{background:linear-gradient(90deg,var(--brand,#888),var(--b-lt),var(--b-a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}' +
+    '@media (prefers-reduced-motion:reduce){.foil:hover::after,.foil:active::after{animation:none;background-position:50% 0}}' +
+    '.pj-item.rainbow.foil::after{background:linear-gradient(115deg,rgba(255,0,0,0) 10%,rgba(255,0,0,.13) 22%,rgba(255,136,0,.13) 33%,rgba(255,255,255,.10) 45%,rgba(0,204,0,.13) 57%,rgba(0,136,255,.13) 68%,rgba(136,0,255,.13) 78%,rgba(136,0,255,0) 92%)}' +
+    '.pj-item.rainbow.foil:hover,.pj-item.rainbow.foil:active{border-image:linear-gradient(135deg,#f00,#f80,#ff0,#0c0,#08f,#80f) 1;box-shadow:0 0 14px rgba(100,60,200,.25),0 0 4px rgba(255,100,0,.15)}' +
+    '.pj-item.rainbow.foil:hover::before,.pj-item.rainbow.foil:active::before{background:var(--rainbow)}';
   document.head.appendChild(st);
 
   /* ── GOOGLE FONTS ── */
@@ -59,28 +63,28 @@
     '<div class="pj-subhead">Some of my side projects :3</div>' +
     '<div class="pj-grid">' +
 
-    '<a class="pj-item rainbow" href="https://resomeow.com" target="_blank" rel="noopener noreferrer">' +
+    '<a class="pj-item rainbow foil" href="https://resomeow.com" target="_blank" rel="noopener noreferrer">' +
     '<span class="pj-arrow" aria-hidden="true">↗</span>' +
     '<img class="pj-logo" src="' + BASE + 'CarrdResomeowLogo.png" alt="Resomeow logo">' +
     '<div class="pj-name">Resomeow</div>' +
     '<div class="pj-desc">Resonite appreciation<br>Channel</div>' +
     '</a>' +
 
-    '<a class="pj-item" href="https://hub.oshi.social" target="_blank" rel="noopener noreferrer" style="--brand:#666BF7">' +
+    '<a class="pj-item foil" href="https://hub.oshi.social" target="_blank" rel="noopener noreferrer" style="--brand:#666BF7; --brand2:#FF8AD8">' +
     '<span class="pj-arrow" aria-hidden="true">↗</span>' +
     '<img class="pj-logo" src="' + BASE + 'CarrdOshiNetworkLogo.png" alt="OshiNetwork logo">' +
     '<div class="pj-name">OshiNetwork</div>' +
     '<div class="pj-desc">Free Services for<br>fellow VR Creators</div>' +
     '</a>' +
 
-    '<a class="pj-item" href="https://uix.dalek.coffee" target="_blank" rel="noopener noreferrer" style="--brand:#1F2322">' +
+    '<a class="pj-item foil" href="https://uix.dalek.coffee" target="_blank" rel="noopener noreferrer" style="--brand:#1F2322; --brand2:#A9C4BF; --b-lt:#C9D6D3">' +
     '<span class="pj-arrow" aria-hidden="true">↗</span>' +
     '<img class="pj-logo" src="' + BASE + 'CarrdPlaceholderLogo.png" alt="UIX Studio logo">' +
     '<div class="pj-name">UIX Studio</div>' +
     '<div class="pj-desc">A no install web<br>based UIX builder</div>' +
     '</a>' +
 
-    '<a class="pj-item foil" href="https://resopal.dalek.coffee/" target="_blank" rel="noopener noreferrer" style="--brand:#A98146">' +
+    '<a class="pj-item foil" href="https://resopal.dalek.coffee/" target="_blank" rel="noopener noreferrer" style="--brand:#A98146; --brand2:#56D8EA; --b-lt:#D9B87A">' +
     '<span class="pj-arrow" aria-hidden="true">↗</span>' +
     '<img class="pj-logo" src="' + BASE + 'CarrdResopalLogo.svg" alt="Resopal logo">' +
     '<div class="pj-name">Resopal</div>' +

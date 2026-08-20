@@ -258,6 +258,92 @@ body {
   filter: drop-shadow(-1px 0 0 #ee1d52) drop-shadow(1px 0 0 #69c9d0);
 }
 
+/* ── FOIL: shared hover treatment ──
+   Tinted per link by --brand and --brand2 set inline.
+   --b-lt is the light "specular" stop, derived from --brand unless
+   a link overrides it. Plain fallbacks precede every color-mix. */
+.foil {
+  position: relative;          /* the sheen below is positioned against this */
+  --b-lt: #fff;
+  --b-lt: color-mix(in srgb, var(--brand, #888) 40%, #fff);
+  --b-a2: var(--brand2, var(--brand, #888));
+}
+.foil > * { position: relative; z-index: 2; }
+
+.foil::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(115deg,
+    rgba(255,255,255,0) 10%,
+    rgba(255,255,255,.07) 28%,
+    rgba(255,255,255,.10) 45%,
+    rgba(255,255,255,.07) 65%,
+    rgba(255,255,255,0) 92%);
+  background: linear-gradient(115deg,
+    transparent 10%,
+    color-mix(in srgb, var(--brand, #888) 17%, transparent) 25%,
+    color-mix(in srgb, var(--b-lt) 13%, transparent) 36%,
+    rgba(255,255,255,.10) 45%,
+    color-mix(in srgb, var(--b-a2) 16%, transparent) 55%,
+    color-mix(in srgb, var(--brand, #888) 15%, transparent) 70%,
+    transparent 92%);
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  transition: opacity var(--t);
+}
+
+.foil:hover, .foil:active {
+  border-color: transparent;
+  border-image: linear-gradient(115deg, var(--brand, #888), var(--b-lt), var(--b-a2), var(--brand, #888)) 1;
+  box-shadow: 0 0 12px rgba(255,255,255,.12), 0 0 22px rgba(255,255,255,.06);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--brand, #888) 22%, transparent),
+              0 0 22px color-mix(in srgb, var(--b-a2) 10%, transparent);
+}
+.lk-link.foil:hover::before, .lk-link.foil:active::before {
+  background: linear-gradient(180deg, var(--brand, #888), var(--b-lt), var(--b-a2));
+}
+.foil:hover::after, .foil:active::after {
+  opacity: 1;
+  animation: foil-sweep 2.6s linear infinite;
+}
+@keyframes foil-sweep {
+  0%   { background-position: 120% 0; }
+  100% { background-position: -20% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .foil:hover::after, .foil:active::after {
+    animation: none;
+    background-position: 50% 0;
+  }
+}
+
+/* rainbow links keep their six-hue border over the foil defaults */
+.lk-link.rainbow.foil::after {
+  background: linear-gradient(115deg,
+    rgba(255,0,0,0) 10%,
+    rgba(255,0,0,.13) 22%,
+    rgba(255,136,0,.13) 33%,
+    rgba(255,255,255,.10) 45%,
+    rgba(0,204,0,.13) 57%,
+    rgba(0,136,255,.13) 68%,
+    rgba(136,0,255,.13) 78%,
+    rgba(136,0,255,0) 92%);
+}
+.lk-link.rainbow.foil:hover, .lk-link.rainbow.foil:active {
+  border-image: linear-gradient(135deg,#f00,#f80,#ff0,#0c0,#08f,#80f) 1;
+  box-shadow: 0 0 14px rgba(100,60,200,.25), 0 0 4px rgba(255,100,0,.15);
+}
+.lk-link.rainbow.foil:hover::before, .lk-link.rainbow.foil:active::before { background: var(--rainbow); }
+
+/* TikTok keeps its cyan/red chromatic aberration glow */
+.lk-social.lk-tiktok.foil:hover, .lk-social.lk-tiktok.foil:active {
+  box-shadow: -2px 0 6px rgba(238,29,82,.5), 2px 0 6px rgba(105,201,208,.5);
+}
+
 /* ── PALIFY: holographic foil ── */
 .lk-palify .lk-icon-svg,
 .lk-palify .lk-link-text,
@@ -321,7 +407,7 @@ body {
     <div class="lk-links">
 
       <!-- Fediverse -->
-      <a class="lk-link rainbow" href="https://oshi.social/@dalekcoffee" target="_blank" rel="noopener noreferrer">
+      <a class="lk-link rainbow foil" href="https://oshi.social/@dalekcoffee" target="_blank" rel="noopener noreferrer">
         <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="lk-icon-inline" aria-hidden="true">
           <g class="fedi-rest">
             <line x1="12" y1="3" x2="20.6" y2="9.2" stroke="white" stroke-width="1.4"/>
@@ -363,7 +449,7 @@ body {
       </a>
 
       <!-- Discord -->
-      <a class="lk-link" href="https://discord.com/invite/h6JerzYnpY" target="_blank" rel="noopener noreferrer" style="--brand:#5865f2">
+      <a class="lk-link foil" href="https://discord.com/invite/h6JerzYnpY" target="_blank" rel="noopener noreferrer" style="--brand:#5865f2; --brand2:#EB459E">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/discord')" data-fb="DC" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">DC</span>
         <span class="lk-link-text">Discord</span>
@@ -371,7 +457,7 @@ body {
       </a>
 
       <!-- Resonite Cafe -->
-      <a class="lk-link" href="https://go.resonite.com/record/U-JustDalek-/R-019d5193-d1b1-73e1-8bbd-7dc32a2e6a6f" target="_blank" rel="noopener noreferrer" style="--brand:#c8956c">
+      <a class="lk-link foil" href="https://go.resonite.com/record/U-JustDalek-/R-019d5193-d1b1-73e1-8bbd-7dc32a2e6a6f" target="_blank" rel="noopener noreferrer" style="--brand:#c8956c; --brand2:#E8B15C">
         <svg class="lk-icon-svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M5 8h11v8a2.5 2.5 0 0 1-2.5 2.5h-6A2.5 2.5 0 0 1 5 16V8z"/>
           <path d="M16 10.5h1.5a2 2 0 0 1 0 4H16"/>
@@ -383,7 +469,7 @@ body {
       </a>
 
       <!-- Ko-fi -->
-      <a class="lk-link" href="https://ko-fi.com/dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#FF5E5B">
+      <a class="lk-link foil" href="https://ko-fi.com/dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#FF5E5B; --brand2:#00B9FE">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/kofi')" data-fb="KO" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">KO</span>
         <span class="lk-link-text">Ko-fi</span>
@@ -391,7 +477,7 @@ body {
       </a>
 
       <!-- Cults3D -->
-      <a class="lk-link" href="https://cults3d.com/en/users/DalekCoffee/3d-models" target="_blank" rel="noopener noreferrer" style="--brand:#7b3fe4">
+      <a class="lk-link foil" href="https://cults3d.com/en/users/DalekCoffee/3d-models" target="_blank" rel="noopener noreferrer" style="--brand:#7b3fe4; --brand2:#E44FD0">
         <img class="lk-icon-img" src="https://cults3d.com/favicon.ico" alt="" aria-hidden="true" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="lk-icon-abbr" style="display:none" aria-hidden="true">C3</span>
         <span class="lk-link-text">3D Printables</span>
@@ -426,57 +512,57 @@ body {
     <div class="lk-section-label">Socials</div>
     <div class="lk-socials">
 
-      <a class="lk-social lk-tiktok" href="https://www.tiktok.com/@dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#69c9d0">
+      <a class="lk-social lk-tiktok foil" href="https://www.tiktok.com/@dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#69c9d0; --brand2:#EE1D52">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/tiktok')" data-fb="TT" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">TT</span>
         <span>TikTok</span>
       </a>
 
-      <a class="lk-social" href="https://x.com/DalekCoffee" target="_blank" rel="noopener noreferrer" style="--brand:#aaa">
+      <a class="lk-social foil" href="https://x.com/DalekCoffee" target="_blank" rel="noopener noreferrer" style="--brand:#aaa; --brand2:#E8ECF5">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/x')" data-fb="X" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">X</span>
         <span>X</span>
       </a>
 
-      <a class="lk-social" href="https://www.twitch.tv/dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#9146ff">
+      <a class="lk-social foil" href="https://www.twitch.tv/dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#9146ff; --brand2:#E0A2FF">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/twitch')" data-fb="TW" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">TW</span>
         <span>Twitch</span>
       </a>
 
-      <a class="lk-social" href="https://www.instagram.com/dalekcoffee/" target="_blank" rel="noopener noreferrer" style="--brand:#e1306c">
+      <a class="lk-social foil" href="https://www.instagram.com/dalekcoffee/" target="_blank" rel="noopener noreferrer" style="--brand:#e1306c; --brand2:#F77737">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/instagram')" data-fb="IN" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">IN</span>
         <span>Instagram</span>
       </a>
 
-      <a class="lk-social" href="https://bsky.app/profile/dalek.coffee" target="_blank" rel="noopener noreferrer" style="--brand:#0085ff">
+      <a class="lk-social foil" href="https://bsky.app/profile/dalek.coffee" target="_blank" rel="noopener noreferrer" style="--brand:#0085ff; --brand2:#00D6E0">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/bluesky')" data-fb="BS" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">BS</span>
         <span>Bluesky</span>
       </a>
 
-      <a class="lk-social" href="https://www.youtube.com/@DalekCoffee" target="_blank" rel="noopener noreferrer" style="--brand:#f00">
+      <a class="lk-social foil" href="https://www.youtube.com/@DalekCoffee" target="_blank" rel="noopener noreferrer" style="--brand:#f00; --brand2:#FF4D6D">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/youtube')" data-fb="YT" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">YT</span>
         <span>YouTube</span>
       </a>
 
-      <a class="lk-social" href="https://www.threads.com/@dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#aaa">
+      <a class="lk-social foil" href="https://www.threads.com/@dalekcoffee" target="_blank" rel="noopener noreferrer" style="--brand:#aaa; --brand2:#E8ECF5">
         <span class="lk-icon-mask" style="--mi:url('https://cdn.simpleicons.org/threads')" data-fb="TH" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">TH</span>
         <span>Threads</span>
       </a>
 
       <!-- Beam -->
-      <a class="lk-social" href="https://beamstream.gg/dalek" target="_blank" rel="noopener noreferrer" style="--brand:#285680">
+      <a class="lk-social foil" href="https://beamstream.gg/dalek" target="_blank" rel="noopener noreferrer" style="--brand:#285680; --brand2:#7FD4E8">
         <img class="lk-icon-img" src="https://beamstream.gg/favicon.ico" alt="" aria-hidden="true" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
         <span class="lk-icon-abbr" style="display:none" aria-hidden="true">BE</span>
         <span>Beam</span>
       </a>
 
       <!-- Fluxer -->
-      <a class="lk-social" href="https://fluxer.gg/Lj10zbjx" target="_blank" rel="noopener noreferrer" style="--brand:#4641d9">
+      <a class="lk-social foil" href="https://fluxer.gg/Lj10zbjx" target="_blank" rel="noopener noreferrer" style="--brand:#4641d9; --brand2:#9B8CFF">
         <span class="lk-icon-mask" style="--mi:url('https://fluxerstatic.com/marketing/branding/symbol-black.svg')" data-fb="FL" aria-hidden="true"></span>
         <span class="lk-icon-fb" aria-hidden="true">FL</span>
         <span>Fluxer</span>
