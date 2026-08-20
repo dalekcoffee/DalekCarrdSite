@@ -271,14 +271,13 @@ body {
   pointer-events: none;
   opacity: 0;
   background: linear-gradient(115deg,
-    rgba(245,197,66,0) 10%,
-    rgba(245,197,66,.15) 25%,
-    rgba(155,214,122,.10) 36%,
+    rgba(169,129,70,0) 10%,
+    rgba(169,129,70,.17) 25%,
+    rgba(217,184,122,.13) 36%,
     rgba(255,255,255,.10) 45%,
-    rgba(124,198,240,.17) 55%,
-    rgba(167,139,250,.13) 68%,
-    rgba(245,197,66,.12) 80%,
-    rgba(245,197,66,0) 92%);
+    rgba(86,216,234,.16) 55%,
+    rgba(169,129,70,.15) 70%,
+    rgba(169,129,70,0) 92%);
   background-size: 250% 100%;
   background-position: 120% 0;
   transition: opacity var(--t);
@@ -287,11 +286,11 @@ body {
 .lk-palify:hover,
 .lk-palify:active {
   border-color: transparent;
-  border-image: linear-gradient(115deg,#f5c542,#9bd67a,#7cc6f0,#a78bfa,#f5c542) 1;
-  box-shadow: 0 0 12px rgba(245,197,66,.16), 0 0 22px rgba(124,198,240,.12);
+  border-image: linear-gradient(115deg,#A98146,#D9B87A,#56D8EA,#A98146) 1;
+  box-shadow: 0 0 12px rgba(169,129,70,.22), 0 0 22px rgba(86,216,234,.10);
 }
 .lk-palify:hover::before,
-.lk-palify:active::before { background: linear-gradient(180deg,#f5c542,#9bd67a,#7cc6f0,#a78bfa); }
+.lk-palify:active::before { background: linear-gradient(180deg,#A98146,#D9B87A,#56D8EA); }
 
 .lk-palify:hover::after,
 .lk-palify:active::after { opacity: 1; animation: pal-foil 2.6s linear infinite; }
@@ -301,10 +300,12 @@ body {
   100% { background-position: -20% 0; }
 }
 
-.lk-palify:hover .lk-icon-svg path,
-.lk-palify:active .lk-icon-svg path { stroke: url(#pal-foil); }
-.lk-palify:hover .lk-icon-svg circle,
-.lk-palify:active .lk-icon-svg circle { fill: url(#pal-foil); }
+.lk-palify:hover .lk-icon-svg .res-line,
+.lk-palify:active .lk-icon-svg .res-line { stroke: url(#pal-foil); }
+.lk-palify:hover .lk-icon-svg .res-fill,
+.lk-palify:active .lk-icon-svg .res-fill { fill: url(#pal-foil); }
+.lk-palify:hover .lk-icon-svg .res-ring,
+.lk-palify:active .lk-icon-svg .res-ring { stroke: #56D8EA; }
 
 @media (prefers-reduced-motion: reduce) {
   .lk-palify:hover::after,
@@ -399,21 +400,19 @@ body {
       </a>
 
       <!-- Palify -->
-      <a class="lk-link lk-palify" href="https://palify.org/u/dalek/collection" target="_blank" rel="noopener noreferrer" style="--brand:#f5c542">
-        <svg class="lk-icon-svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <a class="lk-link lk-palify" href="https://palify.org/u/dalek/collection" target="_blank" rel="noopener noreferrer" style="--brand:#A98146">
+        <svg class="lk-icon-svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
             <linearGradient id="pal-foil" gradientUnits="userSpaceOnUse" x1="3" y1="3" x2="21" y2="21">
-              <stop offset="0" stop-color="#f5c542"/>
-              <stop offset=".35" stop-color="#9bd67a"/>
-              <stop offset=".65" stop-color="#7cc6f0"/>
-              <stop offset="1" stop-color="#a78bfa"/>
+              <stop offset="0" stop-color="#A98146"/>
+              <stop offset=".4" stop-color="#D9B87A"/>
+              <stop offset=".7" stop-color="#56D8EA"/>
+              <stop offset="1" stop-color="#A98146"/>
             </linearGradient>
           </defs>
-          <path d="M10.7 6.6A6.4 6.4 0 1 0 13.3 6.6"/>
-          <path d="M10.7 6.6C9 3.4 7.6 2.4 5.8 3.1 4.9 4.9 5.4 7.9 6.4 9.8"/>
-          <path d="M13.3 6.6C15 3.4 16.4 2.4 18.2 3.1 19.1 4.9 18.6 7.9 17.6 9.8"/>
-          <circle cx="9.8" cy="13.2" r=".9" fill="currentColor" stroke="none"/>
-          <circle cx="14.2" cy="13.2" r=".9" fill="currentColor" stroke="none"/>
+          <path class="res-line" d="M12 1.6L22.4 12 12 22.4 1.6 12z" stroke-width="1.1" stroke-linejoin="round"/>
+          <path class="res-ring" d="M6.6 8.4a6.4 6.4 0 0 0 0 7.2M17.4 8.4a6.4 6.4 0 0 1 0 7.2" stroke-width="1.4" stroke-linecap="round"/>
+          <path class="res-fill" fill="currentColor" stroke="none" fill-rule="evenodd" d="M7.6 5.8H12.9C15.5 5.8 17.2 7.3 17.2 9.5C17.2 11.2 16.2 12.5 14.5 13L17.7 18.2H14.8L11.9 13.4H10.3V18.2H7.6ZM10.3 8.1V11H12.7C13.8 11 14.5 10.4 14.5 9.5C14.5 8.6 13.9 8.1 12.7 8.1Z"/>
         </svg>
         <span class="lk-link-text">Palify Collection</span>
         <span class="lk-arrow" aria-hidden="true">↗</span>
