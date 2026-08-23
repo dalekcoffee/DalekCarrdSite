@@ -47,8 +47,8 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 15px 16px;
+  justify-content: center;
+  padding: 16px 14px;
   background: var(--bg2);
   border: 1px solid var(--b1);
   color: rgba(255,255,255,.65);
@@ -67,7 +67,7 @@ body {
 .nv-item:hover, .nv-item:active { background: var(--bg3); color: #fff; }
 .nv-item:focus-visible { outline: 2px solid var(--brand, #fff); outline-offset: -2px; }
 
-.nv-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.nv-text { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
 .nv-label {
   font-size: 13px;
   white-space: nowrap;
@@ -89,13 +89,6 @@ body {
 }
 .nv-item:hover .nv-sub, .nv-item:active .nv-sub { color: rgba(255,255,255,.6); }
 
-.nv-icon {
-  flex-shrink: 0;
-  color: rgba(255,255,255,.4);
-  transition: color var(--t);
-}
-.nv-item:hover .nv-icon, .nv-item:active .nv-icon { color: var(--brand, #fff); }
-
 .nv-item .nv-arrow {          /* outranks `.foil > *` below */
   position: absolute;
   top: 8px;
@@ -113,7 +106,6 @@ body {
 /* ── CURRENT SECTION ── */
 .nv-item.nv-here { background: var(--bg3); color: #fff; }
 .nv-item.nv-here::before { background: var(--brand, #fff); }
-.nv-item.nv-here .nv-icon { color: var(--brand, #fff); }
 
 /* ── FOIL: shared hover treatment ──
    Tinted per item by --brand and --brand2 set inline.
@@ -182,10 +174,10 @@ body {
 @media (max-width: 760px) {
   .nv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 430px) {
-  /* two columns can no longer hold "OnlyFans" + its sub, so stack */
+@media (max-width: 400px) {
+  /* two columns can no longer hold "click at own risk", so stack */
   .nv-grid { grid-template-columns: minmax(0, 1fr); gap: 6px; }
-  .nv-item { padding: 13px 14px; }
+  .nv-item { padding: 14px 12px; }
   .nv-section { padding: 12px 12px; }
 }
 </style>
@@ -197,12 +189,7 @@ body {
     <div class="nv-grid">
 
       <!-- About -->
-      <a class="nv-item foil" href="https://dalek.coffee/#about" style="--brand:#C8956C; --brand2:#E8C79A">
-        <svg class="nv-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M4.5 6.5h11a2 2 0 0 1 2 2v9.5"/>
-          <path d="M4.5 6.5v11h13"/>
-          <path d="M8 10.2h6M8 13.4h4"/>
-        </svg>
+      <a class="nv-item foil" href="https://dalek.coffee/#about" style="--brand:#fff; --brand2:#D6DCE5">
         <span class="nv-text">
           <span class="nv-label">About</span>
           <span class="nv-sub">who i am</span>
@@ -210,11 +197,7 @@ body {
       </a>
 
       <!-- Links -->
-      <a class="nv-item foil" href="https://dalek.coffee/#Links" style="--brand:#7CC6F0; --brand2:#B9E3FF">
-        <svg class="nv-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M10 13.2a3.4 3.4 0 0 0 5 .4l2.6-2.6a3.4 3.4 0 0 0-4.8-4.8l-1.5 1.5"/>
-          <path d="M14 10.8a3.4 3.4 0 0 0-5-.4l-2.6 2.6a3.4 3.4 0 0 0 4.8 4.8l1.5-1.5"/>
-        </svg>
+      <a class="nv-item foil" href="https://dalek.coffee/#Links" style="--brand:#fff; --brand2:#D6DCE5">
         <span class="nv-text">
           <span class="nv-label">Links</span>
           <span class="nv-sub">find me</span>
@@ -222,12 +205,7 @@ body {
       </a>
 
       <!-- Projects -->
-      <a class="nv-item foil" href="https://dalek.coffee/#projects" style="--brand:#9B8CFF; --brand2:#C9BEFF">
-        <svg class="nv-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M12 3.2 20.2 7.6 12 12 3.8 7.6z"/>
-          <path d="M3.8 12 12 16.4 20.2 12"/>
-          <path d="M3.8 16.4 12 20.8l8.2-4.4"/>
-        </svg>
+      <a class="nv-item foil" href="https://dalek.coffee/#projects" style="--brand:#fff; --brand2:#D6DCE5">
         <span class="nv-text">
           <span class="nv-label">Projects</span>
           <span class="nv-sub">side quests</span>
@@ -235,11 +213,8 @@ body {
       </a>
 
       <!-- OnlyFans (the bit) -->
-      <a class="nv-item foil" href="https://www.youtube.com/watch?v=q-YyKGoBHh8&amp;t=2s" target="_blank" rel="noopener noreferrer" style="--brand:#FF5E9C; --brand2:#FFB3D1">
+      <a class="nv-item foil" href="https://www.youtube.com/watch?v=q-YyKGoBHh8&amp;t=2s" target="_blank" rel="noopener noreferrer" style="--brand:#fff; --brand2:#D6DCE5">
         <span class="nv-arrow" aria-hidden="true">↗</span>
-        <svg class="nv-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M12 19.6s-6.8-4-6.8-8.6a3.9 3.9 0 0 1 6.8-2.6 3.9 3.9 0 0 1 6.8 2.6c0 4.6-6.8 8.6-6.8 8.6z"/>
-        </svg>
         <span class="nv-text">
           <span class="nv-label">OnlyFans</span>
           <span class="nv-sub">click at own risk</span>
