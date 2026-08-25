@@ -159,7 +159,7 @@
     var beans = c.left.items.map(buildCoffeeCard).join('');
     var gear  = c.right.items.map(buildCoffeeCard).join('');
     var disclaimer = c.disclaimer ? tabFooter(c.disclaimer) : '';
-    return '<div class="tab-panel active">' +
+    return '<div class="tab-panel">' +
       secHead(c.heading, c.tag) +
       colGroup(c.left.icon, c.left.label) +
       '<div class="coffee-beans-grid">' + beans + '</div>' +
@@ -176,7 +176,7 @@
     var full = (s.full && s.full.length)
       ? '<div class="full-col">' + buildFullColumn(s.full) + '</div>'
       : '';
-    return '<div class="tab-panel active">' +
+    return '<div class="tab-panel">' +
       secHead(s.heading, s.tag) +
       '<div class="dual-col">' +
         '<div class="dual-col-side">' + buildColumn(s.left)  + '</div>' +
@@ -196,35 +196,64 @@
   }
 
   /* ── Sections ──
-     Each section is its own Carrd page, so #StashSetup routes exactly the
-     way #about does and a cold load needs no help from us. The card on each
-     page says which section it is via data-stash-section; the tab bar is
-     just links between those pages. */
+     One Carrd page, one card, three panels swapped client-side — so tabbing
+     is instant, with no page transition or scroll reset.
+
+     Carrd owns the top-level hash and routes it on load, falling back to
+     home for any id it doesn't recognise, so a tab can't live there. Deep
+     links therefore ride on ?stash=, which Carrd ignores:
+
+         https://dalek.coffee/?stash=setup#cafestash
+
+     That is read on arrival only. Clicking a tab deliberately leaves the URL
+     alone, so the query form never appears unless you hand it to someone. */
   var SECTIONS = [
-    { slug: 'merch',  page: 'StashMerch',  label: 'Merch',    render: renderMerch  },
-    { slug: 'coffee', page: 'StashCoffee', label: 'Coffee',   render: renderCoffee },
-    { slug: 'setup',  page: 'StashSetup',  label: 'My Setup', render: renderSetup  }
+    { slug: 'merch',  label: 'Merch',    render: renderMerch  },
+    { slug: 'coffee', label: 'Coffee',   render: renderCoffee },
+    { slug: 'setup',  label: 'My Setup', render: renderSetup  }
   ];
 
-  function sectionFor(slug) {
-    for (var i = 0; i < SECTIONS.length; i++) {
-      if (SECTIONS[i].slug === slug) { return SECTIONS[i]; }
-    }
-    return null;
+  function renderTabs() {
+    var tabs = SECTIONS.map(function (s, i) {
+      return '<button class="tab' + (i === 0 ? ' active' : '') + '" type="button" role="tab" ' +
+        'aria-selected="' + (i === 0 ? 'true' : 'false') + '">' + esc(s.label) + '</button>';
+    }).join('');
+    return '<div class="tabs" role="tablist">' + tabs + '</div>';
   }
 
-  function renderTabs(current) {
-    var links = SECTIONS.map(function (s) {
-      var active = (s === current);
-      return '<a class="tab' + (active ? ' active' : '') + '" href="#' + s.page + '"' +
-        (active ? ' aria-current="page"' : '') + '>' + esc(s.label) + '</a>';
-    }).join('');
-    return '<div class="tabs">' + links + '</div>';
+  /* Which tab a visitor arrived asking for; -1 for "no preference". */
+  function requestedTab() {
+    var m = /[?&]stash=([^&#]*)/.exec(window.location.search);
+    if (!m) { return -1; }
+    var want = decodeURIComponent(m[1]).toLowerCase().trim();
+    for (var i = 0; i < SECTIONS.length; i++) {
+      if (SECTIONS[i].slug === want) { return i; }
+    }
+    return -1;
+  }
+
+  function activateTab(card, index) {
+    var tabs   = card.querySelectorAll('.tab');
+    var panels = card.querySelectorAll('.tab-panel');
+    tabs.forEach(function (t)   { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    panels.forEach(function (p) { p.classList.remove('active'); });
+    if (tabs[index])   { tabs[index].classList.add('active');   tabs[index].setAttribute('aria-selected', 'true'); }
+    if (panels[index]) { panels[index].classList.add('active'); }
+  }
+
+  function initTabs(card) {
+    card.querySelectorAll('.tab').forEach(function (tab, i) {
+      /* No history write here on purpose — see the note above. */
+      tab.addEventListener('click', function () { activateTab(card, i); });
+    });
+
+    var want = requestedTab();
+    if (want !== -1) { activateTab(card, want); }
   }
 
   /* ── Alt badge: block product link on mobile so tooltip can show ── */
-  function initAltBadgeBlock() {
-    document.querySelectorAll('.alt-badge').forEach(function (badge) {
+  function initAltBadgeBlock(card) {
+    card.querySelectorAll('.alt-badge').forEach(function (badge) {
       badge.addEventListener('click', function (e) {
         if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
         e.stopPropagation();
@@ -233,60 +262,31 @@
     });
   }
 
-  /* ── Collect the stash cards on the page ── */
-  function collectCards() {
-    var cards = [];
-    document.querySelectorAll('.card[data-stash-section]').forEach(function (el) {
-      var raw     = (el.getAttribute('data-stash-section') || '').toLowerCase().trim();
-      var section = sectionFor(raw);
-      if (section) {
-        cards.push({ el: el, section: section });
-      } else {
-        console.error('[CafeStash] unknown data-stash-section "' + raw +
-          '" — expected one of: merch, coffee, setup');
-      }
-    });
-    return cards;
+  function boot(card, data) {
+    var panels = SECTIONS.map(function (s) { return s.render(data); }).join('');
+    card.insertAdjacentHTML('beforeend',
+      renderIntro(data) + renderTabs() + panels + renderFooter());
+    initTabs(card);
+    initAltBadgeBlock(card);
   }
 
-  function boot(data, cards) {
-    cards.forEach(function (c) {
-      c.el.insertAdjacentHTML('beforeend',
-        renderIntro(data) + renderTabs(c.section) + c.section.render(data) + renderFooter());
-    });
-    initAltBadgeBlock();
-  }
-
-  function fail(cards) {
-    cards.forEach(function (c) {
-      c.el.insertAdjacentHTML('beforeend',
-        '<div style="padding:20px;font-family:monospace;font-size:10px;' +
-        'color:rgba(255,255,255,.3)">cafe stash unavailable</div>');
-    });
-  }
-
-  /* ── Go ──
-     Every stash page carries its own copy of this script tag, but Carrd
-     serves all pages as one document — so the first copy to run claims the
-     job and renders every card. Waiting for DOMContentLoaded matters: at
-     script-execution time only the cards parsed so far exist. */
-  if (window.__cafeStashBooted) { return; }
-  window.__cafeStashBooted = true;
-
+  /* ── Go ── */
   var started = false;
   function start() {
     if (started) { return; }
     started = true;
 
-    var cards = collectCards();
-    if (!cards.length) { return; }
+    var card = document.querySelector('.card');
+    if (!card) { return; }
 
     fetch(DATA_URL + '?t=' + Date.now())
       .then(function (r) { return r.json(); })
-      .then(function (data) { boot(data, cards); })
+      .then(function (data) { boot(card, data); })
       .catch(function (e) {
         console.error('[CafeStash] Failed to load stash-data.json', e);
-        fail(cards);
+        card.insertAdjacentHTML('beforeend',
+          '<div style="padding:20px;font-family:monospace;font-size:10px;' +
+          'color:rgba(255,255,255,.3)">cafe stash unavailable</div>');
       });
   }
 
