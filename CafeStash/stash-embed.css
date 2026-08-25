@@ -57,6 +57,8 @@ body {
   border-right: 1px solid var(--b1);
   font-family: 'Space Mono', monospace;
   transition: color var(--t), background var(--t);
+  /* tabs are links between Carrd pages, not buttons */
+  display: block; text-decoration: none;
 }
 .tab:last-child { border-right: none; }
 .tab.active { background: #141414; border-bottom: 2px solid; }
