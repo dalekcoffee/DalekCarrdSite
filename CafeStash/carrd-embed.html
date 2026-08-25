@@ -1,0 +1,39 @@
+<!-- ══ CafeStash — Carrd embed ════════════════════════════════════════════
+     One page, one embed. Carrd page id: cafestash
+       + → Embed → Type: Code → Style: Inline → paste this.
+
+     This is unchanged from what's already on the site — kept here so the
+     markup stash-embed.js expects is under version control. The tab bar
+     below is the real one; the panels and footer are injected after it.
+
+     Deep link to a tab (Carrd ignores the query, the embed reads it):
+       https://dalek.coffee/?stash=coffee#cafestash
+       https://dalek.coffee/?stash=setup#cafestash
+     Plain https://dalek.coffee/#cafestash opens on Merch, as always.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.css">
+</head>
+<body>
+<div class="card">
+
+<!-- Tab bar lives here; panels are injected by stash-embed.js -->
+<div class="tabs" role="tablist">
+<button class="tab active" role="tab" aria-selected="true">Merch</button>
+<button class="tab" role="tab" aria-selected="false">Coffee</button>
+<button class="tab" role="tab" aria-selected="false">My Setup</button>
+</div>
+
+</div>
+<script src="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.js"></script>
+</body>
+</html>
