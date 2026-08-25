@@ -198,10 +198,14 @@
   /* ── Wire up tabs (index-based) ──
      Carrd owns the top-level hash: it routes `#<page-id>` on load and falls
      back to home for anything it doesn't recognise. `#StashSetup` is not a
-     Carrd page, so a cold visit to dalek.coffee/#StashSetup lands on home.
-     The tab therefore travels in a query param, which Carrd ignores, while
-     the hash stays on the real page id. The old `#Stash*` hashes are still
-     honoured on arrival so previously shared links keep working. */
+     Carrd page, so a cold visit to dalek.coffee/#StashSetup would land on
+     home. CafeStash/carrd-head.html fixes that upstream — it runs before
+     Carrd's router, swaps the tab hash for the real page id, and leaves the
+     tab on window.__cafeStashTab for us to pick up here.
+
+     If that snippet isn't installed the pretty hashes can't survive a cold
+     load, so tab clicks fall back to a `?stash=` param, which Carrd ignores.
+     Ugly, but shareable. */
   var PAGE_HASH  = '#cafestash';
   var TAB_PARAM  = 'stash';
   var TAB_SLUGS  = ['merch', 'coffee', 'setup'];
@@ -210,15 +214,18 @@
   function tabIndexFromUrl() {
     var q = /[?&]stash=([^&#]*)/.exec(window.location.search);
     if (q) {
-      var slug = decodeURIComponent(q[1]).toLowerCase();
-      var bySlug = TAB_SLUGS.indexOf(slug);
+      var bySlug = TAB_SLUGS.indexOf(decodeURIComponent(q[1]).toLowerCase());
       if (bySlug !== -1) { return bySlug; }
     }
+
+    /* Live hash beats the head-script handoff, which goes stale once the
+       visitor navigates within the page. */
     var hash = window.location.hash.toLowerCase();
     for (var i = 0; i < TAB_HASHES.length; i++) {
       if (TAB_HASHES[i].toLowerCase() === hash) { return i; }
     }
-    return -1;
+
+    return TAB_SLUGS.indexOf(String(window.__cafeStashTab || '').toLowerCase());
   }
 
   /* Canonical, cold-load-safe URL for a tab: ?stash=<slug>#cafestash */
@@ -254,7 +261,8 @@
       tab.addEventListener('click', function () {
         activateTab(i);
         /* replaceState never fires hashchange, so Carrd's router stays out of it */
-        try { history.replaceState(null, '', tabUrl(i)); } catch (e) {}
+        var url = window.__cafeStashRouter ? TAB_HASHES[i] : tabUrl(i);
+        try { history.replaceState(null, '', url); } catch (e) {}
       });
     });
 
