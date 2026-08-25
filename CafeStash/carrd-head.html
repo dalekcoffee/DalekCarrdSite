@@ -1,0 +1,37 @@
+<!-- ══ CafeStash deep-link router ══════════════════════════════════════════
+     Paste this into Carrd:  Settings → Code → Head
+
+     Why it exists: Carrd's router reads location.hash on load and only
+     recognises real page ids, falling back to home for anything else.
+     #StashSetup is a tab inside the CafeStash embed, not a Carrd page, so a
+     cold visit to dalek.coffee/#StashSetup would land on home.
+
+     This runs before Carrd routes, swaps the tab hash out for the real page
+     id, and hands the tab name to stash-embed.js. The shared URL stays
+     exactly as it is; Carrd just never sees the part it can't parse.
+
+     If the page id ever changes, update PAGE below.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  var PAGE = '#cafestash';
+  var TABS = {
+    '#stashmerch':  'merch',
+    '#stashcoffee': 'coffee',
+    '#stashsetup':  'setup'
+  };
+
+  /* Lets the embed know the rewrite is live, so it can keep writing the
+     pretty hashes on tab clicks instead of falling back to ?stash=. */
+  window.__cafeStashRouter = true;
+
+  var slug = TABS[(window.location.hash || '').toLowerCase()];
+  if (!slug) { return; }
+
+  window.__cafeStashTab = slug;
+
+  var url = window.location.pathname + window.location.search + PAGE;
+  try { history.replaceState(null, '', url); }
+  catch (e) { window.location.hash = PAGE; }
+}());
+</script>
