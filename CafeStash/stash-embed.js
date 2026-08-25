@@ -208,18 +208,10 @@
      That is read on arrival only. Clicking a tab deliberately leaves the URL
      alone, so the query form never appears unless you hand it to someone. */
   var SECTIONS = [
-    { slug: 'merch',  label: 'Merch',    render: renderMerch  },
-    { slug: 'coffee', label: 'Coffee',   render: renderCoffee },
-    { slug: 'setup',  label: 'My Setup', render: renderSetup  }
+    { slug: 'merch',  render: renderMerch  },
+    { slug: 'coffee', render: renderCoffee },
+    { slug: 'setup',  render: renderSetup  }
   ];
-
-  function renderTabs() {
-    var tabs = SECTIONS.map(function (s, i) {
-      return '<button class="tab' + (i === 0 ? ' active' : '') + '" type="button" role="tab" ' +
-        'aria-selected="' + (i === 0 ? 'true' : 'false') + '">' + esc(s.label) + '</button>';
-    }).join('');
-    return '<div class="tabs" role="tablist">' + tabs + '</div>';
-  }
 
   /* Which tab a visitor arrived asking for; -1 for "no preference". */
   function requestedTab() {
@@ -232,28 +224,28 @@
     return -1;
   }
 
-  function activateTab(card, index) {
-    var tabs   = card.querySelectorAll('.tab');
-    var panels = card.querySelectorAll('.tab-panel');
+  function activateTab(index) {
+    var tabs   = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.tab-panel');
     tabs.forEach(function (t)   { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
     panels.forEach(function (p) { p.classList.remove('active'); });
     if (tabs[index])   { tabs[index].classList.add('active');   tabs[index].setAttribute('aria-selected', 'true'); }
     if (panels[index]) { panels[index].classList.add('active'); }
   }
 
-  function initTabs(card) {
-    card.querySelectorAll('.tab').forEach(function (tab, i) {
+  function initTabs() {
+    document.querySelectorAll('.tab').forEach(function (tab, i) {
       /* No history write here on purpose — see the note above. */
-      tab.addEventListener('click', function () { activateTab(card, i); });
+      tab.addEventListener('click', function () { activateTab(i); });
     });
 
     var want = requestedTab();
-    if (want !== -1) { activateTab(card, want); }
+    if (want !== -1) { activateTab(want); }
   }
 
   /* ── Alt badge: block product link on mobile so tooltip can show ── */
-  function initAltBadgeBlock(card) {
-    card.querySelectorAll('.alt-badge').forEach(function (badge) {
+  function initAltBadgeBlock() {
+    document.querySelectorAll('.alt-badge').forEach(function (badge) {
       badge.addEventListener('click', function (e) {
         if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
         e.stopPropagation();
@@ -263,11 +255,16 @@
   }
 
   function boot(card, data) {
+    /* Intro sits above the tab bar the embed already provides. */
+    var tabsEl = card.querySelector('.tabs');
+    if (tabsEl && data.intro) {
+      tabsEl.insertAdjacentHTML('beforebegin', renderIntro(data));
+    }
+
     var panels = SECTIONS.map(function (s) { return s.render(data); }).join('');
-    card.insertAdjacentHTML('beforeend',
-      renderIntro(data) + renderTabs() + panels + renderFooter());
-    initTabs(card);
-    initAltBadgeBlock(card);
+    card.insertAdjacentHTML('beforeend', panels + renderFooter());
+    initTabs();
+    initAltBadgeBlock();
   }
 
   /* ── Go ── */
