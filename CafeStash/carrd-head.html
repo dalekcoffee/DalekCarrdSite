@@ -34,13 +34,37 @@
      pretty hashes on tab clicks instead of falling back to ?stash=. */
   window.__cafeStashRouter = true;
 
-  var slug = TABS[(window.location.hash || '').toLowerCase()];
+  var original = window.location.hash || '';
+  var slug = TABS[original.toLowerCase()];
   if (!slug) { return; }
 
   window.__cafeStashTab = slug;
 
-  var url = window.location.pathname + window.location.search + PAGE;
-  try { history.replaceState(null, '', url); }
-  catch (e) { window.location.hash = PAGE; }
+  function rewrite(hash) {
+    var url = window.location.pathname + window.location.search + hash;
+    /* replaceState, never `location.hash =`: assigning fires hashchange, and
+       Carrd's router would see the tab hash and bounce to home. */
+    try { history.replaceState(null, '', url); return true; }
+    catch (e) { return false; }
+  }
+
+  if (!rewrite(PAGE)) { window.location.hash = PAGE; return; }
+
+  /* Second channel, in case the embed can't see our globals: once Carrd has
+     routed, put the pretty hash back. The embed reads the hash at its own
+     init and prefers it over the handoff, so whichever lands first wins and
+     both agree. The URL the visitor ends up sharing stays #StashSetup. */
+  var restored = false;
+  function restore() {
+    if (restored) { return; }
+    restored = true;
+    setTimeout(function () { rewrite(original); }, 0);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', restore);
+  } else {
+    restore();
+  }
+  window.addEventListener('load', restore);
 }());
 </script>
