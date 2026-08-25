@@ -1,5 +1,14 @@
 <!-- ══ CafeStash deep-link router ══════════════════════════════════════════
-     Paste this into Carrd:  Settings → Code → Head
+     Where this goes in Carrd (it is NOT a Settings panel — it's an element):
+
+       1. On the HOME page, click + → Embed
+       2. Type    → Code
+       3. Style   → Hidden,  then Placement → Head
+       4. Code    → paste everything below, <script> tags included
+       5. Save, then Publish
+
+     Placing it on the home page matters: a cold visitor to a #Stash* link is
+     exactly the case where Carrd hasn't resolved a page yet.
 
      Why it exists: Carrd's router reads location.hash on load and only
      recognises real page ids, falling back to home for anything else.
