@@ -195,8 +195,48 @@
       '</div>';
   }
 
-  /* ── Wire up tabs (index-based) ── */
+  /* ── Wire up tabs (index-based) ──
+     Carrd owns the top-level hash: it routes `#<page-id>` on load and falls
+     back to home for anything it doesn't recognise. `#StashSetup` is not a
+     Carrd page, so a cold visit to dalek.coffee/#StashSetup lands on home.
+     The tab therefore travels in a query param, which Carrd ignores, while
+     the hash stays on the real page id. The old `#Stash*` hashes are still
+     honoured on arrival so previously shared links keep working. */
+  var PAGE_HASH  = '#cafestash';
+  var TAB_PARAM  = 'stash';
+  var TAB_SLUGS  = ['merch', 'coffee', 'setup'];
   var TAB_HASHES = ['#StashMerch', '#StashCoffee', '#StashSetup'];
+
+  function tabIndexFromUrl() {
+    var q = /[?&]stash=([^&#]*)/.exec(window.location.search);
+    if (q) {
+      var slug = decodeURIComponent(q[1]).toLowerCase();
+      var bySlug = TAB_SLUGS.indexOf(slug);
+      if (bySlug !== -1) { return bySlug; }
+    }
+    var hash = window.location.hash.toLowerCase();
+    for (var i = 0; i < TAB_HASHES.length; i++) {
+      if (TAB_HASHES[i].toLowerCase() === hash) { return i; }
+    }
+    return -1;
+  }
+
+  /* Canonical, cold-load-safe URL for a tab: ?stash=<slug>#cafestash */
+  function tabUrl(index) {
+    var hash = window.location.hash;
+    for (var i = 0; i < TAB_HASHES.length; i++) {
+      if (TAB_HASHES[i].toLowerCase() === hash.toLowerCase()) { hash = ''; break; }
+    }
+    if (!hash) { hash = PAGE_HASH; }
+
+    var search = window.location.search
+      .replace(/^\?/, '')
+      .split('&')
+      .filter(function (p) { return p && p.split('=')[0] !== TAB_PARAM; });
+    search.push(TAB_PARAM + '=' + TAB_SLUGS[index]);
+
+    return window.location.pathname + '?' + search.join('&') + hash;
+  }
 
   function activateTab(index) {
     var tabs   = document.querySelectorAll('.tab');
@@ -213,14 +253,21 @@
     tabs.forEach(function (tab, i) {
       tab.addEventListener('click', function () {
         activateTab(i);
-        history.replaceState(null, '', TAB_HASHES[i]);
+        /* replaceState never fires hashchange, so Carrd's router stays out of it */
+        try { history.replaceState(null, '', tabUrl(i)); } catch (e) {}
       });
     });
 
-    /* ── Activate tab from URL hash on load ── */
-    var hash  = window.location.hash;
-    var found = TAB_HASHES.indexOf(hash);
+    /* ── Activate tab from the URL on load ── */
+    var found = tabIndexFromUrl();
     if (found !== -1) { activateTab(found); }
+
+    /* Someone already on the site pasting a #Stash* link navigates in-document,
+       so pick the tab up on hash changes too. */
+    window.addEventListener('hashchange', function () {
+      var i = tabIndexFromUrl();
+      if (i !== -1) { activateTab(i); }
+    });
   }
 
   /* ── Alt badge: block product link on mobile so tooltip can show ── */
