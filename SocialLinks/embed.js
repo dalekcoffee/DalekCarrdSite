@@ -210,6 +210,10 @@
     '<span class="lk-icon-mask" style="--mi:url(\'https://fluxerstatic.com/marketing/branding/symbol-black.svg\')" data-fb="FL" aria-hidden="true"></span>' +
     '<span class="lk-icon-fb" aria-hidden="true">FL</span><span>Fluxer</span></a>' +
 
+    '<a class="lk-social foil" href="https://youtu.be/q-YyKGoBHh8?si=602bSylCzgNpDJuy&amp;t=2" target="_blank" rel="noopener noreferrer" style="--brand:#00aff0; --brand2:#7FE3FF">' +
+    '<span class="lk-icon-mask" style="--mi:url(\'https://cdn.simpleicons.org/onlyfans\')" data-fb="OF" aria-hidden="true"></span>' +
+    '<span class="lk-icon-fb" aria-hidden="true">OF</span><span>OnlyFans</span></a>' +
+
     '</div></div>' +
     '</div>';
 
