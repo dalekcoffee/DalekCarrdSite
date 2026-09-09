@@ -236,17 +236,26 @@ body {
   text-overflow: clip;
 }
 
-/* group label */
+/* group label — the band that starts a category.
+   These sat one shade off the card and read as just another row, so the band
+   now carries rules top and bottom, a darker fill, and the white accent bar
+   the rows only reveal on hover. Held on permanently, that bar is what marks
+   a category apart from the items under it. */
 .col-group {
   display: flex; align-items: center; gap: 10px;
-  padding: 13px 20px 12px;
-  border-bottom: 1px solid var(--b1);
-  background: #0a0a0a;
+  padding: 16px 20px 14px 17px;
+  border-top: 1px solid #2e2e2e;
+  border-bottom: 1px solid #2e2e2e;
+  border-left: 3px solid #fff;
+  background: #060606;
 }
+/* The section header already draws a rule, so the first category under it
+   doesn't need a second one stacked on top. */
+.sec-head + .col-group { border-top: none; }
 .col-group-icon { font-size: 22px; line-height: 1; opacity: 1; flex-shrink: 0; display: flex; align-items: center; }
 .col-group-label {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase;
+  font-size: 22px; letter-spacing: 0.2em; text-transform: uppercase;
   color: #fff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -501,6 +510,8 @@ body {
   /* ── Global text ── */
   .intro-text      { font-size: 9px; }
   .col-group-label { font-size: 14px; }
+  /* 13px + the 3px accent bar keeps the label flush with the rows' 16px. */
+  .col-group       { padding: 14px 16px 12px 13px; }
   .sec-footer p    { font-size: 9px; }
   .sec-head h2     { font-size: 18px; }
   .sec-tag         { font-size: 9px; }
