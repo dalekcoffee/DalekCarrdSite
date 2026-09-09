@@ -1,22 +1,25 @@
 <!-- ══ CafeStash — My Setup page ═════════════════════════════════════════════
      One of three CafeStash embeds. Each one is a whole Carrd page:
 
-       CafeStash/carrd-embed-merch.html   →  Merch
-       CafeStash/carrd-embed-coffee.html  →  Coffee
-       CafeStash/carrd-embed-setup.html   →  My Setup
+       CafeStash/carrd-embed-merch.html   →  Merch    (#cafemerch)
+       CafeStash/carrd-embed-coffee.html  →  Coffee   (#cafecoffee)
+       CafeStash/carrd-embed-setup.html   →  My Setup (#cafesetup)
 
      Paste this whole file into its page:
        + → Embed → Type: Code → Style: Inline
 
-     There is no tab bar in here — navigation between the three pages is
-     Carrd's job, done with the header buttons on the Carrd side. Because
-     each section is a real page, its hash deep-links, back-buttons and
-     opens in a new tab exactly like #about or #Links do.
+     There is no tab bar in here: moving between the three pages is Carrd's
+     job, done with the header buttons on the Carrd side.
 
-     The three blocks are identical except for data-stash-section, which is
-     the only thing telling the script which section to draw. All three
-     pages carry the same script tag; Carrd serves them as one document, so
-     the first copy to run renders all three cards and the rest stand down.
+     The three blocks differ only in data-stash-section, which is the only
+     thing telling the script which section to draw.
+
+     Carrd serves every page as one document but holds each embed's script
+     back as <unloaded-script>, running it when its page is first shown — so
+     this script executes up to three times, at whatever moment each page is
+     visited. That is fine: every run only draws cards that aren't drawn
+     yet, and the first run keeps watching for cards Carrd adds or rebuilds
+     later.
      ═══════════════════════════════════════════════════════════════════════ -->
 
 <meta name="color-scheme" content="dark">

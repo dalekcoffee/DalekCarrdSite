@@ -216,9 +216,11 @@
     setup:  { render: renderSetup,  badges: [AMAZON]   }
   };
 
-  /* ── Alt badge: block product link on mobile so tooltip can show ── */
-  function initAltBadgeBlock() {
-    document.querySelectorAll('.alt-badge').forEach(function (badge) {
+  /* ── Alt badge: block product link on mobile so tooltip can show ──
+     Scoped to the card being drawn, so re-drawing one card can't double-bind
+     the badges in another. */
+  function initAltBadgeBlock(scope) {
+    scope.querySelectorAll('.alt-badge').forEach(function (badge) {
       badge.addEventListener('click', function (e) {
         if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
         e.stopPropagation();
@@ -227,63 +229,101 @@
     });
   }
 
-  /* ── Collect every stash card in the document ── */
-  function collectCards() {
-    var cards = [];
+  /* ── Render one card ──
+     Marked as rendered on the element itself, not in a variable, so the
+     marker dies with the node. If Carrd throws the card away and rebuilds
+     it, the replacement arrives unmarked and gets drawn again. */
+  var DONE_ATTR = 'data-stash-rendered';
+
+  function renderCard(el, section, data) {
+    el.setAttribute(DONE_ATTR, '1');
+    el.innerHTML = renderIntro(data) + section.render(data) + renderFooter(section);
+    initAltBadgeBlock(el);
+  }
+
+  function failCard(el) {
+    el.setAttribute(DONE_ATTR, '1');
+    el.innerHTML = '<div style="padding:20px;font-family:monospace;font-size:10px;' +
+      'color:rgba(255,255,255,.3)">cafe stash unavailable</div>';
+  }
+
+  /* ── Data: fetched once per document, shared by every card ── */
+  function stashData() {
+    if (!window.__cafeStashData) {
+      window.__cafeStashData = fetch(DATA_URL + '?t=' + Date.now())
+        .then(function (r) { return r.json(); });
+    }
+    return window.__cafeStashData;
+  }
+
+  /* ── Sweep: draw any card that isn't drawn yet ──
+     Cheap and idempotent, so it is safe to call on anything that might have
+     changed the page. Cards already carrying the marker are skipped. */
+  function sweep() {
+    var pending = [];
     document.querySelectorAll('.card[data-stash-section]').forEach(function (el) {
+      if (el.hasAttribute(DONE_ATTR)) { return; }
       var slug    = (el.getAttribute('data-stash-section') || '').toLowerCase().trim();
       var section = SECTIONS[slug];
       if (section) {
-        cards.push({ el: el, section: section });
+        pending.push({ el: el, section: section });
       } else {
         console.error('[CafeStash] unknown data-stash-section "' + slug +
           '" — expected one of: merch, coffee, setup');
       }
     });
-    return cards;
-  }
+    if (!pending.length) { return; }
 
-  function boot(data, cards) {
-    cards.forEach(function (c) {
-      c.el.insertAdjacentHTML('beforeend',
-        renderIntro(data) + c.section.render(data) + renderFooter(c.section));
-    });
-    initAltBadgeBlock();
-  }
-
-  function fail(cards) {
-    cards.forEach(function (c) {
-      c.el.insertAdjacentHTML('beforeend',
-        '<div style="padding:20px;font-family:monospace;font-size:10px;' +
-        'color:rgba(255,255,255,.3)">cafe stash unavailable</div>');
-    });
-  }
-
-  /* ── Go ──
-     Each stash page carries its own copy of this script tag, but Carrd serves
-     every page as a single document — so the first copy to run claims the job
-     and renders all three cards. Waiting for DOMContentLoaded matters: at
-     script-execution time only the cards parsed so far exist. */
-  if (window.__cafeStashBooted) { return; }
-  window.__cafeStashBooted = true;
-
-  function start() {
-    var cards = collectCards();
-    if (!cards.length) { return; }
-
-    fetch(DATA_URL + '?t=' + Date.now())
-      .then(function (r) { return r.json(); })
-      .then(function (data) { boot(data, cards); })
+    stashData()
+      .then(function (data) {
+        pending.forEach(function (c) { renderCard(c.el, c.section, data); });
+      })
       .catch(function (e) {
         console.error('[CafeStash] Failed to load stash-data.json', e);
-        fail(cards);
+        pending.forEach(function (c) { failCard(c.el); });
       });
   }
 
+  /* ── Go ──
+     All three pages carry this script tag, and Carrd serves them as one
+     document, so it executes up to three times. That is fine now: every run
+     just sweeps, and a card already drawn is left alone.
+
+     The watching matters more than the first sweep. Carrd owns these
+     containers and may rebuild a page's embed when it is navigated to,
+     which throws away whatever was drawn into it. The observer catches the
+     replacement; hashchange covers a page swap that reuses the node. */
+  if (window.__cafeStashWatching) { return; }
+  window.__cafeStashWatching = true;
+
+  var queued = false;
+  function scheduleSweep() {
+    if (queued) { return; }
+    queued = true;
+    /* Coalesce a burst of mutations into one pass, and let Carrd finish
+       building the page before we look at it. */
+    setTimeout(function () { queued = false; sweep(); }, 0);
+  }
+
+  function watch() {
+    sweep();
+
+    if (window.MutationObserver) {
+      new MutationObserver(function (records) {
+        for (var i = 0; i < records.length; i++) {
+          if (records[i].addedNodes.length) { scheduleSweep(); return; }
+        }
+      }).observe(document.body, { childList: true, subtree: true });
+    }
+
+    window.addEventListener('hashchange', scheduleSweep);
+    window.addEventListener('load', scheduleSweep);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
+    document.addEventListener('DOMContentLoaded', watch);
   } else {
-    start();
+    watch();
   }
 
 }());
