@@ -43,36 +43,11 @@ body {
   text-transform: uppercase;
 }
 
-/* ── TABS ── */
-.tabs {
-  display: flex;
-  border-bottom: 1px solid var(--b1);
-  background: #0c0c0c;
-}
-.tab {
-  flex: 1; padding: 13px 5px; text-align: center;
-  font-size: 9px; text-transform: uppercase; font-weight: 700;
-  letter-spacing: 0.1em; color: rgba(255,255,255,.35);
-  cursor: pointer; background: none; border: none;
-  border-right: 1px solid var(--b1);
-  font-family: 'Space Mono', monospace;
-  transition: color var(--t), background var(--t);
-}
-.tab:last-child { border-right: none; }
-.tab.active { background: #141414; border-bottom: 2px solid; }
-.tab:hover:not(.active) { color: rgba(255,255,255,.65); }
-.tab:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
-
-/* per-tab accent colours */
-.tab:nth-child(1).active        { color: var(--cof);  border-bottom-color: var(--cof); }
-.tab:nth-child(2).active        { color: var(--cof); border-bottom-color: var(--cof); }
-.tab:nth-child(3).active        { color: var(--pur); border-bottom-color: var(--pur); }
-.tab:nth-child(1):focus-visible { outline-color: var(--cof); }
-.tab:nth-child(2):focus-visible { outline-color: var(--cof); }
-.tab:nth-child(3):focus-visible { outline-color: var(--pur); }
-
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
+/* ── SECTION PANEL ──
+   Each Carrd page holds exactly one section, so the panel is a plain
+   wrapper — nothing to show or hide. Navigation between Merch, Coffee and
+   Setup is done with Carrd's own header buttons, not by this embed. */
+.stash-panel { display: block; }
 
 /* ── SECTION HEADER ── */
 .sec-head {
@@ -433,24 +408,24 @@ body {
 }
 .alt-badge:hover::after, .note-badge:hover::after { opacity: 1; }
 
-/* ── PER-TAB DISCLAIMER ── */
-.tab-footer {
+/* ── PER-SECTION DISCLAIMER ── */
+.sec-footer {
   display: flex; flex-direction: column; gap: 10px;
   padding: 13px 20px;
   border-top: 1px solid var(--b1);
   background: #0a0a0a;
 }
-.tab-footer p {
+.sec-footer p {
   font-size: 15px;
   font-weight: 400;
   color: rgba(255,255,255,.75);
   letter-spacing: 0.03em;
   line-height: 1.6;
 }
-.tab-footer-alt {
+.sec-footer-alt {
   display: flex; align-items: flex-start; gap: 10px;
 }
-.tab-footer-alt .alt-badge { flex-shrink: 0; margin-top: 3px; }
+.sec-footer-alt .alt-badge { flex-shrink: 0; margin-top: 3px; }
 
 /* ── CARD FOOTER ── */
 .footer-bar {
@@ -526,7 +501,7 @@ body {
   /* ── Global text ── */
   .intro-text      { font-size: 9px; }
   .col-group-label { font-size: 14px; }
-  .tab-footer p    { font-size: 9px; }
+  .sec-footer p    { font-size: 9px; }
   .sec-head h2     { font-size: 18px; }
   .sec-tag         { font-size: 9px; }
 
@@ -544,8 +519,8 @@ body {
 
   /* ── Footer ── */
   .footer-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .tab-footer { flex-direction: column; }
-  .tab-footer-alt { flex-direction: column; }
+  .sec-footer { flex-direction: column; }
+  .sec-footer-alt { flex-direction: column; }
 
   /* ── Favorite overlay — keep current size on mobile ── */
   .coffee-fav      { font-size: 8.5px; }

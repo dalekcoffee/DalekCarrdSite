@@ -1,0 +1,30 @@
+<!-- ══ CafeStash — Coffee page ═════════════════════════════════════════════
+     One of three CafeStash embeds. Each one is a whole Carrd page:
+
+       CafeStash/carrd-embed-merch.html   →  Merch
+       CafeStash/carrd-embed-coffee.html  →  Coffee
+       CafeStash/carrd-embed-setup.html   →  My Setup
+
+     Paste this whole file into its page:
+       + → Embed → Type: Code → Style: Inline
+
+     There is no tab bar in here — navigation between the three pages is
+     Carrd's job, done with the header buttons on the Carrd side. Because
+     each section is a real page, its hash deep-links, back-buttons and
+     opens in a new tab exactly like #about or #Links do.
+
+     The three blocks are identical except for data-stash-section, which is
+     the only thing telling the script which section to draw. All three
+     pages carry the same script tag; Carrd serves them as one document, so
+     the first copy to run renders all three cards and the rest stand down.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.css">
+
+<div class="card" data-stash-section="coffee"></div>
+
+<script src="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.js"></script>
