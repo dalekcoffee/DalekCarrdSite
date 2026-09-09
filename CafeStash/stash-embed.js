@@ -52,12 +52,12 @@
   var ALT_BADGE  = '<span class="alt-badge" data-tooltip="Alt Picks are alternatives Dalek found after his original item if his current items are no longer available for purchase. These are the items he would probably buy next. - Compatibility between items has not been verified.">Alt Pick</span>';
   var DISC_BADGE = '<span class="disc-badge">Discontinued</span>';
 
-  function tabFooter(text) {
+  function sectionFooter(text) {
     var paras = text.split('\n\n');
     var last  = paras.pop();
     var body  = paras.map(function(p) { return '<p>' + esc(p) + '</p>'; }).join('');
-    body += '<div class="tab-footer-alt">' + ALT_BADGE + '<p>' + esc(last) + '</p></div>';
-    return '<div class="tab-footer">' + body + '</div>';
+    body += '<div class="sec-footer-alt">' + ALT_BADGE + '<p>' + esc(last) + '</p></div>';
+    return '<div class="sec-footer">' + body + '</div>';
   }
 
   /* ── Build compact row ── */
@@ -121,7 +121,7 @@
           '<span class="merch-cta">Shop now ' + MERCH_ARROW + '</span>' +
         '</div></a>';
     }).join('');
-    return '<div class="tab-panel active">' +
+    return '<div class="stash-panel">' +
       secHead(data.merch.heading, data.merch.tag) +
       '<div class="merch-grid">' + items + '</div>' +
       '</div>';
@@ -158,8 +158,8 @@
     var c = data.coffee;
     var beans = c.left.items.map(buildCoffeeCard).join('');
     var gear  = c.right.items.map(buildCoffeeCard).join('');
-    var disclaimer = c.disclaimer ? tabFooter(c.disclaimer) : '';
-    return '<div class="tab-panel">' +
+    var disclaimer = c.disclaimer ? sectionFooter(c.disclaimer) : '';
+    return '<div class="stash-panel">' +
       secHead(c.heading, c.tag) +
       colGroup(c.left.icon, c.left.label) +
       '<div class="coffee-beans-grid">' + beans + '</div>' +
@@ -172,11 +172,11 @@
   /* ── Render setup panel ── */
   function renderSetup(data) {
     var s = data.setup;
-    var disclaimer = s.disclaimer ? tabFooter(s.disclaimer) : '';
+    var disclaimer = s.disclaimer ? sectionFooter(s.disclaimer) : '';
     var full = (s.full && s.full.length)
       ? '<div class="full-col">' + buildFullColumn(s.full) + '</div>'
       : '';
-    return '<div class="tab-panel">' +
+    return '<div class="stash-panel">' +
       secHead(s.heading, s.tag) +
       '<div class="dual-col">' +
         '<div class="dual-col-side">' + buildColumn(s.left)  + '</div>' +
@@ -188,64 +188,39 @@
   }
 
   /* ── Render card footer ── */
-  function renderFooter() {
+  function renderFooter(section) {
+    var badges = section.badges.map(function (b) {
+      return '<span class="badge ' + b.cls + '">' + esc(b.label) + '</span>';
+    }).join('');
     return '<div class="footer-bar">' +
       '<span class="footer-note"><a href="https://dalek.coffee" target="_blank" rel="noopener noreferrer">dalek.coffee</a>&nbsp;·&nbsp;affiliate links used</span>' +
-      '<div class="footer-badges"><span class="badge badge-pf">Printify</span><span class="badge badge-amz">Amazon</span></div>' +
+      '<div class="footer-badges">' + badges + '</div>' +
       '</div>';
   }
 
   /* ── Sections ──
-     One Carrd page, one card, three panels swapped client-side — so tabbing
-     is instant, with no page transition or scroll reset.
+     One Carrd page per section, one card each. A card says which section it
+     is with data-stash-section; nothing else on the page has to match.
 
-     Carrd owns the top-level hash and routes it on load, falling back to
-     home for any id it doesn't recognise, so a tab can't live there. Deep
-     links therefore ride on ?stash=, which Carrd ignores:
+     There is no tab bar here on purpose — moving between Merch, Coffee and
+     Setup is plain Carrd navigation, driven by the header buttons on the
+     Carrd side. That means each section gets a real page id, so deep links,
+     the back button and open-in-new-tab all work the way they do for every
+     other page on the site, with no help from this script. */
+  var PRINTIFY = { label: 'Printify', cls: 'badge-pf'  };
+  var AMAZON   = { label: 'Amazon',   cls: 'badge-amz' };
 
-         https://dalek.coffee/?stash=setup#cafestash
+  var SECTIONS = {
+    merch:  { render: renderMerch,  badges: [PRINTIFY] },
+    coffee: { render: renderCoffee, badges: [AMAZON]   },
+    setup:  { render: renderSetup,  badges: [AMAZON]   }
+  };
 
-     That is read on arrival only. Clicking a tab deliberately leaves the URL
-     alone, so the query form never appears unless you hand it to someone. */
-  var SECTIONS = [
-    { slug: 'merch',  render: renderMerch  },
-    { slug: 'coffee', render: renderCoffee },
-    { slug: 'setup',  render: renderSetup  }
-  ];
-
-  /* Which tab a visitor arrived asking for; -1 for "no preference". */
-  function requestedTab() {
-    var m = /[?&]stash=([^&#]*)/.exec(window.location.search);
-    if (!m) { return -1; }
-    var want = decodeURIComponent(m[1]).toLowerCase().trim();
-    for (var i = 0; i < SECTIONS.length; i++) {
-      if (SECTIONS[i].slug === want) { return i; }
-    }
-    return -1;
-  }
-
-  function activateTab(index) {
-    var tabs   = document.querySelectorAll('.tab');
-    var panels = document.querySelectorAll('.tab-panel');
-    tabs.forEach(function (t)   { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-    panels.forEach(function (p) { p.classList.remove('active'); });
-    if (tabs[index])   { tabs[index].classList.add('active');   tabs[index].setAttribute('aria-selected', 'true'); }
-    if (panels[index]) { panels[index].classList.add('active'); }
-  }
-
-  function initTabs() {
-    document.querySelectorAll('.tab').forEach(function (tab, i) {
-      /* No history write here on purpose — see the note above. */
-      tab.addEventListener('click', function () { activateTab(i); });
-    });
-
-    var want = requestedTab();
-    if (want !== -1) { activateTab(want); }
-  }
-
-  /* ── Alt badge: block product link on mobile so tooltip can show ── */
-  function initAltBadgeBlock() {
-    document.querySelectorAll('.alt-badge').forEach(function (badge) {
+  /* ── Alt badge: block product link on mobile so tooltip can show ──
+     Scoped to the card being drawn, so re-drawing one card can't double-bind
+     the badges in another. */
+  function initAltBadgeBlock(scope) {
+    scope.querySelectorAll('.alt-badge').forEach(function (badge) {
       badge.addEventListener('click', function (e) {
         if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
         e.stopPropagation();
@@ -254,43 +229,101 @@
     });
   }
 
-  function boot(card, data) {
-    /* Intro sits above the tab bar the embed already provides. */
-    var tabsEl = card.querySelector('.tabs');
-    if (tabsEl && data.intro) {
-      tabsEl.insertAdjacentHTML('beforebegin', renderIntro(data));
-    }
+  /* ── Render one card ──
+     Marked as rendered on the element itself, not in a variable, so the
+     marker dies with the node. If Carrd throws the card away and rebuilds
+     it, the replacement arrives unmarked and gets drawn again. */
+  var DONE_ATTR = 'data-stash-rendered';
 
-    var panels = SECTIONS.map(function (s) { return s.render(data); }).join('');
-    card.insertAdjacentHTML('beforeend', panels + renderFooter());
-    initTabs();
-    initAltBadgeBlock();
+  function renderCard(el, section, data) {
+    el.setAttribute(DONE_ATTR, '1');
+    el.innerHTML = renderIntro(data) + section.render(data) + renderFooter(section);
+    initAltBadgeBlock(el);
   }
 
-  /* ── Go ── */
-  var started = false;
-  function start() {
-    if (started) { return; }
-    started = true;
+  function failCard(el) {
+    el.setAttribute(DONE_ATTR, '1');
+    el.innerHTML = '<div style="padding:20px;font-family:monospace;font-size:10px;' +
+      'color:rgba(255,255,255,.3)">cafe stash unavailable</div>';
+  }
 
-    var card = document.querySelector('.card');
-    if (!card) { return; }
+  /* ── Data: fetched once per document, shared by every card ── */
+  function stashData() {
+    if (!window.__cafeStashData) {
+      window.__cafeStashData = fetch(DATA_URL + '?t=' + Date.now())
+        .then(function (r) { return r.json(); });
+    }
+    return window.__cafeStashData;
+  }
 
-    fetch(DATA_URL + '?t=' + Date.now())
-      .then(function (r) { return r.json(); })
-      .then(function (data) { boot(card, data); })
+  /* ── Sweep: draw any card that isn't drawn yet ──
+     Cheap and idempotent, so it is safe to call on anything that might have
+     changed the page. Cards already carrying the marker are skipped. */
+  function sweep() {
+    var pending = [];
+    document.querySelectorAll('.card[data-stash-section]').forEach(function (el) {
+      if (el.hasAttribute(DONE_ATTR)) { return; }
+      var slug    = (el.getAttribute('data-stash-section') || '').toLowerCase().trim();
+      var section = SECTIONS[slug];
+      if (section) {
+        pending.push({ el: el, section: section });
+      } else {
+        console.error('[CafeStash] unknown data-stash-section "' + slug +
+          '" — expected one of: merch, coffee, setup');
+      }
+    });
+    if (!pending.length) { return; }
+
+    stashData()
+      .then(function (data) {
+        pending.forEach(function (c) { renderCard(c.el, c.section, data); });
+      })
       .catch(function (e) {
         console.error('[CafeStash] Failed to load stash-data.json', e);
-        card.insertAdjacentHTML('beforeend',
-          '<div style="padding:20px;font-family:monospace;font-size:10px;' +
-          'color:rgba(255,255,255,.3)">cafe stash unavailable</div>');
+        pending.forEach(function (c) { failCard(c.el); });
       });
   }
 
+  /* ── Go ──
+     All three pages carry this script tag, and Carrd serves them as one
+     document, so it executes up to three times. That is fine now: every run
+     just sweeps, and a card already drawn is left alone.
+
+     The watching matters more than the first sweep. Carrd owns these
+     containers and may rebuild a page's embed when it is navigated to,
+     which throws away whatever was drawn into it. The observer catches the
+     replacement; hashchange covers a page swap that reuses the node. */
+  if (window.__cafeStashWatching) { return; }
+  window.__cafeStashWatching = true;
+
+  var queued = false;
+  function scheduleSweep() {
+    if (queued) { return; }
+    queued = true;
+    /* Coalesce a burst of mutations into one pass, and let Carrd finish
+       building the page before we look at it. */
+    setTimeout(function () { queued = false; sweep(); }, 0);
+  }
+
+  function watch() {
+    sweep();
+
+    if (window.MutationObserver) {
+      new MutationObserver(function (records) {
+        for (var i = 0; i < records.length; i++) {
+          if (records[i].addedNodes.length) { scheduleSweep(); return; }
+        }
+      }).observe(document.body, { childList: true, subtree: true });
+    }
+
+    window.addEventListener('hashchange', scheduleSweep);
+    window.addEventListener('load', scheduleSweep);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
+    document.addEventListener('DOMContentLoaded', watch);
   } else {
-    start();
+    watch();
   }
 
 }());

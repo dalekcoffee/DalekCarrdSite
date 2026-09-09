@@ -1,0 +1,33 @@
+<!-- ══ CafeStash — My Setup page ═════════════════════════════════════════════
+     One of three CafeStash embeds. Each one is a whole Carrd page:
+
+       CafeStash/carrd-embed-merch.html   →  Merch    (#cafemerch)
+       CafeStash/carrd-embed-coffee.html  →  Coffee   (#cafecoffee)
+       CafeStash/carrd-embed-setup.html   →  My Setup (#cafesetup)
+
+     Paste this whole file into its page:
+       + → Embed → Type: Code → Style: Inline
+
+     There is no tab bar in here: moving between the three pages is Carrd's
+     job, done with the header buttons on the Carrd side.
+
+     The three blocks differ only in data-stash-section, which is the only
+     thing telling the script which section to draw.
+
+     Carrd serves every page as one document but holds each embed's script
+     back as <unloaded-script>, running it when its page is first shown — so
+     this script executes up to three times, at whatever moment each page is
+     visited. That is fine: every run only draws cards that aren't drawn
+     yet, and the first run keeps watching for cards Carrd adds or rebuilds
+     later.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.css">
+
+<div class="card" data-stash-section="setup"></div>
+
+<script src="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.js"></script>
