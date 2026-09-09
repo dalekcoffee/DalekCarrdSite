@@ -115,6 +115,7 @@
         "icon": "\ud83c\udf92",
         "items": [
           { "label": "Chest Rig",       "name": "BECOJADDE Running Vest",   "desc": "Carries the whole kit hands-free.",                    "url": "https://amzn.to/4wGHxLq", "img": "Images/Setup/BECOJADDE Running Vest.png" },
+          { "label": "Ruck Weight ×2", "name": "Yes4All Cast Iron 10 LB",  "desc": "Adds 20 lb of load to the vest.",                      "url": "https://amzn.to/3UxLC7g", "img": "Images/Setup/Yes4All Cast Iron Rucking Weight 10lb.png" },
           { "label": "Camera",          "name": "Xtra Edge Pro",            "desc": "The main IRL action cam.",                 "url": "https://amzn.to/4xAbnBO", "img": "Images/Setup/Xtra Edge Pro.png" },
           { "label": "Camera \u00b7 Alt",   "name": "DJI Osmo Action 5 Pro",    "desc": "Same camera, pricier brand.",   "url": "https://amzn.to/4wuJWZe", "img": "Images/Setup/DJI Osmo Action 5 Pro.png", "alt": true, "note": "Basically the same camera as the Xtra Edge Pro, just the more expensive name-brand version. Either one works for IRL.", "noteLabel": "Compare" },
           { "label": "Microphone",      "name": "Hollyland Lark M2",        "desc": "Wireless lav, two receivers.",             "url": "https://amzn.to/4wt3ahO", "img": "Images/Setup/Hollyland Lark M2 Camera RX + USB-C RX.png", "note": "Doing VR and IRL? The Camera RX + USB-C RX version covers both setups with one mic kit - run the camera receiver on the IRL rig and plug the USB-C receiver into the PC for VR.", "noteLabel": "VR + IRL" },
