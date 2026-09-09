@@ -20,14 +20,21 @@
      visited. That is fine: every run only draws cards that aren't drawn
      yet, and the first run keeps watching for cards Carrd adds or rebuilds
      later.
+
+     The ?v=2 on the stylesheet and script is a cache buster. GitHub Pages
+     tells browsers to keep these files for ten minutes, and a browser that
+     already holds an older copy can go on serving it long after that. When
+     stash-embed.js or stash-embed.css changes, bump the number in all three
+     embed files and re-paste them into Carrd, so nobody is left running the
+     previous version.
      ═══════════════════════════════════════════════════════════════════════ -->
 
 <meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.css">
+<link rel="stylesheet" href="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.css?v=2">
 
 <div class="card" data-stash-section="coffee"></div>
 
-<script src="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.js"></script>
+<script src="https://dalekcoffee.github.io/DalekCarrdSite/CafeStash/stash-embed.js?v=2"></script>
