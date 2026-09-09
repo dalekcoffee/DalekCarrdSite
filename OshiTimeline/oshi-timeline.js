@@ -86,7 +86,7 @@
   }
 
   /* ───────────────────────── Text rendering ──────────────────────── */
-  // MFM function-tag allow-lists — fixed sets so no user string reaches a CSS
+  // MFM function-tag allow-lists - fixed sets so no user string reaches a CSS
   // class or font-family unsanitised.
   var MFM_FONTS = { serif: 'serif', monospace: 'monospace', cursive: 'cursive', fantasy: 'fantasy' };
   var MFM_ANIM  = { spin: 1, jelly: 1, shake: 1, tada: 1, bounce: 1, jump: 1, rainbow: 1 };
@@ -174,7 +174,7 @@
     }
     out = folded.join('\n').replace(/\n/g, '<br>');
 
-    // Inline formatting — bold before italic so ** isn't eaten by *.
+    // Inline formatting - bold before italic so ** isn't eaten by *.
     out = out.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/__([^_]+)__/g, '<b>$1</b>');
     out = out.replace(/~~([^~]+)~~/g, '<s>$1</s>');
     out = out.replace(/\*([^*\n]+)\*/g, '<i>$1</i>')
@@ -208,7 +208,7 @@
     return out.replace(/\x02(\d+)\x02/g, function (m, n) { return '<pre><code>' + escapeHtml(codeBlocks[+n]) + '</code></pre>'; });
   }
 
-  // Escape + emoji only — for display names, handles, CW labels.
+  // Escape + emoji only - for display names, handles, CW labels.
   function renderInline(text, emojis) {
     if (!text) return '';
     cacheEmojis(emojis);
@@ -264,7 +264,7 @@
     }
     if (f.isSensitive) {
       media = '<div class="_sens">' + media + '</div>' +
-        '<div class="_sx">Sensitive — tap to reveal</div>';
+        '<div class="_sx">Sensitive - tap to reveal</div>';
     }
     if (f.comment) {
       media += '<button class="_alt" type="button">ALT</button>' +
@@ -289,7 +289,7 @@
     // Single attachment: plain full-width tile.
     if (tiles.length === 1) return '<div class="_md">' + tiles[0] + '</div>';
 
-    // Multiple: peek carousel — the active slide is centred while its neighbours
+    // Multiple: peek carousel - the active slide is centred while its neighbours
     // peek at the edges; clicking a neighbour (delegated below) brings it in.
     var slides = tiles.map(function (t) { return '<div class="_ms">' + t + '</div>'; }).join('');
     return '<div class="_md _mc"><div class="_mt" data-i="0" style="transform:translateX(8%)">' +
@@ -317,8 +317,8 @@
       cacheEmojis(quoted.user.emojis);
     }
 
-    // Skip plain replies (text opens with a mention) — they read as
-    // out-of-context fragments — but never drop a quote post.
+    // Skip plain replies (text opens with a mention) - they read as
+    // out-of-context fragments - but never drop a quote post.
     if (!isBoost && !quoted && n.text && n.text.trim()[0] === '@') return '';
 
     var cwText  = note.cw || (isBoost && n.cw) || null;
@@ -398,7 +398,7 @@
   /* ────────────────────────── New-post baseline ──────────────────── */
   // Capture the "last visit" baseline into prevSeenTs, then advance the stored
   // baseline to the newest post now on screen. buildNote badges any post that is
-  // newer than prevSeenTs (and under FRESH_MS) — so a returning visitor only sees
+  // newer than prevSeenTs (and under FRESH_MS) - so a returning visitor only sees
   // posts made since they last loaded the page, and those badges self-dismiss next
   // visit. Must run on the reset page BEFORE notes are rendered.
   //
@@ -412,7 +412,7 @@
     var newest = null;
     for (var i = 0; i < notes.length; i++) {
       var n = notes[i];
-      if (n.renote && !(n.text || '').trim()) continue; // pure boost — skip
+      if (n.renote && !(n.text || '').trim()) continue; // pure boost - skip
       newest = n;
       break;
     }
@@ -466,7 +466,7 @@
   var drag = null;           // active pointer-drag state
   var suppressClick = false; // skip the click synthesized after a drag
 
-  // Delegated click / tap — covers notes added by pagination.
+  // Delegated click / tap - covers notes added by pagination.
   timeline.addEventListener('click', function (e) {
     // CW reveal: toggle the matching ._cwx body; the char/file meta only shows
     // in the collapsed "Show content" state.
@@ -511,7 +511,7 @@
     }
   });
 
-  // Pointer drag — one path for mouse click-drag, touch swipe and pen.
+  // Pointer drag - one path for mouse click-drag, touch swipe and pen.
   timeline.addEventListener('pointerdown', function (e) {
     suppressClick = false;
     if (e.button > 0) return; // ignore non-primary mouse buttons

@@ -2,7 +2,7 @@
   'use strict';
 
   var LB_USER    = 'Dalek.coffee';
-  /* Simkl addresses profiles by numeric account id, not by username —
+  /* Simkl addresses profiles by numeric account id, not by username -
      simkl.com/dalekcoffee/ does not resolve to the profile. Find yours in the
      URL of your own dashboard. */
   var SIMKL_USER_ID = '8848544';
@@ -32,8 +32,8 @@
    * Trakt limited free accounts to a single connected app, so the feed moved to
    * Simkl (free, no app limit, TV + film + anime as first-class) for history,
    * watching, ratings and favorites. The live "Now Watching" row does NOT come
-   * from Simkl — Simkl only records a watch at the 90% mark, which is far too
-   * late to be "live" — it comes straight from the Plex webhook state that n8n
+   * from Simkl - Simkl only records a watch at the 90% mark, which is far too
+   * late to be "live" - it comes straight from the Plex webhook state that n8n
    * already keeps. Set false to hide the whole video half (Now Watching, "On
    * Screen", "Ratings & Reviews", and the Simkl link in the header); music is
    * unaffected either way.
@@ -77,7 +77,7 @@
       { label: 'YouTube', icon: 'youtube', bb: '#FF0000', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.youtube.com/results?search_query=' + q },
       { label: 'IMDb',    icon: 'imdb',    bb: '#F5C518', bt: '#000000', bi: TO_BLACK, href: item.imdbUrl || ('https://www.imdb.com/find/?q=' + q) },
       /* Simkl's simple-icons glyph is a flat monochrome mark; the chip uses a
-         near-black ground rather than a brand hex — confirm against Simkl's
+         near-black ground rather than a brand hex - confirm against Simkl's
          current brand color before this ships to production. */
       { label: 'Simkl',   icon: 'simkl',   bb: '#111827', bt: '#ffffff', bi: TO_WHITE, href: item.simklUrl || ('https://simkl.com/search/?q=' + q) }
     ];
@@ -218,7 +218,7 @@
   function getCoverInfo(t) {
     var meta = t.track_metadata || t;
     /* Prefer a cover URL the n8n workflow already resolved server-side (fast,
-       cached, validated) — falls back through the client-side chain on error. */
+       cached, validated) - falls back through the client-side chain on error. */
     if (t.cover_url || meta.cover_url) return { type: 'direct', url: t.cover_url || meta.cover_url };
     var map = meta.mbid_mapping || {};
     var add = meta.additional_info || {};
@@ -486,7 +486,7 @@
     var title = mode === 'music'
       ? (liveState.music.track ? liveState.music.track.track_metadata.track_name : '')
       : (liveState.video.data ? liveState.video.data.title : '');
-    sub.textContent = '— ' + title;
+    sub.textContent = '- ' + title;
     sub.classList.toggle('dks-hide', npOpen);
   }
 
@@ -519,7 +519,7 @@
       } else {
         sub = (d.season && d.season > 1 ? 'S' + d.season + ' · ' : '') + 'EP ' + (d.episode || '?');
         if (d.totalEpisodes) sub += ' / ' + d.totalEpisodes;
-        if (d.episodeTitle) sub += ' — ' + d.episodeTitle;
+        if (d.episodeTitle) sub += ' - ' + d.episodeTitle;
       }
       el('dks-np-code').textContent = codeFor(d.title);
       el('dks-np-title').textContent = d.title || 'Unknown';
@@ -660,7 +660,7 @@
       var empty = document.createElement('div');
       empty.className = 'dks-empty';
       empty.textContent = range === 'this_month'
-        ? 'Monthly stats are still processing — check back soon'
+        ? 'Monthly stats are still processing - check back soon'
         : 'No listens for this range yet';
       list.appendChild(empty);
       return;
@@ -706,7 +706,7 @@
     return !isMovie && !e.isAnime; /* tv */
   }
 
-  /* Recent watch progress — how far through the series this watch sits, so a
+  /* Recent watch progress - how far through the series this watch sits, so a
      viewer can read "finished" (full bar) vs "dropped" (partial + stale time).
      When the feed didn't send series totals on the recent entry, borrow them
      from the Watching feed (loaded at init) if the same show is there;
@@ -724,7 +724,7 @@
   function recentProgress(e) {
     if (!e) return { known: false };
     /* A movie in Recent history is always a finished sitting (Simkl only logs
-       it once the scrobble completes at 90%) — full bar, same visual as a
+       it once the scrobble completes at 90%) - full bar, same visual as a
        finished series. */
     if (e.type === 'movie') return { known: true, pct: 100, done: true, movie: true };
     var watched = e.epWatched, total = e.epTotal;
@@ -735,7 +735,7 @@
       else if (watching && !w) {
         /* Watching lists every show with watched < aired episodes, so a series
            in Recent that's absent from it is watched to the end of what's
-           aired — full bar, even though the feed sent no episode counts. Only
+           aired - full bar, even though the feed sent no episode counts. Only
            inferred once the Watching feed has actually loaded (guard above),
            so a slow/failed fetch can't mark everything finished. */
         return { known: true, pct: 100, done: true, inferred: true };
@@ -771,7 +771,7 @@
   function epLabel(e) {
     if (e.type === 'movie') return 'Movie';
     var s = (e.season && e.season > 1 ? 'S' + e.season + ' · ' : '') + 'E' + (e.number || '?');
-    if (e.episodeTitle) s += ' — ' + e.episodeTitle;
+    if (e.episodeTitle) s += ' - ' + e.episodeTitle;
     return s;
   }
 
@@ -811,7 +811,7 @@
       for (var i = 0; i < spoilerEls.length; i++) {
         if (!spoilerEls[i].classList.contains('revealed')) { pending = true; break; }
       }
-      hintEl.textContent = pending ? 'Spoiler — click blurred text to reveal' : '';
+      hintEl.textContent = pending ? 'Spoiler - click blurred text to reveal' : '';
       hintEl.classList.toggle('dks-hide', !pending);
     }
 
@@ -825,8 +825,8 @@
       s.textContent = text;
       s.setAttribute('role', 'button');
       s.setAttribute('tabindex', '0');
-      s.title = 'Spoiler — click to reveal';
-      s.setAttribute('aria-label', 'Spoiler — press to reveal');
+      s.title = 'Spoiler - click to reveal';
+      s.setAttribute('aria-label', 'Spoiler - press to reveal');
       function toggle() { s.classList.toggle('revealed'); syncHint(); }
       s.addEventListener('click', function (ev) { ev.stopPropagation(); toggle(); });
       s.addEventListener('keydown', function (ev) {
@@ -839,7 +839,7 @@
     if (note) {
       SPOILER_TAG_RE.lastIndex = 0;
       if (e.noteSpoiler) {
-        /* whole review is sensitive — strip inline tags, blur everything */
+        /* whole review is sensitive - strip inline tags, blur everything */
         addSpoiler(note.replace(SPOILER_TAG_RE, '$1'));
       } else if (SPOILER_TAG_RE.test(note)) {
         SPOILER_TAG_RE.lastIndex = 0;
@@ -873,7 +873,7 @@
       scoreEl.querySelector('.dks-score-val').textContent = scoreText(e.score);
       scoreEl.title = scoreText(e.score) + ' out of 10';
     } else {
-      scoreEl.textContent = '—';
+      scoreEl.textContent = '-';
       scoreEl.removeAttribute('title');
     }
     d.querySelector('.dks-d-meta').textContent = e.meta || (e.kind || '');
@@ -907,7 +907,7 @@
     if (kind === 'fav') all = all.filter(matchesFavFilter);
     /* Recent caps at the 10 most recent; a "see more" tile (below) links to the
        full Simkl history whenever it's the active tab and there's anything to
-       show. Sort by watch time first — don't trust the feed to be newest-first,
+       show. Sort by watch time first - don't trust the feed to be newest-first,
        or the cap could silently drop the newest watches instead of the oldest. */
     var isRecent = kind === 'watch' && st.mode === 'recent';
     if (isRecent) all = all.slice().sort(function (a, b) { return (b.watchedAt || 0) - (a.watchedAt || 0); });
@@ -999,7 +999,7 @@
     if (isRecent) strip.appendChild(buildSeeMore());
 
     /* Final prototype behavior: poster 0 pre-selected (ring + caret + detail),
-       so the panel is populated without hover — required on touch devices. */
+       so the panel is populated without hover - required on touch devices. */
     selectPoster(kind, 0);
   }
 
@@ -1037,7 +1037,7 @@
         var entries = ((d && d.entries) || []).map(normalizeEntry);
         dataCache[cacheKey] = entries;
         if (!activeRange[kind] || range === activeRange[kind]) renderStrip(kind, entries, range);
-        /* Watching data feeds Recent's progress borrow/inference — if Recent
+        /* Watching data feeds Recent's progress borrow/inference - if Recent
            rendered first (fetch race), refresh it now that Watching is here. */
         if (range === 'watching' && activeRange.watch === 'recent' && dataCache['feed_recent']) {
           renderStrip('watch', dataCache['feed_recent'], 'recent');
@@ -1079,7 +1079,7 @@
     });
   }
 
-  /* ═══ MOCK FIXTURES (sandbox only — ?mock=1) ══════════════════════════════ */
+  /* ═══ MOCK FIXTURES (sandbox only - ?mock=1) ══════════════════════════════ */
   var MOCK_LIVE = qp('live') || 'video';
   var MOCK_NEWER = qp('newer') || 'video';
 
@@ -1105,7 +1105,7 @@
   function mockFeedEntries(range) {
     var nowSec = Math.floor(Date.now() / 1000);
     if (range === 'toprated') return [
-      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone — the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', noteDate: '14 Mar 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Mob Psycho 100', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 37 EP', note: 'ONE writes restraint better than anyone - the whole show builds to quiet moments instead of shouting matches, and it lands every single time because the animation carries the emotion the dialogue refuses to spell out.', noteDate: '14 Mar 2026', poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'The Bear', kind: 'SERIES', isAnime: false, score: 10, meta: 'SERIES · 46 EP', note: '', poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, score: 9, meta: 'FILM · 2H 46M', note: '', poster: '', simklUrl: '', imdbUrl: '' }
@@ -1124,22 +1124,22 @@
       { title: 'Rick and Morty', kind: 'SERIES', isAnime: false, type: 'episode', season: 9, number: 2, episodeTitle: 'Rick, Bts, Sev...', epWatched: 82, epTotal: 82, watchedAt: nowSec - 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 2 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Dan Da Dan', kind: 'ANIME', isAnime: true, type: 'episode', season: 1, number: 12, episodeTitle: 'Let’s Go to the Cursed House', epWatched: 12, epTotal: 12, watchedAt: nowSec - 4 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
-      /* Severance ships no totals here on purpose — exercises the fallback that
+      /* Severance ships no totals here on purpose - exercises the fallback that
          borrows series progress from the Watching feed (4/10 there). */
       { title: 'Severance', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 3, episodeTitle: 'Who Is Alive?', epWatched: null, epTotal: null, watchedAt: nowSec - 6 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'One Piece', kind: 'ANIME', isAnime: true, type: 'episode', season: 21, number: 1088, episodeTitle: 'The Battle Ends', epWatched: 1088, epTotal: null, watchedAt: nowSec - 8 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'The Bear', kind: 'SERIES', isAnime: false, type: 'episode', season: 3, number: 6, episodeTitle: 'Napkins', epWatched: 24, epTotal: 28, watchedAt: nowSec - 10 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Perfect Blue', kind: 'FILM', isAnime: true, type: 'movie', watchedAt: nowSec - 12 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Jujutsu Kaisen', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 23, episodeTitle: 'Shibuya Incident', epWatched: 47, epTotal: 47, watchedAt: nowSec - 15 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
-      /* Arcane ships no totals AND isn't in the Watching mock — exercises the
+      /* Arcane ships no totals AND isn't in the Watching mock - exercises the
          "absent from Watching means finished" inference (full bar). */
       { title: 'Arcane', kind: 'SERIES', isAnime: false, type: 'episode', season: 2, number: 9, episodeTitle: 'The Dirt Under Your Nails', epWatched: null, epTotal: null, watchedAt: nowSec - 18 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, type: 'episode', season: 2, number: 4, episodeTitle: 'A Man With No Sword', epWatched: 28, epTotal: 48, watchedAt: nowSec - 21 * 86400, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Dune: Part Two', kind: 'FILM', isAnime: false, type: 'movie', watchedAt: nowSec - 24 * 86400, poster: '', simklUrl: '', imdbUrl: '' }
     ];
     if (range === 'favorites') return [
-      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard — every episode is a short film.', noteDate: '9 Feb 2026', poster: '', simklUrl: '', imdbUrl: '' },
-      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me — and that ending broke me.', noteDate: '21 Nov 2025', noteSpoiler: true, poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Cowboy Bebop', kind: 'ANIME', isAnime: true, score: 10, meta: 'ANIME · 26 EP', note: 'Still the gold standard - every episode is a short film.', noteDate: '9 Feb 2026', poster: '', simklUrl: '', imdbUrl: '' },
+      { title: 'Arcane', kind: 'SERIES', isAnime: false, score: 0, meta: 'SERIES · 18 EP', note: 'The animation ruined every other show for me - and that ending broke me.', noteDate: '21 Nov 2025', noteSpoiler: true, poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Vinland Saga', kind: 'ANIME', isAnime: true, score: 9, meta: 'ANIME · 48 EP', note: 'Best redemption arc in anime, full stop. [spoiler]Thorfinn renouncing violence after Askeladd dies is the entire thesis.[/spoiler]', noteDate: '2 Jan 2026', poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Blade Runner 2049', kind: 'FILM', isAnime: false, score: 10, meta: 'FILM · 2H 44M', note: '', poster: '', simklUrl: '', imdbUrl: '' },
       { title: 'Perfect Blue', kind: 'FILM', isAnime: true, score: 9, meta: 'FILM · 1H 21M', note: 'Watched it once, thought about it for a year.', noteDate: '30 Dec 2025', poster: '', simklUrl: '', imdbUrl: '' }
@@ -1168,7 +1168,7 @@
     ];
   }
 
-  /* ═══ LOADING SKELETON — card renders full-size before any data arrives ═══ */
+  /* ═══ LOADING SKELETON - card renders full-size before any data arrives ═══ */
   function renderListPlaceholders() {
     var list = el('dks-list');
     list.innerHTML = '';

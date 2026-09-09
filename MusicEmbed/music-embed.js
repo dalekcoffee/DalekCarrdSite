@@ -114,7 +114,7 @@ function titlesMatch(a, b) {
  * ─── Score a candidate result against what we know ──────────────────────────
  * Artist MUST match, and at least one of track / album must agree. Returns 0
  * to reject. This is what stops "any cover by this artist" and "same title,
- * wrong artist" from ever being shown — a correct ♫ placeholder beats wrong art.
+ * wrong artist" from ever being shown - a correct ♫ placeholder beats wrong art.
  */
 function scoreCandidate(cArtist, cTrack, cAlbum, artist, track, album) {
   if (!titlesMatch(cArtist, artist)) return 0;
@@ -124,7 +124,7 @@ function scoreCandidate(cArtist, cTrack, cAlbum, artist, track, album) {
   return 1 + (tOk ? 2 : 0) + (albOk ? 2 : 0);
 }
 
-/* ─── JSONP loader — for sources without CORS (Deezer) ─── */
+/* ─── JSONP loader - for sources without CORS (Deezer) ─── */
 var jsonpSeq = 0;
 function jsonp(url, timeoutMs) {
   return new Promise(function(resolve) {
@@ -207,7 +207,7 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track, album) {
     return;
   }
 
-  /* Fuzzy fallbacks — used when there's no MBID, and if a resolved image 404s.
+  /* Fuzzy fallbacks - used when there's no MBID, and if a resolved image 404s.
      Deezer first (better global coverage), then iTunes; both validate the match. */
   function resolveFallbacks() {
     return fetchDeezerUrl(artist, track, album).then(function(url) {
@@ -229,7 +229,7 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track, album) {
       if (imgEl.parentNode) imgEl.parentNode.classList.add('dkt-loaded');
     };
     imgEl.onerror = function() {
-      /* A resolved URL failed to load as an image — try the fuzzy sources once, then give up */
+      /* A resolved URL failed to load as an image - try the fuzzy sources once, then give up */
       if (!imgEl.dataset.fallbackTried) {
         imgEl.dataset.fallbackTried = '1';
         resolveFallbacks().then(done);
@@ -258,14 +258,14 @@ function loadCoverArt(imgEl, wipeEl, info, artist, track, album) {
 
 /*
  * ─── Tab data cache ───────────────────────────────────────────────────────────
- * In-memory only — no sessionStorage needed since n8n owns the hour-level cache.
+ * In-memory only - no sessionStorage needed since n8n owns the hour-level cache.
  * This just prevents re-hitting n8n on tab switches within the same page load.
  */
 var dataCache = {};
 
 /*
  * ─── Now Playing polling ──────────────────────────────────────────────────────
- * Still hits ListenBrainz directly — NP data is ephemeral and doesn't benefit
+ * Still hits ListenBrainz directly - NP data is ephemeral and doesn't benefit
  * from an hourly cache. Interval: 3.5 min with 429 back-off.
  */
 var npTrackKey  = null;
@@ -389,7 +389,7 @@ function render(tracks, isRecent, range) {
     var empty = document.createElement('div');
     empty.className = 'dkt-empty';
     empty.textContent = range === 'this_month'
-      ? 'Monthly stats are still processing — check back in a few days.'
+      ? 'Monthly stats are still processing - check back in a few days.'
       : 'No listens for this range yet.';
     list.appendChild(empty);
     return;
@@ -400,7 +400,7 @@ function render(tracks, isRecent, range) {
 /*
  * ─── loadData ─────────────────────────────────────────────────────────────────
  * If N8N_STATS_WEBHOOK is set, all tab data goes through n8n.
- * n8n is responsible for the hourly LB cache — the embed just asks for data.
+ * n8n is responsible for the hourly LB cache - the embed just asks for data.
  * In-memory dataCache prevents re-requests on tab switches within the same load.
  *
  * Falls back to direct LB calls if N8N_STATS_WEBHOOK is empty (dev/test mode).
@@ -425,7 +425,7 @@ function loadData(range) {
     })
     .then(function(d) {
       /*
-       * n8n returns { tracks: [...] } — a normalised wrapper.
+       * n8n returns { tracks: [...] } - a normalised wrapper.
        * Direct LB returns the full payload; unwrap the same way as before.
        */
       var tracks;

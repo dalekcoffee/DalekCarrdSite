@@ -1,4 +1,4 @@
-# ── n8n workflow exports — never commit these ───────────────────────────────
+# ── n8n workflow exports - never commit these ───────────────────────────────
 # Their Config nodes carry live credentials (Simkl client id + access token,
 # TMDB API key, Plex account id), and a scrubbed copy drifts out of date the
 # moment the real workflow is edited in n8n. The workflows live in n8n; this

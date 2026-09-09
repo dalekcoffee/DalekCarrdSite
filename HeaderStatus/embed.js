@@ -119,7 +119,7 @@
     statusText.textContent = info.label;
   }
 
-  // Activity pill registry — maps a Discord activity name to a pill icon/color.
+  // Activity pill registry - maps a Discord activity name to a pill icon/color.
   // Entries are tested top-to-bottom and the FIRST whose `match` substring appears
   // in the (lowercased) activity name wins, so list specific names before generic
   // ones and avoid short ambiguous tokens (e.g. 'art' would also hit "Smartass").

@@ -202,7 +202,7 @@
      One Carrd page per section, one card each. A card says which section it
      is with data-stash-section; nothing else on the page has to match.
 
-     There is no tab bar here on purpose — moving between Merch, Coffee and
+     There is no tab bar here on purpose - moving between Merch, Coffee and
      Setup is plain Carrd navigation, driven by the header buttons on the
      Carrd side. That means each section gets a real page id, so deep links,
      the back button and open-in-new-tab all work the way they do for every
@@ -269,7 +269,7 @@
         pending.push({ el: el, section: section });
       } else {
         console.error('[CafeStash] unknown data-stash-section "' + slug +
-          '" — expected one of: merch, coffee, setup');
+          '" - expected one of: merch, coffee, setup');
       }
     });
     if (!pending.length) { return; }

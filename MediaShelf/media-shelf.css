@@ -1,4 +1,4 @@
-/* ═══ Dalek's Shelf — hi-fi design tokens from design_handoff_media_embed ═══ */
+/* ═══ Dalek's Shelf - hi-fi design tokens from design_handoff_media_embed ═══ */
 :root{--dks-accent:#ffffff;--dks-card:#0d0d0f;--dks-tile:#161618;--dks-border:rgba(255,255,255,0.09)}
 
 #dks-shelf{width:100%;display:flex;justify-content:center}
