@@ -5,7 +5,7 @@
      Hosted: https://dalekcoffee.github.io/DalekCarrdSite/Livestream/embed.js
      Carrd:  <div id="ls-root"></div>
              <script src="https://dalekcoffee.github.io/DalekCarrdSite/Livestream/embed.js"></script>
-     The mount div is optional — the script appends its own if absent. */
+     The mount div is optional - the script appends its own if absent. */
 
   var WEBHOOK = 'https://n8n.bakalabs.dev/webhook/93ca9fde-c08b-4e52-b9da-559011cb3665';
 
@@ -105,7 +105,7 @@
       '.ls-chat-frame{position:relative;flex:1;min-height:0;background:#18181b}',
       '#ls-card iframe{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block;border:none;background:transparent}',
 
-      /* rotating call-to-action — fills the chat-header dead space; slides in from */
+      /* rotating call-to-action - fills the chat-header dead space; slides in from */
       /* the left, out to the right. Icons/links mirror the Links embed. */
       '.ls-cta-slot{position:absolute;top:0;right:56px;bottom:0;left:56px;overflow:hidden}',
       '.ls-cta{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;gap:9px;padding:0 14px;text-decoration:none;color:rgba(255,255,255,.7);font-size:12px;font-weight:700;letter-spacing:.03em;white-space:nowrap;pointer-events:none;transform:translateX(-120%);opacity:0;transition:transform .7s cubic-bezier(.33,0,.2,1),opacity .7s ease,background .2s,color .2s}',
@@ -145,19 +145,19 @@
 
       '@keyframes ls-pulse-red{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,51,51,.7)}70%{transform:scale(1);box-shadow:0 0 0 8px rgba(255,51,51,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(255,51,51,0)}}',
 
-      /* fullscreen control — a single theater toggle, in the chat header */
+      /* fullscreen control - a single theater toggle, in the chat header */
       '.ls-fs-btn{display:inline-flex;align-items:center;justify-content:center;width:46px;flex-shrink:0;padding:0;background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-family:inherit;transition:background .2s,color .2s,box-shadow .2s}',
       '.ls-fs-btn svg{width:17px;height:17px;display:block}',
       '.ls-fs-btn:hover,.ls-fs-btn:active{color:var(--brand,#fff);background:#141414}',
       '.ls-fs-btn:focus-visible{outline:2px solid var(--brand,#fff);outline-offset:-2px}',
       /* right-aligned (dead space to its left). Shows the expand glyph when closed */
-      /* and swaps in place to the X when in theater mode — same control, one icon. */
+      /* and swaps in place to the X when in theater mode - same control, one icon. */
       '.ls-theater-btn{position:absolute;top:0;right:0;bottom:0;width:56px;z-index:2;--brand:#a970ff}',
       '.ls-theater-btn svg{width:24px;height:24px}',
       '.ls-fs-btn .fs-i-close{display:none}',
       '.ls-theater-btn.is-active .fs-i-expand{display:none}',
       '.ls-theater-btn.is-active .fs-i-close{display:block}',
-      /* chat show/hide — ONE toggle in the chat header (left of the CTA, mirrors the close */
+      /* chat show/hide - ONE toggle in the chat header (left of the CTA, mirrors the close */
       /* on the right). The header bar stays put in every state; only the messages collapse. */
       '.ls-chat-toggle{position:absolute;top:0;left:0;bottom:0;width:56px;z-index:2;--brand:#5b9bd5}',
       '.ls-chat-toggle svg{width:22px;height:22px}',
@@ -177,7 +177,7 @@
       /* one-shot attention pulse (3 slow cycles ~= 5s); fired on open / enter / exit */
       '.ls-theater-btn.ls-fs-pulse{animation:ls-fs-pulse 1.667s ease-out 3}',
       '@keyframes ls-fs-pulse{0%{box-shadow:0 0 0 0 rgba(169,112,255,.5);background:#0c0c0c;color:rgba(255,255,255,.55)}40%{background:#171029;color:#a970ff}70%{box-shadow:0 0 0 10px rgba(169,112,255,0)}100%{box-shadow:0 0 0 0 rgba(169,112,255,0);background:#0c0c0c;color:rgba(255,255,255,.55)}}',
-      /* fullscreen states — driven by our own classes so the same CSS covers the */
+      /* fullscreen states - driven by our own classes so the same CSS covers the */
       /* native Fullscreen API and the iOS fixed-position fallback below */
       '.ls-pseudofs{position:fixed;top:0;left:0;width:100%;height:100%;max-width:none;z-index:2147483646;background:#000}',
       '.ls-fs-lock{overflow:hidden}',
@@ -186,7 +186,7 @@
       '@media (max-width:1024px){.ls-embeds.ls-fs-theater{flex-direction:column}.ls-embeds.ls-fs-theater .ls-main{flex:0 0 auto}.ls-embeds.ls-fs-theater .ls-chat{flex:1 1 auto;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}}',
       /* landscape phone: side-by-side (big player + slim chat), like desktop theater */
       '@media (max-width:1024px) and (orientation:landscape){.ls-embeds.ls-fs-theater{flex-direction:row;--lsChatW:clamp(220px,35%,320px)}.ls-embeds.ls-fs-theater .ls-main{flex:1 1 auto;height:100%}.ls-embeds.ls-fs-theater .ls-video{aspect-ratio:auto;flex:1;min-height:0;max-width:none}.ls-embeds.ls-fs-theater .ls-chat{flex:0 0 auto;width:var(--lsChatW);height:100%;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-frame{height:auto;flex:1;min-height:0}.ls-embeds.ls-fs-theater .ls-chat-toggle,.ls-embeds.ls-fs-theater .ls-theater-btn{width:44px}.ls-embeds.ls-fs-theater .ls-cta-slot{left:44px;right:44px}.ls-embeds.ls-fs-theater .ls-cta{font-size:11px;gap:7px;padding:0 8px}',
-      /* hidden in landscape FS — same as desktop: control strip stays a top-right */
+      /* hidden in landscape FS - same as desktop: control strip stays a top-right */
       /* bar beside the tabs, player widens (no full-width overlay over the video) */
       '.ls-embeds.ls-fs-theater.ls-chat-hidden{flex-direction:row}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-vtabs{padding-right:var(--lsChatW)}.ls-embeds.ls-fs-theater.ls-chat-hidden .ls-chat{position:absolute;top:0;right:0;bottom:auto;width:var(--lsChatW);height:var(--tabH);min-height:0;border-top:none;border-left:1px solid var(--bg2);z-index:3}}',
       /* portrait phone in theater: hiding chat just leaves a black void, so disable */
@@ -198,7 +198,7 @@
       '@media (max-width:1024px){',
         '.ls-embeds{flex-direction:column}',
         '.ls-chat{flex:none;width:100%;min-width:0;border-left:none;border-top:1px solid var(--bg2)}',
-        /* flex:none so the 522px basis sticks — otherwise the base flex:1 collapses it to 0 */
+        /* flex:none so the 522px basis sticks - otherwise the base flex:1 collapses it to 0 */
         '.ls-chat-frame{flex:none;height:522px}',
         /* shave the tip font a hair so "Backup player, has ads!" also fits one line */
         /* on ~360px Android widths (not just 375px+ iPhones) at the 60/40 split */
@@ -255,7 +255,7 @@
             '<div class="ls-chat-head">' +
               '<button class="ls-fs-btn ls-chat-toggle" type="button" aria-label="Hide chat" title="Hide chat">' + CHAT_HIDE_ICON + CHAT_SHOW_ICON + '</button>' +
               '<div class="ls-cta-slot" id="ls-cta-slot"></div>' +
-              '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode — fullscreen player and chat">' + FS_ICONS + '</button>' +
+              '<button class="ls-fs-btn ls-theater-btn" type="button" aria-label="Theater mode - fullscreen player and chat">' + FS_ICONS + '</button>' +
             '</div>' +
             '<div class="ls-chat-frame" id="ls-chatframe"><div class="ls-skeleton">Loading chat</div></div>' +
           '</div>' +
@@ -419,11 +419,11 @@
      live count while they watch ad-free on Beam. Behind Beam it's muted and pinned to
      the cheapest variant Twitch offers (audio-only where available, else the smallest
      video rendition); on the Twitch tab it goes audible at auto quality.
-     Note this is a quality switch, not a load/unload — the player iframe exists either
+     Note this is a quality switch, not a load/unload - the player iframe exists either
      way. What changes is how much stream it pulls. */
 
   /* Audio-only isn't in Twitch's documented embed API and isn't offered on every
-     channel, so it's a preference, not a guarantee — cheapestQuality() falls back to
+     channel, so it's a preference, not a guarantee - cheapestQuality() falls back to
      the smallest video rendition when it's absent. Flip this to false if audio-only
      turns out not to register as a viewer. */
   var BG_PREFER_AUDIO_ONLY = true;
@@ -458,7 +458,7 @@
         muted: true, autoplay: true, parent: PARENTS
       });
       /* The autoplay flag alone is unreliable: Safari/iOS ignore muted autoplay, and the widget
-         auto-opens with no user gesture. Nudge it into a playing — and so viewer-counted — state
+         auto-opens with no user gesture. Nudge it into a playing - and so viewer-counted - state
          on ready, and again on the first interaction (see the first-gesture unlock below). */
       twitchPlayer.addEventListener(Twitch.Player.READY, nudgeTwitchPlay);
       twitchPlayer.addEventListener(Twitch.Player.PLAY, function () {
@@ -506,7 +506,7 @@
       twitchPlayer.setMuted(true);
       twitchPlayer.setVolume(0);
       /* If the viewer paused Twitch while watching it, resume it (muted) when they flip
-         back to Beam — a paused player stops counting toward Twitch's live viewers. */
+         back to Beam - a paused player stops counting toward Twitch's live viewers. */
       if (twitchPlayer.isPaused && twitchPlayer.isPaused()) twitchPlayer.play();
     } catch (e) {}
     /* getQualities() is usually still empty at PLAY time, so a single attempt here
@@ -526,7 +526,7 @@
     try { twitchPlayer.play(); twitchPlayer.setQuality('auto'); twitchPlayer.setMuted(false); twitchPlayer.setVolume(0.5); } catch (e) {}
   }
 
-  /* Beam has no mute API — load it when shown, unload it when hidden so its audio stops. */
+  /* Beam has no mute API - load it when shown, unload it when hidden so its audio stops. */
   function loadBeam() {
     var el = mount.querySelector('#ls-beam');
     if (el.querySelector('iframe')) return;
@@ -545,7 +545,7 @@
   function loadIframes() {
     if (iframesLoaded) return;
     iframesLoaded = true;
-    ensureTwitch();                         /* always on — muted, cheapest variant, behind Beam */
+    ensureTwitch();                         /* always on - muted, cheapest variant, behind Beam */
     if (activeTab === 'beam') loadBeam();
     applyVideoStack();
     var cf = makeIframe(CHAT_SRC);
@@ -554,7 +554,7 @@
       if (sk) sk.remove();
     });
     chatSlot.appendChild(cf);
-    setTimeout(pulseTheaterBtn, 700);       /* embed just opened — hint the theater toggle */
+    setTimeout(pulseTheaterBtn, 700);       /* embed just opened - hint the theater toggle */
   }
 
   /* ── TAB SWITCHING ── */
@@ -583,7 +583,7 @@
   /* ── FIRST-GESTURE UNLOCK ──
      Permissive browsers (Chrome/Edge/Firefox desktop) start the muted background Twitch player on
      load, so it counts a viewer while someone watches Beam. Safari/iOS won't autoplay without a
-     user gesture, and the widget auto-opens with none — so on the first press anywhere in the card,
+     user gesture, and the widget auto-opens with none - so on the first press anywhere in the card,
      make sure Twitch is loaded and playing. */
   card.addEventListener('pointerdown', function () {
     ensureTwitch();
@@ -598,7 +598,7 @@
       ptsBtn.classList.add('ls-pulse');
       setTimeout(function () { ptsBtn.classList.remove('ls-pulse'); }, 4200);
     }, PTS_PULSE_MS);
-    /* Once they click through, stop nagging for this page load (no persistence — resets on reload/close). */
+    /* Once they click through, stop nagging for this page load (no persistence - resets on reload/close). */
     ptsBtn.addEventListener('click', function () {
       clearInterval(ptsPulse);
       ptsBtn.classList.remove('ls-pulse');
@@ -606,7 +606,7 @@
   }
 
   /* ── FULLSCREEN (theater) ──
-     One toggle (in the chat header) fullscreens the whole embed together — the tab
+     One toggle (in the chat header) fullscreens the whole embed together - the tab
      bar, both players, and chat. The same button swaps its glyph to an X while
      fullscreen and acts as the exit (no separate floating button). iPhone Safari has
      no element-level Fullscreen API (only bare <video>), so there we fall back to a
@@ -618,7 +618,7 @@
   var fsActive   = null;                 /* {el, mode, pseudo} or null */
   var fsPendingEl = null, fsPendingMode = null;
 
-  /* One-shot 5s pulse to hint the toggle is interactive — fired when the embed first
+  /* One-shot 5s pulse to hint the toggle is interactive - fired when the embed first
      opens and on each theater enter/exit. No repeating loop; just a gentle nudge. */
   var fsPulseTimer = null;
   function pulseTheaterBtn() {
@@ -639,13 +639,13 @@
     el.classList.add('ls-fs-' + mode);
     document.documentElement.classList.add('ls-fs-lock');
     updateFsBtns();         /* swaps the toggle's glyph to the X via .is-active */
-    pulseTheaterBtn();      /* fullscreen opened — pulse the (now X) close button */
+    pulseTheaterBtn();      /* fullscreen opened - pulse the (now X) close button */
   }
   function clearFsClasses(el, mode) {
     el.classList.remove('ls-fs-' + mode, 'ls-pseudofs');
     document.documentElement.classList.remove('ls-fs-lock');
     updateFsBtns();
-    pulseTheaterBtn();      /* fullscreen closed — pulse the (now expand) toggle */
+    pulseTheaterBtn();      /* fullscreen closed - pulse the (now expand) toggle */
   }
   function enterPseudo(el, mode) {
     fsActive = { el: el, mode: mode, pseudo: true };
@@ -679,7 +679,7 @@
     else if (!fsActive) enterFs(el, mode);
   }
 
-  /* Native fullscreen enters/leaves asynchronously — sync our classes off the events
+  /* Native fullscreen enters/leaves asynchronously - sync our classes off the events
      so Esc / browser-chrome exits are handled too. */
   function onFsChange() {
     var fe = fsElement();
@@ -699,7 +699,7 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && fsActive && fsActive.pseudo) exitFs(); });
 
   function updateFsBtns() {
-    setFsBtn(theaterBtn, !!(fsActive && fsActive.mode === 'theater'), 'Theater mode — fullscreen player and chat', 'Exit theater mode');
+    setFsBtn(theaterBtn, !!(fsActive && fsActive.mode === 'theater'), 'Theater mode - fullscreen player and chat', 'Exit theater mode');
   }
   function setFsBtn(btn, active, labelOff, labelOn) {
     if (!btn) return;
@@ -710,7 +710,7 @@
   if (theaterBtn) theaterBtn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); toggleFs(embedsEl, 'theater'); });
 
   /* Chat show/hide (landscape fullscreen only): collapse the chat column so the player
-     fills the width, or bring it back. Two buttons so only the relevant one is on screen —
+     fills the width, or bring it back. Two buttons so only the relevant one is on screen -
      hide embeds in the chat header, show floats on the video once chat is gone. */
   if (chatToggle) chatToggle.addEventListener('click', function (e) {
     e.preventDefault(); e.stopPropagation();

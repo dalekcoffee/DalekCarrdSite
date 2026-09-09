@@ -9,13 +9,13 @@
       "heading": "Reproduction Steps",
       "items": [
         "Login as Tenant Admin.",
-        "Create a new profile — connect a social account and do NOT scope any users to this profile. (Tested with Twitter/X.)",
+        "Create a new profile - connect a social account and do NOT scope any users to this profile. (Tested with Twitter/X.)",
         "Log off from the tenant admin account.",
         "Login as an end-user who is not scoped to the new profile.",
         "In the main dashboard: open Dev Tools → navigate to the Network tab and refresh the dashboard.",
-        "Locate responses — find JSON files named `accounts`.",
-        "Inspect response — all tenant profiles appear, including those outside the user's scope.",
-        "Check metadata section — OAuth `access_token` and `refresh_token` are exposed in plaintext."
+        "Locate responses - find JSON files named `accounts`.",
+        "Inspect response - all tenant profiles appear, including those outside the user's scope.",
+        "Check metadata section - OAuth `access_token` and `refresh_token` are exposed in plaintext."
       ],
       "numbered": true,
       "image_after": "repro"
@@ -46,7 +46,7 @@
         "Rotate all exposed tokens.",
         "Enforce profile-level authorization server-side.",
         "Only return resources scoped to the authenticated user.",
-        "Securely store OAuth credentials — never expose to clients."
+        "Securely store OAuth credentials - never expose to clients."
       ]
     },
     {

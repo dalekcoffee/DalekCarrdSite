@@ -45,7 +45,7 @@ body {
 
 /* ── SECTION PANEL ──
    Each Carrd page holds exactly one section, so the panel is a plain
-   wrapper — nothing to show or hide. Navigation between Merch, Coffee and
+   wrapper - nothing to show or hide. Navigation between Merch, Coffee and
    Setup is done with Carrd's own header buttons, not by this embed. */
 .stash-panel { display: block; }
 
@@ -74,7 +74,7 @@ body {
 @keyframes wipe { 0%{left:-100%} 100%{left:100%} }
 
 /* ════════════════════════════
-   MERCH — big grid
+   MERCH - big grid
 ════════════════════════════ */
 .merch-grid {
   display: grid;
@@ -138,7 +138,7 @@ body {
 .merch-item:active .merch-cta { color: #fff; }
 
 /* ════════════════════════════
-   COFFEE — stacked grid layout
+   COFFEE - stacked grid layout
 ════════════════════════════ */
 .coffee-beans-grid,
 .gear-grid {
@@ -218,7 +218,7 @@ body {
 .dual-col-side { border-right: 1px solid var(--b1); }
 .dual-col-side:last-child { border-right: none; }
 
-/* full-width group (third setup) — rows in a 2-up grid on desktop */
+/* full-width group (third setup) - rows in a 2-up grid on desktop */
 .full-rows {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -236,7 +236,7 @@ body {
   text-overflow: clip;
 }
 
-/* group label — the band that starts a category.
+/* group label - the band that starts a category.
    These sat one shade off the card and read as just another row, so the band
    now carries rules top and bottom, a darker fill, and the white accent bar
    the rows only reveal on hover. Held on permanently, that bar is what marks
@@ -462,7 +462,7 @@ body {
 .badge-amz { color: var(--amz); border-color: var(--amz); }
 
 /* ════════════════════════════
-   RESPONSIVE — mobile / narrow
+   RESPONSIVE - mobile / narrow
 ════════════════════════════ */
 @media (max-width: 1280px) {
 
@@ -533,7 +533,7 @@ body {
   .sec-footer { flex-direction: column; }
   .sec-footer-alt { flex-direction: column; }
 
-  /* ── Favorite overlay — keep current size on mobile ── */
+  /* ── Favorite overlay - keep current size on mobile ── */
   .coffee-fav      { font-size: 8.5px; }
   .coffee-fav-star { font-size: 11px; }
 }

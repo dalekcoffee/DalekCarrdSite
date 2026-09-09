@@ -183,7 +183,7 @@
   white-space: nowrap;
   margin-left: auto;
 }
-/* Per-post "New" pill — set on posts made since the visitor's last visit (see
+/* Per-post "New" pill - set on posts made since the visitor's last visit (see
    captureFreshness in the JS). margin-left:auto parks it with the timestamp at the
    right of the row ("New  3h"); align-self centers it against the baseline row. */
 #ofs ._nnew {
@@ -294,7 +294,7 @@
 }
 
 /* ──────────────────────── Content warning ──────────────────────── */
-/* Summary shows as plain post text; a full-width bar reveals the body —
+/* Summary shows as plain post text; a full-width bar reveals the body -
    matching the native Misskey/Sharkey "Show content (N characters)" style. */
 #ofs ._cwt {
   font-size: 18px;
@@ -362,12 +362,12 @@
   width: 100%;
   display: block;
   max-height: 520px;
-  /* contain (not cover) so tall/portrait images show in full — letterboxed
-     against the #111 backdrop — instead of having their tops and bottoms
+  /* contain (not cover) so tall/portrait images show in full - letterboxed
+     against the #111 backdrop - instead of having their tops and bottoms
      cropped off. */
   object-fit: contain;
 }
-/* Multiple attachments: peek carousel — one centred slide, neighbours peeking
+/* Multiple attachments: peek carousel - one centred slide, neighbours peeking
    at the edges (~8% each). Clicking a neighbour navigates (see JS). */
 #ofs ._md._mc {
   border: none;

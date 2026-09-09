@@ -43,10 +43,10 @@
 .dkt-rank{font-family:"Bebas Neue",sans-serif;font-size:24px;color:#222}
 .dkt-row:first-child .dkt-rank{color:var(--dkt-accent)}
 
-/* ── Art cell — shared by rows and NP section ── */
+/* ── Art cell - shared by rows and NP section ── */
 .dkt-art{width:100px;height:100px;background:#050505;border-right:1px solid var(--dkt-border);flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .dkt-art img.dkt-main-img{width:100%;height:100%;object-fit:cover;display:none;position:absolute;top:0;left:0;z-index:3}
-/* Music note placeholder via CSS — avoids long base64 strings that Carrd line-wraps */
+/* Music note placeholder via CSS - avoids long base64 strings that Carrd line-wraps */
 .dkt-art::after{content:'♫';font-size:22px;color:#222;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;font-family:serif}
 .dkt-art.dkt-loaded::after{display:none}
 .dkt-wipe{position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);z-index:2;animation:dktWipe 1.5s infinite linear}
@@ -57,7 +57,7 @@
 .dkt-title{font-family:"Bebas Neue",sans-serif;font-size:18px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
 .dkt-artist{font-size:8px;color:var(--dkt-text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:2px;margin-bottom:8px}
 
-/* ── Buttons — slide up on row hover ── */
+/* ── Buttons - slide up on row hover ── */
 .dkt-btns{display:flex;flex-wrap:wrap;gap:4px;opacity:0;transition:.3s ease;transform:translateY(5px)}
 .dkt-row:hover .dkt-btns,.dkt-row:active .dkt-btns{opacity:1;transform:translateY(0)}
 .dkt-btn{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:2px;text-decoration:none !important;transition:all .2s ease;background:#fff;color:#000;opacity:.45;font-family:inherit;border:none}
