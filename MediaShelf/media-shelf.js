@@ -41,6 +41,26 @@
   var VIDEO_ENABLED = true;
 
   /*
+   * ─── Discord presence gate ─────────────────────────────────────────────────
+   * The strip only names what is playing while Discord shows me present. Go
+   * offline and it falls back to the same "Nothing Playing" idle state it
+   * already uses when nothing is on - the strip itself never disappears.
+   *
+   * Scrobbling is untouched: that runs Plex -> n8n -> ListenBrainz and never
+   * reads this page, so hiding a track here changes nothing upstream.
+   *
+   * Same public Lanyard endpoint the HeaderStatus clock embed polls, and the
+   * same two accounts. Either one being present counts as present, so the work
+   * account that drives the "At Work" pill does not blank the strip. Note that
+   * Discord's invisible mode reports as offline, so invisible hides too.
+   *
+   * Set false to always show the strip.
+   */
+  var PRESENCE_GATE     = true;
+  var LANYARD_IDS       = ['252367431274725377', '1476219861289144394'];
+  var PRESENCE_INTERVAL = 60000;
+
+  /*
    * ─── Sandbox overrides (test.html only; inert on Carrd) ────────────────────
    *   ?mock=1&live=video|music|both|none&newer=video|music
    *   ?feed=<feed-url>&music=<url>
@@ -449,6 +469,9 @@
     video: { active: false, key: null, data: null, changedAt: 0 }
   };
   var liveRenderedKey = null;
+  /* null until the first Lanyard reply lands. Unknown presence shows the strip,
+     so a Lanyard outage can never blank it on its own. */
+  var presenceOnline = null;
 
   el('dks-np-head').addEventListener('click', function () {
     if (el('dks-np').classList.contains('idle')) return;
@@ -457,6 +480,7 @@
   });
 
   function currentLiveMode() {
+    if (PRESENCE_GATE && presenceOnline === false) return null;
     var m = liveState.music, v = liveState.video;
     if (m.active && v.active) return (v.changedAt >= m.changedAt) ? 'video' : 'music';
     if (m.active) return 'music';
@@ -493,7 +517,21 @@
   function updateLiveStrip() {
     var mode = currentLiveMode();
     syncNpChrome();
-    if (!mode) { liveRenderedKey = null; return; }
+    if (!mode) {
+      liveRenderedKey = null;
+      /* Empty the body rather than just collapsing it. The idle strip should
+         carry nothing about what was playing - collapsed is only a visual
+         hide, and the text would still sit in the DOM for anyone who looks. */
+      el('dks-np-code').textContent = '';
+      el('dks-np-title').textContent = '';
+      el('dks-np-artist').textContent = '';
+      el('dks-np-btns').innerHTML = '';
+      var idleImg = el('dks-np-img');
+      idleImg.style.display = 'none';
+      idleImg.removeAttribute('src');
+      delete idleImg.dataset.fallbackTried;
+      return;
+    }
 
     var key = mode + ':' + (mode === 'music' ? liveState.music.key : liveState.video.key);
     if (key === liveRenderedKey) return;
@@ -600,10 +638,55 @@
       .catch(function () { scheduleNextNWPoll(); });
   }
 
+  /* ── Discord presence poll (60 s, visibility-aware) ──────────────────────
+     Lanyard is an unauthenticated public GET, so this runs straight from the
+     browser the way the clock embed does - no n8n involvement. 60 s so the
+     strip clears shortly after Discord goes dark rather than waiting out the
+     3.5 min music poll. */
+  var presTimer = null;
+  function scheduleNextPresPoll(delay) {
+    if (MOCK) return;
+    clearTimeout(presTimer);
+    presTimer = setTimeout(function () {
+      if (!document.hidden) pollPresence();
+      else scheduleNextPresPoll(PRESENCE_INTERVAL);
+    }, delay !== undefined ? delay : PRESENCE_INTERVAL);
+  }
+  function applyPresence(statuses) {
+    var online = false;
+    for (var i = 0; i < statuses.length; i++) {
+      if (statuses[i] && statuses[i] !== 'offline') { online = true; break; }
+    }
+    if (online === presenceOnline) return;
+    presenceOnline = online;
+    updateLiveStrip();
+  }
+  function fetchPresence(id) {
+    return fetch('https://api.lanyard.rest/v1/users/' + id)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { return (j && j.data && j.data.discord_status) || null; })
+      .catch(function () { return null; });
+  }
+  function pollPresence() {
+    if (!PRESENCE_GATE) return;
+    if (MOCK) { applyPresence([mockPresence()]); return; }
+    var pending = [];
+    for (var i = 0; i < LANYARD_IDS.length; i++) pending.push(fetchPresence(LANYARD_IDS[i]));
+    Promise.all(pending).then(function (statuses) {
+      scheduleNextPresPoll();
+      /* A real "offline" is the string 'offline'; null only means the request
+         failed. Every request failing leaves the last known answer alone. */
+      for (var j = 0; j < statuses.length; j++) {
+        if (statuses[j]) { applyPresence(statuses); return; }
+      }
+    }).catch(function () { scheduleNextPresPoll(); });
+  }
+
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
       clearTimeout(npTimer); pollNowPlaying();
       clearTimeout(nwTimer); pollNowWatching();
+      clearTimeout(presTimer); pollPresence();
     }
   });
 
@@ -1083,6 +1166,10 @@
   var MOCK_LIVE = qp('live') || 'video';
   var MOCK_NEWER = qp('newer') || 'video';
 
+  function mockPresence() {
+    return qp('presence') === 'offline' ? 'offline' : 'online';
+  }
+
   function mockMusicNP() {
     if (MOCK_LIVE !== 'music' && MOCK_LIVE !== 'both') return { playing: false, track: null };
     return { playing: true, track: { track_metadata: {
@@ -1206,6 +1293,7 @@
     renderStripPlaceholders('fav');
   }
   setTimeout(function () {
+    pollPresence();
     pollNowPlaying();
     loadMusic(currentRange);
     if (VIDEO_ENABLED) {

@@ -17,6 +17,23 @@ var LB_USER = 'Dalek.coffee';
 var N8N_NP_WEBHOOK    = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
 var N8N_STATS_WEBHOOK = 'https://n8n.bakalabs.dev/webhook/f84033fe-a000-47f5-986a-e5444ab230e6';
 
+/*
+ * ─── Discord presence gate ───────────────────────────────────────────────────
+ * Only name the playing track while Discord shows me present. Offline and the
+ * strip falls back to the "Nothing Playing" state it already has - it never
+ * disappears. Scrobbling is unaffected: that runs Plex -> n8n -> ListenBrainz
+ * and never reads this page.
+ *
+ * Same public Lanyard endpoint and the same two accounts the HeaderStatus
+ * clock embed uses; either being present counts. Discord's invisible mode
+ * reports as offline, so invisible hides too. Set false to always show.
+ *
+ * Kept in step with MediaShelf/media-shelf.js, which carries the same gate.
+ */
+var PRESENCE_GATE     = true;
+var LANYARD_IDS       = ['252367431274725377', '1476219861289144394'];
+var PRESENCE_INTERVAL = 60000;
+
 var BRANDS = [
   {id:'yt', name:'YouTube',   short:'YT', color:'#FF0000', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/youtube/black',    url:'https://www.youtube.com/results?search_query='},
   {id:'sp', name:'Spotify',   short:'SP', color:'#1DB954', textOnHover:'#fff', icon:'https://cdn.simpleicons.org/spotify/black',    url:'https://open.spotify.com/search/'},
@@ -269,6 +286,7 @@ var dataCache = {};
  * from an hourly cache. Interval: 3.5 min with 429 back-off.
  */
 var npTrackKey  = null;
+var npLastTrack = null;
 var npTimer     = null;
 var NP_INTERVAL = 210000; /* 3.5 min */
 
@@ -298,43 +316,120 @@ function pollNowPlaying() {
     })
     .then(function(d) {
       if (!d) return;
-      var track = d.playing ? d.track : null;
-      var dot   = document.getElementById('dkt-np-dot');
-      var label = document.getElementById('dkt-np-label');
-      var body  = document.getElementById('dkt-np-body');
-      if (track && track.track_metadata) {
-        var key = track.track_metadata.track_name + '||' + track.track_metadata.artist_name;
-        dot.classList.add('active');
-        label.textContent = 'Now Playing'; label.classList.add('active');
-        body.classList.add('open');
-        document.getElementById('dkt-np-title').textContent  = track.track_metadata.track_name;
-        document.getElementById('dkt-np-artist').textContent = track.track_metadata.artist_name;
-        if (key !== npTrackKey) {
-          npTrackKey = key;
-          var btns = document.getElementById('dkt-np-btns');
-          btns.innerHTML = '';
-          var q = encodeURIComponent(track.track_metadata.track_name + ' ' + track.track_metadata.artist_name);
-          for (var b = 0; b < BRANDS.length; b++) btns.appendChild(makeBtn(BRANDS[b], q));
-          var npImg  = document.getElementById('dkt-np-img');
-          var npWipe = document.getElementById('dkt-np-wipe');
-          npImg.style.display = 'none'; npImg.removeAttribute('src'); delete npImg.dataset.fallbackTried;
-          if (npWipe) { npWipe.style.display = ''; }
-          loadCoverArt(npImg, npWipe, getCoverInfo(track), track.track_metadata.artist_name, track.track_metadata.track_name, track.track_metadata.release_name);
-        }
-      } else {
-        npTrackKey = null;
-        dot.classList.remove('active');
-        label.textContent = 'Nothing Playing'; label.classList.remove('active');
-        body.classList.remove('open');
-      }
+      npLastTrack = d.playing ? d.track : null;
+      renderNP();
     })
     .catch(function() { scheduleNextPoll(); });
+}
+
+/* Draws whatever the last poll saw, unless the presence gate is holding it
+   back - in which case it draws the idle state instead. */
+function renderNP() {
+  var track = (PRESENCE_GATE && presenceOnline === false) ? null : npLastTrack;
+  var dot   = document.getElementById('dkt-np-dot');
+  var label = document.getElementById('dkt-np-label');
+  var body  = document.getElementById('dkt-np-body');
+  /* The markup lives in the pasted Carrd HTML, not in this file - presence can
+     now call this on its own, so check the nodes are actually there. */
+  if (!dot || !label || !body) return;
+  if (track && track.track_metadata) {
+    var key = track.track_metadata.track_name + '||' + track.track_metadata.artist_name;
+    dot.classList.add('active');
+    label.textContent = 'Now Playing'; label.classList.add('active');
+    body.classList.add('open');
+    document.getElementById('dkt-np-title').textContent  = track.track_metadata.track_name;
+    document.getElementById('dkt-np-artist').textContent = track.track_metadata.artist_name;
+    if (key !== npTrackKey) {
+      npTrackKey = key;
+      var btns = document.getElementById('dkt-np-btns');
+      btns.innerHTML = '';
+      var q = encodeURIComponent(track.track_metadata.track_name + ' ' + track.track_metadata.artist_name);
+      for (var b = 0; b < BRANDS.length; b++) btns.appendChild(makeBtn(BRANDS[b], q));
+      var npImg  = document.getElementById('dkt-np-img');
+      var npWipe = document.getElementById('dkt-np-wipe');
+      npImg.style.display = 'none'; npImg.removeAttribute('src'); delete npImg.dataset.fallbackTried;
+      if (npWipe) { npWipe.style.display = ''; }
+      loadCoverArt(npImg, npWipe, getCoverInfo(track), track.track_metadata.artist_name, track.track_metadata.track_name, track.track_metadata.release_name);
+    }
+  } else {
+    npTrackKey = null;
+    dot.classList.remove('active');
+    label.textContent = 'Nothing Playing'; label.classList.remove('active');
+    body.classList.remove('open');
+    /* Empty the body rather than just collapsing it - collapsed is only a
+       visual hide, and the track would still sit in the DOM. */
+    setText('dkt-np-title', '');
+    setText('dkt-np-artist', '');
+    var idleBtns = document.getElementById('dkt-np-btns');
+    if (idleBtns) idleBtns.innerHTML = '';
+    var idleImg = document.getElementById('dkt-np-img');
+    if (idleImg) {
+      idleImg.style.display = 'none';
+      idleImg.removeAttribute('src');
+      delete idleImg.dataset.fallbackTried;
+    }
+    var idleWipe = document.getElementById('dkt-np-wipe');
+    if (idleWipe) idleWipe.style.display = 'none';
+  }
+}
+
+function setText(id, value) {
+  var node = document.getElementById(id);
+  if (node) node.textContent = value;
+}
+
+/* ─── Discord presence polling (60 s, visibility-aware) ───────────────────
+ * Lanyard is an unauthenticated public GET, so this runs from the browser and
+ * never touches n8n. 60 s so the strip clears shortly after Discord goes dark
+ * rather than waiting out the 3.5 min music poll. */
+var presenceOnline = null;   /* null = not known yet, which shows the track */
+var presTimer = null;
+
+function scheduleNextPresPoll(delay) {
+  clearTimeout(presTimer);
+  presTimer = setTimeout(function() {
+    if (!document.hidden) pollPresence();
+    else scheduleNextPresPoll(PRESENCE_INTERVAL);
+  }, delay !== undefined ? delay : PRESENCE_INTERVAL);
+}
+
+function applyPresence(statuses) {
+  var online = false;
+  for (var i = 0; i < statuses.length; i++) {
+    if (statuses[i] && statuses[i] !== 'offline') { online = true; break; }
+  }
+  if (online === presenceOnline) return;
+  presenceOnline = online;
+  renderNP();
+}
+
+function fetchPresence(id) {
+  return fetch('https://api.lanyard.rest/v1/users/' + id)
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(j) { return (j && j.data && j.data.discord_status) || null; })
+    .catch(function() { return null; });
+}
+
+function pollPresence() {
+  if (!PRESENCE_GATE) return;
+  var pending = [];
+  for (var i = 0; i < LANYARD_IDS.length; i++) pending.push(fetchPresence(LANYARD_IDS[i]));
+  Promise.all(pending).then(function(statuses) {
+    scheduleNextPresPoll();
+    /* A real "offline" comes back as the string 'offline'; null only means the
+       request failed, and every request failing leaves the last answer alone. */
+    for (var j = 0; j < statuses.length; j++) {
+      if (statuses[j]) { applyPresence(statuses); return; }
+    }
+  }).catch(function() { scheduleNextPresPoll(); });
 }
 
 document.addEventListener('visibilitychange', function() {
   if (!document.hidden) {
     clearTimeout(npTimer);
     pollNowPlaying();
+    clearTimeout(presTimer);
+    pollPresence();
   }
 });
 
@@ -453,6 +548,7 @@ document.getElementById('dkt-tab-container').addEventListener('click', function(
 });
 
 setTimeout(function() {
+  pollPresence();
   pollNowPlaying();
   var tabs = document.querySelectorAll('.dkt-tab');
   for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
