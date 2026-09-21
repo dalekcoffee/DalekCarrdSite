@@ -23,6 +23,13 @@ body {
   background: var(--bg);
   border-top: 2px solid #fff;
   border-bottom: 1px solid var(--b2);
+  /* A badge in the last column opens its tooltip past the right edge of
+     the card, and on a phone that was enough to make the whole page scroll
+     sideways. clip (not hidden) trims the overhang without turning the card
+     into a scroll container, so the page stays put and the vertical axis is
+     left alone. Such a tooltip is cut at the screen edge, which is where it
+     was already unreadable. */
+  overflow-x: clip;
   /* Reserve space on first paint so the embed doesn't jump from a tiny
      skeleton to full size once the panels are injected. Floor is sized to
      roughly cover the default (Merch) tab; tune if the jump persists. */
@@ -76,21 +83,24 @@ body {
 /* ════════════════════════════
    MERCH - big grid
 ════════════════════════════ */
+/* Gridlines are the 1px gaps with the grid's own background showing
+   through, not borders on the tiles - that way the column count can
+   change at any width without a set of nth-child rules to keep in step
+   with it. Same technique as the coffee grid below. */
 .merch-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--b1);
   border-bottom: 1px solid var(--b1);
 }
 .merch-item {
   display: flex; flex-direction: column;
   text-decoration: none; color: #fff;
-  border-right: 1px solid var(--b1);
-  border-bottom: 1px solid var(--b1);
+  background: var(--bg);
   transition: background var(--t);
   position: relative;
 }
-.merch-item:nth-child(3n) { border-right: none; }
-.merch-item:nth-last-child(-n+3) { border-bottom: none; }
 .merch-item:hover, .merch-item:active { background: var(--bg3); }
 .merch-item:focus-visible { outline: 2px solid var(--cof); outline-offset: -2px; }
 .merch-item::before {
@@ -257,6 +267,10 @@ body {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 22px; letter-spacing: 0.2em; text-transform: uppercase;
   color: #fff;
+  /* min-width is what lets this shrink inside the flex band. Without it a
+     long category name refuses to go below its own text width and drags
+     the column out past the edge of the screen instead of ellipsizing. */
+  min-width: 0;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
@@ -462,78 +476,181 @@ body {
 .badge-amz { color: var(--amz); border-color: var(--amz); }
 
 /* ════════════════════════════
-   RESPONSIVE - mobile / narrow
+   RESPONSIVE - narrow windows, portrait monitors, phones
+
+   Desktop above 1280px is untouched; everything from here down only
+   applies once the viewport is narrower than that.
+
+   There are two separate jobs in here, and it helps to keep them apart:
+
+   1. SIZE. Type, padding and thumbnails scale smoothly with the viewport
+      instead of snapping to one fixed "mobile" size the moment the window
+      crosses 1280px. Every clamp() is written so its top end is exactly
+      the desktop value at 1280px and its bottom end lands at 360px, so
+      dragging a window narrower never produces a jump - it just shrinks.
+
+   2. COLUMNS. The grids used to halve their column count in a single step
+      at 1280px, and halving the columns DOUBLES every tile: four across on
+      a 1920px screen is a 480px tile, but the two across it fell back to
+      was a 540px tile on a 1080px portrait monitor - bigger than desktop.
+      That is what made a half window or a portrait monitor look enormous.
+
+      The column ladder further down only ever takes a column away, and only
+      once the tiles have genuinely run out of room, so a tile now stays
+      between about 180px and 320px wide at every width under 1280px rather
+      than ballooning past 500px. Holding four columns down to 900px is what
+      does most of that work.
 ════════════════════════════ */
 @media (max-width: 1280px) {
 
   /* ── Smaller min-height floor for narrow screens ── */
   .card { min-height: 480px; }
 
-  /* ── Grids: 4-col → 2-col ── */
+  /* ── Coffee card text ── */
+  .coffee-card-label { font-size: clamp(10.5px, calc(8.74px + 0.49vw), 15px); }
+  .coffee-card-name  { font-size: clamp(14px, calc(11.65px + 0.65vw), 20px); }
+  .coffee-card-desc  { font-size: clamp(11px, calc(9.43px + 0.43vw), 15px); }
+  .coffee-card-info  {
+    padding: clamp(10px, calc(9.22px + 0.22vw), 12px)
+             clamp(11px, calc(9.83px + 0.33vw), 14px);
+  }
+
+  /* ── Merch text ── */
+  .merch-sub  { font-size: clamp(10.5px, calc(8.74px + 0.49vw), 15px); }
+  .merch-name { font-size: clamp(14px, calc(11.65px + 0.65vw), 20px); }
+  .merch-desc { font-size: clamp(11px, calc(9.43px + 0.43vw), 15px); }
+  .merch-cta  { font-size: clamp(8px, calc(7.61px + 0.11vw), 9px); }
+  .merch-info {
+    padding: clamp(10px, calc(9.22px + 0.22vw), 12px)
+             clamp(11px, calc(9.83px + 0.33vw), 14px);
+  }
+
+  /* ── Setup row text + thumb ──
+     Names and descriptions wrap here instead of trailing off into an
+     ellipsis: a narrower row has nowhere to put the missing words. */
+  .c-thumb {
+    width:  clamp(76px, calc(52.91px + 6.41vw), 135px);
+    height: clamp(76px, calc(52.91px + 6.41vw), 135px);
+  }
+  .c-label { font-size: clamp(11px, calc(8.65px + 0.65vw), 17px); }
+  .c-name  {
+    font-size: clamp(15px, calc(12.26px + 0.76vw), 22px);
+    white-space: normal; overflow: visible; text-overflow: clip;
+  }
+  .c-desc  {
+    font-size: clamp(12px, calc(10.04px + 0.54vw), 17px);
+    white-space: normal; overflow: visible; text-overflow: clip;
+  }
+  .c-row {
+    padding: clamp(12px, calc(9.65px + 0.65vw), 18px)
+             clamp(14px, calc(10.87px + 0.87vw), 22px);
+    gap: clamp(12px, calc(9.65px + 0.65vw), 18px);
+    align-items: flex-start;
+  }
+
+  /* ── Section header ── */
+  .sec-head {
+    padding: clamp(12px, calc(10.43px + 0.43vw), 16px)
+             clamp(14px, calc(11.65px + 0.65vw), 20px);
+  }
+  .sec-head h2 { font-size: clamp(16px, calc(13.65px + 0.65vw), 22px); }
+  .sec-tag     { font-size: clamp(8.5px, calc(7.91px + 0.16vw), 10px); }
+
+  /* ── Category band ──
+     The left padding stays 3px short of the right so the label still sits
+     flush with the rows once the white accent bar is counted. */
+  .col-group {
+    padding: clamp(12px, calc(10.43px + 0.43vw), 16px)
+             clamp(14px, calc(11.65px + 0.65vw), 20px)
+             clamp(11px, calc(9.83px + 0.33vw), 14px)
+             clamp(11px, calc(8.65px + 0.65vw), 17px);
+  }
+  .col-group-icon  { font-size: clamp(15px, calc(12.26px + 0.76vw), 22px); }
+  /* Two lines beat an ellipsis here: there is no room to spare, and a
+     category name with its tail cut off ("Secondary PC - Streaming ·
+     Record...") is the one bit of text on the page you cannot guess. */
+  .col-group-label {
+    font-size: clamp(14px, calc(10.87px + 0.87vw), 22px);
+    white-space: normal; overflow: visible; text-overflow: clip;
+  }
+
+  /* ── Intro and footers ── */
+  .intro-bar {
+    padding: clamp(11px, calc(10.22px + 0.22vw), 13px)
+             clamp(14px, calc(11.65px + 0.65vw), 20px);
+  }
+  .intro-text { font-size: clamp(10.5px, calc(8.74px + 0.49vw), 15px); line-height: 1.6; }
+  .sec-footer {
+    padding: clamp(11px, calc(10.22px + 0.22vw), 13px)
+             clamp(14px, calc(11.65px + 0.65vw), 20px);
+  }
+  .sec-footer p { font-size: clamp(10.5px, calc(8.74px + 0.49vw), 15px); }
+  .footer-bar {
+    padding: clamp(10px, calc(9.61px + 0.11vw), 11px)
+             clamp(14px, calc(11.65px + 0.65vw), 20px);
+  }
+
+  /* ── Favorite overlay ── */
+  .coffee-fav      { font-size: clamp(9px, calc(7.43px + 0.43vw), 13px); }
+  .coffee-fav-star { font-size: clamp(11px, calc(8.65px + 0.65vw), 17px); }
+
+  /* ── Tooltip: pinned to the badge's left edge so it cannot run off the
+     side of the card, and never wider than the card it sits in. ── */
+  .alt-badge::after,
+  .note-badge::after {
+    width: min(300px, calc(100vw - 40px));
+    font-size: clamp(11px, calc(9.43px + 0.43vw), 15px);
+    left: 0; transform: none;
+  }
+}
+
+/* ── 900px: the first column comes off the coffee grids, and the setup
+   columns stack.
+
+   Four coffee tiles still have room down to here - 225px each at 900px.
+   Below that they would start squeezing the product shots, so the grid
+   drops to three. Dropping a column is a step UP in tile size, which is
+   exactly why it belongs this far down and not at 1280px.
+
+   The setup rows stack at the same point. They used to stack at 1280px,
+   which left every row running the full width of a portrait monitor with a
+   small thumbnail and a long empty stretch after the text. ── */
+@media (max-width: 900px) {
   .coffee-beans-grid,
-  .gear-grid { grid-template-columns: repeat(2, 1fr); }
+  .gear-grid { grid-template-columns: repeat(3, 1fr); }
 
-  /* ── Merch: 3-col → 2-col ── */
-  .merch-grid { grid-template-columns: 1fr 1fr; }
-  .merch-item:nth-child(3n)       { border-right: 1px solid var(--b1); }
-  .merch-item:nth-child(even)     { border-right: none; }
-  .merch-item:nth-last-child(-n+3){ border-bottom: 1px solid var(--b1); }
-  .merch-item:nth-last-child(-n+2){ border-bottom: none; }
-
-  /* ── Setup: 2-col → 1-col stack ── */
-  .dual-col { grid-template-columns: 1fr; }
+  .dual-col  { grid-template-columns: 1fr; }
   .full-rows { grid-template-columns: 1fr; }
   .full-rows .c-row:nth-child(odd) { border-right: none; }
   .dual-col-side { border-right: none !important; border-bottom: 1px solid var(--b1); }
   .dual-col-side:last-child { border-bottom: none; }
+}
 
-  /* ── Coffee card text ── */
-  .coffee-card-label { font-size: 11px; }
-  .coffee-card-name  { font-size: 14px; }
-  .coffee-card-desc  { font-size: 11px; }
-  .coffee-card-info  { padding: 10px 10px; }
+/* ── 640px: two across, and that is the floor. One column would put a
+   full-width product photo on a phone, which is the thing this whole
+   section exists to avoid. ── */
+@media (max-width: 640px) {
+  .card { min-height: 360px; }
 
-  /* ── Merch text ── */
-  .merch-sub  { font-size: 11px; }
-  .merch-name { font-size: 14px; }
-  .merch-desc { font-size: 11px; }
-  .merch-cta  { font-size: 8px; }
-  .merch-info { padding: 10px 10px; }
+  .coffee-beans-grid,
+  .gear-grid,
+  .merch-grid { grid-template-columns: repeat(2, 1fr); }
 
-  /* ── Setup row text + thumb ── */
-  .c-thumb { width: 72px; height: 72px; }
-  .c-label  { font-size: 12px; }
-  .c-name   { font-size: 15px; white-space: normal; }
-  .c-desc   { font-size: 12px; white-space: normal; }
-  .c-row    { padding: 14px 16px; gap: 12px; align-items: flex-start; }
+  .coffee-card-img img { padding: 6px; }
+  .c-thumb img         { padding: 4px; }
 
-  /* ── Global text ── */
-  .intro-text      { font-size: 9px; }
-  .col-group-label { font-size: 14px; }
-  /* 13px + the 3px accent bar keeps the label flush with the rows' 16px. */
-  .col-group       { padding: 14px 16px 12px 13px; }
-  .sec-footer p    { font-size: 9px; }
-  .sec-head h2     { font-size: 18px; }
-  .sec-tag         { font-size: 9px; }
+  .footer-bar     { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .sec-footer-alt { flex-direction: column; }
+}
 
-  /* ── Tooltip: keep readable but constrain width ── */
-  .alt-badge::after,
-  .note-badge::after { width: 260px; font-size: 11px; left: 0; transform: none; }
-
-  /* ── Alt badge: expanded tap target (8px halo around the badge) ── */
+/* ── Touch: there is no hover to open a tooltip with, so the badge gets an
+   8px halo of tap target around it. Keyed to the input rather than the
+   width, because a half-width window on a desktop still has a pointer. ── */
+@media (hover: none) {
   .alt-badge::before,
   .note-badge::before {
     content: '';
     position: absolute;
     top: -8px; right: -8px; bottom: -8px; left: -8px;
   }
-
-  /* ── Footer ── */
-  .footer-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .sec-footer { flex-direction: column; }
-  .sec-footer-alt { flex-direction: column; }
-
-  /* ── Favorite overlay - keep current size on mobile ── */
-  .coffee-fav      { font-size: 8.5px; }
-  .coffee-fav-star { font-size: 11px; }
 }
