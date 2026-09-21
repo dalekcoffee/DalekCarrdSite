@@ -216,13 +216,22 @@
     setup:  { render: renderSetup,  badges: [AMAZON]   }
   };
 
-  /* ── Alt badge: block product link on mobile so tooltip can show ──
+  /* ── Alt badge: block product link on touch so tooltip can show ──
      Scoped to the card being drawn, so re-drawing one card can't double-bind
-     the badges in another. */
+     the badges in another.
+
+     Keyed to whether the device can hover, not to how wide the window is.
+     A half-width window or a portrait monitor is still a pointer, and the
+     CSS tooltip opens on hover there - swallowing the click just stopped
+     the badge from opening the product. */
+  function canHover() {
+    return !!(window.matchMedia && window.matchMedia('(hover: hover)').matches);
+  }
+
   function initAltBadgeBlock(scope) {
     scope.querySelectorAll('.alt-badge').forEach(function (badge) {
       badge.addEventListener('click', function (e) {
-        if (window.innerWidth > 1280) return; // desktop: CSS tooltip handles it
+        if (canHover()) return; // pointer: CSS tooltip handles it
         e.stopPropagation();
         e.preventDefault();
       });
