@@ -107,8 +107,6 @@
     }
     clockEl.innerHTML = 'MY TIME: ' + h + '<span class="hs-blink">:</span>' + m + ' ' + ampm + ' ' + tz;
   }
-  renderClock();
-  setInterval(renderClock, 1000);
 
   /* ── STATUS + ACTIVITY ── */
   function applyStatus(raw) {
@@ -232,8 +230,6 @@
       setMotdCategory('away');
     });
   }
-  refresh();
-  setInterval(refresh, 60000);
 
   /* ── MOTD ── */
   var SHORTCODE_RE = /:([a-zA-Z0-9_.@-]+):/g;
@@ -338,4 +334,45 @@
       maybeShowMotd();
     })
     .catch(function () { /* leave hidden on failure */ });
+
+  /* ── TIMERS ──
+     The clock and the status poll only run while the tab is visible - a
+     background tab has nobody to show them to, and each poll is two Lanyard
+     requests. Coming back renders the clock at once and refreshes the status
+     if the last poll is older than REFRESH_MS.
+
+     If this script runs again (Carrd re-running embeds, a double paste), the
+     new run takes over: the earlier run's timers and listener are cleared
+     first, so ticks and polls never stack up. */
+  var REFRESH_MS = 60000;
+  var prev = window.__hsTimers;
+  if (prev) {
+    clearInterval(prev.clock);
+    clearTimeout(prev.poll);
+    document.removeEventListener('visibilitychange', prev.onVis);
+  }
+  var timers = window.__hsTimers = { clock: null, poll: null, onVis: null };
+  var lastRefresh = 0;
+
+  function tick() {
+    lastRefresh = Date.now();
+    refresh();
+    timers.poll = setTimeout(tick, REFRESH_MS);
+  }
+  function resume() {
+    renderClock();
+    clearInterval(timers.clock);
+    timers.clock = setInterval(renderClock, 1000);
+    clearTimeout(timers.poll);
+    timers.poll = setTimeout(tick, Math.max(0, lastRefresh + REFRESH_MS - Date.now()));
+  }
+  function pause() {
+    clearInterval(timers.clock);
+    clearTimeout(timers.poll);
+    timers.clock = timers.poll = null;
+  }
+
+  timers.onVis = function () { if (document.hidden) pause(); else resume(); };
+  document.addEventListener('visibilitychange', timers.onVis);
+  if (document.hidden) renderClock(); else resume();
 })();

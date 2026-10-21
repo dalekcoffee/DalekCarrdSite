@@ -462,13 +462,16 @@
          on ready, and again on the first interaction (see the first-gesture unlock below). */
       twitchPlayer.addEventListener(Twitch.Player.READY, nudgeTwitchPlay);
       twitchPlayer.addEventListener(Twitch.Player.PLAY, function () {
+        /* Autoplay can start it after the card was collapsed - nothing plays while closed. */
+        if (!isOpen()) { try { twitchPlayer.pause(); } catch (e) {} return; }
         if (activeTab === 'twitch') twitchForeground(); else twitchBackground();
       });
     });
   }
-  /* Best-effort play(); no-op if the player isn't ready yet or is already playing. */
+  /* Best-effort play(); no-op if the player isn't ready yet, is already playing,
+     or the card is collapsed. */
   function nudgeTwitchPlay() {
-    if (!twitchPlayer) return;
+    if (!twitchPlayer || !isOpen()) return;
     try { if (twitchPlayer.play) twitchPlayer.play(); } catch (e) {}
   }
   function stopQualityWatch() {
@@ -567,7 +570,9 @@
       tabs[i].classList.toggle('active', on);
       tabs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
     }
-    if (!iframesLoaded) return;
+    /* Collapsed (a keyboard user can still reach the hidden tabs): just remember
+       the choice - resumePlayers() applies it when the card opens. */
+    if (!iframesLoaded || !isOpen()) return;
     /* Focused: full player, audible, auto quality. Backgrounded: straight back to
        muted + cheapest, never unloaded, so the view keeps counting either way. */
     if (which === 'twitch') { unloadBeam(); ensureTwitch(); twitchForeground(); }
@@ -720,9 +725,31 @@
   });
 
   /* ── COLLAPSE / LIVE STATE ── */
+  function isOpen() { return card.classList.contains('ls-open'); }
+
+  /* Collapsing only hides the body - the iframes keep running, and Beam has no
+     mute API - so actually stop playback: drop Beam's iframe and pause Twitch.
+     Reopening brings back whichever tab was active. */
+  function stopPlayers() {
+    if (!iframesLoaded) return;
+    unloadBeam();
+    stopQualityWatch();
+    if (twitchPlayer) { try { twitchPlayer.pause(); } catch (e) {} }
+  }
+  function resumePlayers() {
+    if (activeTab === 'twitch') { unloadBeam(); twitchForeground(); }
+    else { loadBeam(); twitchBackground(); }
+    applyVideoStack();
+  }
+
+  /* Players are only stopped/resumed on a real open↔closed change, so the
+     90s poll re-asserting the same state never touches what's playing. */
   function applyOpenState(open) {
+    var wasOpen = isOpen();
     card.classList.toggle('ls-open', open);
     if (open) loadIframes();
+    if (open === wasOpen) return;
+    if (open) resumePlayers(); else stopPlayers();
   }
 
   function setLive(isLive) {
@@ -734,20 +761,28 @@
   }
 
   strip.addEventListener('click', function () {
-    var isOpen = card.classList.contains('ls-open');
-    userOverride = !isOpen;
+    userOverride = !isOpen();
     applyOpenState(userOverride);
   });
 
-  /* ── LIVE POLL ── */
+  /* ── LIVE POLL ──
+     A single failed poll (n8n hiccup, network blip) used to flip the widget
+     offline and collapse a stream someone was watching. While live, hold that
+     state until POLL_FAIL_LIMIT polls in a row have failed (~4.5 min). */
+  var POLL_FAIL_LIMIT = 3;
+  var pollFails = 0;
   function poll() {
     fetch(WEBHOOK + '?t=' + Date.now())
-      .then(function (r) { return r.json(); })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (d) {
+        pollFails = 0;
         var rec = Array.isArray(d) ? d[0] : d;
         setLive(!!(rec && (rec.live === true || rec.live === 'true')));
       })
-      .catch(function () { setLive(false); });
+      .catch(function () {
+        pollFails++;
+        if (!currentlyLive || pollFails >= POLL_FAIL_LIMIT) setLive(false);
+      });
   }
   poll();
   setInterval(poll, 90000);
