@@ -41,12 +41,21 @@
   var VIDEO_ENABLED = true;
 
   /*
-   * ─── Sandbox overrides (test.html only; inert on Carrd) ────────────────────
+   * ─── Sandbox overrides (test harness only) ─────────────────────────────────
    *   ?mock=1&live=video|music|both|none&newer=video|music
-   *   ?feed=<feed-url>&music=<url>
+   *   ?feed=<feed-url>&music=<url>&accent=<css color>
+   * Read only on localhost, a file:// copy, or the hosted test.html. Anywhere
+   * else - dalek.coffee included - the query string is ignored, so a crafted
+   * link can't point the shelf at someone else's feed.
    */
+  function isSandbox() {
+    var loc = window.location;
+    if (loc.protocol === 'file:') return true;
+    if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc.hostname)) return true;
+    return loc.hostname === 'dalekcoffee.github.io' && /\/MediaShelf\/test\.html$/.test(loc.pathname);
+  }
   var QS = null;
-  try { QS = new URLSearchParams(window.location.search); } catch (e) {}
+  try { if (isSandbox()) QS = new URLSearchParams(window.location.search); } catch (e) {}
   function qp(k) { return QS ? QS.get(k) : null; }
   var MOCK = qp('mock') === '1';
   /* ?trakt= kept as an alias so old bookmarked sandbox URLs still work */
@@ -71,15 +80,36 @@
     { label: 'Genius',     icon: 'genius',     bb: '#FFE24B', bt: '#000000', bi: TO_BLACK, url: 'https://genius.com/search?q=' }
   ];
 
+  /* ─── URL guard for values that come from a feed ─────────────────────────
+   * Feed fields end up in a.href and img.src. Only web URLs pass - http is
+   * upgraded to https (the page is https; browsers upgrade images the same
+   * way), anything else (javascript:, data:, garbage) comes back as '' - and
+   * when hosts are given, the URL must also sit on one of them or a subdomain. */
+  function safeUrl(u, hosts) {
+    if (!u) return '';
+    var p;
+    try { p = new URL(String(u)); } catch (e) { return ''; }
+    if (p.protocol === 'http:') p.protocol = 'https:';
+    if (p.protocol !== 'https:') return '';
+    if (hosts) {
+      var h = p.hostname.toLowerCase(), ok = false;
+      for (var i = 0; i < hosts.length; i++) {
+        if (h === hosts[i] || h.slice(-(hosts[i].length + 1)) === '.' + hosts[i]) { ok = true; break; }
+      }
+      if (!ok) return '';
+    }
+    return p.href;
+  }
+
   function mediaBrandDefs(item) {
     var q = encodeURIComponent(item.title || '');
     var defs = [
       { label: 'YouTube', icon: 'youtube', bb: '#FF0000', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.youtube.com/results?search_query=' + q },
-      { label: 'IMDb',    icon: 'imdb',    bb: '#F5C518', bt: '#000000', bi: TO_BLACK, href: item.imdbUrl || ('https://www.imdb.com/find/?q=' + q) },
+      { label: 'IMDb',    icon: 'imdb',    bb: '#F5C518', bt: '#000000', bi: TO_BLACK, href: safeUrl(item.imdbUrl, ['imdb.com']) || ('https://www.imdb.com/find/?q=' + q) },
       /* Simkl's simple-icons glyph is a flat monochrome mark; the chip uses a
          near-black ground rather than a brand hex - confirm against Simkl's
          current brand color before this ships to production. */
-      { label: 'Simkl',   icon: 'simkl',   bb: '#111827', bt: '#ffffff', bi: TO_WHITE, href: item.simklUrl || ('https://simkl.com/search/?q=' + q) }
+      { label: 'Simkl',   icon: 'simkl',   bb: '#111827', bt: '#ffffff', bi: TO_WHITE, href: safeUrl(item.simklUrl, ['simkl.com']) || ('https://simkl.com/search/?q=' + q) }
     ];
     if (item.isAnime) defs.push({ label: 'Crunchyroll', icon: 'crunchyroll', bb: '#F47521', bt: '#ffffff', bi: TO_WHITE, href: 'https://www.crunchyroll.com/search?q=' + q });
     return defs;
@@ -89,6 +119,7 @@
     container.innerHTML = '';
     for (var i = 0; i < defs.length; i++) {
       var d = defs[i];
+      if (!safeUrl(d.href)) continue;
       var a = document.createElement('a');
       a.className = 'dks-btn';
       a.style.setProperty('--bb', d.bb);
@@ -219,7 +250,8 @@
     var meta = t.track_metadata || t;
     /* Prefer a cover URL the n8n workflow already resolved server-side (fast,
        cached, validated) - falls back through the client-side chain on error. */
-    if (t.cover_url || meta.cover_url) return { type: 'direct', url: t.cover_url || meta.cover_url };
+    var direct = safeUrl(t.cover_url || meta.cover_url);
+    if (direct) return { type: 'direct', url: direct };
     var map = meta.mbid_mapping || {};
     var add = meta.additional_info || {};
     var caaId = map.caa_id || t.caa_id || null;
@@ -341,6 +373,7 @@
     });
   }
   function loadPoster(imgEl, url) {
+    url = safeUrl(url);
     if (!url) return;
     imgEl.onload = function () { imgEl.style.display = 'block'; };
     imgEl.onerror = function () { imgEl.style.display = 'none'; };
