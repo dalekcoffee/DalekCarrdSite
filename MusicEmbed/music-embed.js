@@ -272,6 +272,36 @@ var npTrackKey  = null;
 var npTimer     = null;
 var NP_INTERVAL = 210000; /* 3.5 min */
 
+/* ─── Discord presence (shared with HeaderStatus / MusicEmbed) ────────────
+ * Resolves to true when the header would read OFFLINE, using the same rule
+ * as HeaderStatus/embed.js: ONLINE if the main account is streaming, the
+ * work account is online, or the main status is anything but 'offline'.
+ * A failed or malformed Lanyard response counts as offline. Memoised on
+ * window.__dalekPresence (30 s) so embeds on one page share one request pair. */
+function discordPresence() {
+  var memo = window.__dalekPresence;
+  if (memo && memo.promise && Date.now() - memo.at < 30000) return memo.promise;
+  function lanyard(id) {
+    return fetch('https://api.lanyard.rest/v1/users/' + id)
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j || !j.data) throw new Error('bad lanyard response');
+        return j.data;
+      });
+  }
+  var p = Promise.all([lanyard('1476219861289144394'), lanyard('252367431274725377')])
+    .then(function (res) {
+      var work = res[0], main = res[1];
+      var acts = main.activities || [];
+      for (var i = 0; i < acts.length; i++) if (acts[i].type === 1) return false;
+      if (work.discord_status === 'online') return false;
+      return main.discord_status === 'offline';
+    })
+    .catch(function () { return true; });
+  window.__dalekPresence = { at: Date.now(), promise: p };
+  return p;
+}
+
 function scheduleNextPoll(delay) {
   clearTimeout(npTimer);
   npTimer = setTimeout(function() {
@@ -290,6 +320,9 @@ function pollNowPlaying() {
    * so concurrent visitors share one LB call and no CORS issues reach the browser.
    * Response shape: { playing: bool, track: listen_object | null }
    */
+  /* The row mirrors the header: when Discord reads OFFLINE it takes the same
+     path as "no track". Display-only - the n8n call below still happens. */
+  var presence = discordPresence();
   fetch(N8N_NP_WEBHOOK + '?range=now_playing&t=' + Date.now())
     .then(function(r) {
       if (!r.ok) { scheduleNextPoll(); return null; }
@@ -297,8 +330,13 @@ function pollNowPlaying() {
       return r.json();
     })
     .then(function(d) {
-      if (!d) return;
-      var track = d.playing ? d.track : null;
+      if (!d) return null;
+      return presence.then(function(offline) { return { d: d, offline: offline }; });
+    })
+    .then(function(res) {
+      if (!res) return;
+      var d = res.d;
+      var track = (d.playing && !res.offline) ? d.track : null;
       var dot   = document.getElementById('dkt-np-dot');
       var label = document.getElementById('dkt-np-label');
       var body  = document.getElementById('dkt-np-body');

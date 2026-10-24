@@ -218,7 +218,7 @@
       }
       var s = mainData.discord_status;
       applyStatus(s);
-      if (s === 'idle') {
+      if (s === 'idle' || s === 'offline' || !STATUS_MAP[s]) {
         hideActivity();
       } else {
         applyActivity(mainData.activities || []);

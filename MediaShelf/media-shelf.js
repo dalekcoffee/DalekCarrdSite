@@ -476,10 +476,46 @@
   function el(id) { return document.getElementById(id); }
 
   /* ═══ UNIFIED NOW PLAYING (music + Plex, latest activity wins) ════════════ */
+  /* ─── Discord presence (shared with HeaderStatus / MusicEmbed) ────────────
+   * Resolves to true when the header would read OFFLINE, using the same rule
+   * as HeaderStatus/embed.js: ONLINE if the main account is streaming, the
+   * work account is online, or the main status is anything but 'offline'.
+   * A failed or malformed Lanyard response counts as offline. Memoised on
+   * window.__dalekPresence (30 s) so embeds on one page share one request pair. */
+  function discordPresence() {
+    var memo = window.__dalekPresence;
+    if (memo && memo.promise && Date.now() - memo.at < 30000) return memo.promise;
+    function lanyard(id) {
+      return fetch('https://api.lanyard.rest/v1/users/' + id)
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j || !j.data) throw new Error('bad lanyard response');
+          return j.data;
+        });
+    }
+    var p = Promise.all([lanyard('1476219861289144394'), lanyard('252367431274725377')])
+      .then(function (res) {
+        var work = res[0], main = res[1];
+        var acts = main.activities || [];
+        for (var i = 0; i < acts.length; i++) if (acts[i].type === 1) return false;
+        if (work.discord_status === 'online') return false;
+        return main.discord_status === 'offline';
+      })
+      .catch(function () { return true; });
+    window.__dalekPresence = { at: Date.now(), promise: p };
+    return p;
+  }
+
   var npOpen = true;
+  /* The live rows mirror the header: nothing reads "Now Playing" / "Now Watching"
+     while the header says OFFLINE. discordOffline starts true so the rows stay
+     hidden until Lanyard confirms otherwise. Discord's Invisible status also
+     reads as offline on Lanyard, so it hides them too. Display-only - the polls
+     keep running. Not applied in MOCK. */
   var liveState = {
     music: { active: false, key: null, track: null, changedAt: 0 },
-    video: { active: false, key: null, data: null, changedAt: 0 }
+    video: { active: false, key: null, data: null, changedAt: 0 },
+    discordOffline: !MOCK
   };
   var liveRenderedKey = null;
 
@@ -489,7 +525,18 @@
     syncNpChrome();
   });
 
+  function refreshPresence() {
+    if (MOCK) return;
+    discordPresence().then(function (off) {
+      if (off !== liveState.discordOffline) {
+        liveState.discordOffline = off;
+        updateLiveStrip();
+      }
+    });
+  }
+
   function currentLiveMode() {
+    if (liveState.discordOffline) return null;
     var m = liveState.music, v = liveState.video;
     if (m.active && v.active) return (v.changedAt >= m.changedAt) ? 'video' : 'music';
     if (m.active) return 'music';
@@ -586,6 +633,7 @@
   }
   function pollNowPlaying() {
     if (MOCK) { applyMusicNP(mockMusicNP()); return; }
+    refreshPresence();
     fetch(N8N_NP_WEBHOOK + '?range=now_playing&t=' + Date.now())
       .then(function (r) {
         if (!r.ok) { scheduleNextPoll(); return null; }
@@ -623,6 +671,7 @@
     if (!VIDEO_ENABLED) return;
     if (MOCK) { applyVideoNW(mockVideoLive()); return; }
     if (!N8N_MEDIA_FEED_WEBHOOK) return;
+    refreshPresence();
     fetch(N8N_MEDIA_FEED_WEBHOOK + '?range=now&t=' + Date.now())
       .then(function (r) {
         if (!r.ok) { scheduleNextNWPoll(); return null; }
@@ -635,6 +684,7 @@
 
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
+      refreshPresence();
       clearTimeout(npTimer); pollNowPlaying();
       clearTimeout(nwTimer); pollNowWatching();
     }
@@ -760,12 +810,15 @@
        it once the scrobble completes at 90%) - full bar, same visual as a
        finished series. */
     if (e.type === 'movie') return { known: true, pct: 100, done: true, movie: true };
+    /* dropped / on hold / gone stale in Simkl's Watching list: never guess
+       "finished" for these, even when absent from the Watching feed. */
+    var status = (e.status === 'dropped' || e.status === 'hold' || e.status === 'stale') ? e.status : null;
     var watched = e.epWatched, total = e.epTotal;
     if (!total) {
       var watching = dataCache['feed_watching'];
       var w = findWatchingMatch(e.title);
       if (w && w.epTotal) { watched = w.epWatched; total = w.epTotal; }
-      else if (watching && !w) {
+      else if (watching && !w && !status) {
         /* Watching lists every show with watched < aired episodes, so a series
            in Recent that's absent from it is watched to the end of what's
            aired - full bar, even though the feed sent no episode counts. Only
@@ -774,10 +827,10 @@
         return { known: true, pct: 100, done: true, inferred: true };
       }
     }
-    if (!total) return { known: false };
+    if (!total) return { known: false, status: status };
     watched = watched || 0;
     var pct = Math.max(0, Math.min(100, Math.round((watched / total) * 100)));
-    return { known: true, pct: pct, watched: watched, total: total, done: watched >= total };
+    return { known: true, pct: pct, watched: watched, total: total, done: watched >= total && !status, status: status };
   }
 
   function caretUpdate(kind) {
@@ -822,6 +875,10 @@
     if (prog.known) d.querySelector('.dks-bar-fill').style.width = prog.pct + '%';
     var meta = [e.kind || 'SERIES'];
     if (prog.movie) meta.push('WATCHED');
+    else if (prog.status) {
+      meta.push(prog.status === 'hold' ? 'ON HOLD' : 'DROPPED');
+      if (prog.known) meta.push(prog.watched + ' / ' + prog.total + ' EP');
+    }
     else if (prog.inferred) meta.push('FINISHED'); /* complete, but ep counts unknown */
     else if (prog.known) meta.push(prog.watched + ' / ' + prog.total + ' EP' + (prog.done ? ' · FINISHED' : ''));
     meta.push(relTime(e.watchedAt) || 'recently');
@@ -983,7 +1040,8 @@
         rtime.textContent = relTime(e.watchedAt) || '';
         rrow.appendChild(rlab); rrow.appendChild(rtime);
         rol.appendChild(rrow);
-        /* Progress bar tells "finished" (full) from "dropped" (partial) at a glance. */
+        /* Progress bar tells "finished" (full) from "dropped" (partial) at a glance;
+           recentProgress never reports a dropped / held / stale show as full. */
         if (rprog.known) {
           var rbar = document.createElement('div'); rbar.className = 'dks-bar';
           var rfill = document.createElement('div'); rfill.className = 'dks-bar-fill';
