@@ -11,7 +11,8 @@
     '.pj-section{padding:19px 23px;border-bottom:1px solid var(--b2)}' +
     '.pj-section:last-child{border-bottom:none}' +
     '.pj-subhead{font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.4);font-weight:400;margin-bottom:16px;text-align:center}' +
-    '.pj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}' +
+    '.pj-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}' +
+    '.pj-grid>.pj-item{flex:0 0 calc((100% - 24px) / 4);min-width:0}' +
     '.pj-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 14px 18px;background:var(--bg2);border:1px solid var(--b1);color:rgba(255,255,255,.65);text-decoration:none;text-align:center;overflow:hidden;transition:background var(--t),border-color var(--t),box-shadow var(--t),color var(--t)}' +
     '.pj-item::before{content:\'\';position:absolute;top:0;bottom:0;left:0;width:2px;background:#222;transition:background var(--t)}' +
     '.pj-item:hover,.pj-item:active{background:var(--bg3);color:#fff;border-color:var(--brand,#333);box-shadow:0 0 10px rgba(255,255,255,.08);box-shadow:0 0 10px color-mix(in srgb,var(--brand,#333) 20%,transparent)}' +
@@ -28,7 +29,7 @@
     '.pj-item.rainbow:hover .pj-name,.pj-item.rainbow:active .pj-name{background:linear-gradient(90deg,#f00,#f80,#ff0,#0c0,#08f,#80f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}' +
     '.pj-item .pj-arrow{position:absolute;top:10px;right:12px;font-size:14px;color:#2a2a2a;transition:color var(--t),transform var(--t);pointer-events:none}' +
     '.pj-item:hover .pj-arrow,.pj-item:active .pj-arrow{color:rgba(255,255,255,.3);transform:translate(2px,-2px)}' +
-    '@media (max-width:760px){.pj-grid{grid-template-columns:repeat(2,1fr)}}' +
+    '@media (max-width:760px){.pj-grid>.pj-item{flex-basis:calc((100% - 8px) / 2)}}' +
     '@media (max-width:640px){.pj-logo{width:60px;height:60px}.pj-name{font-size:20px}.pj-section{padding:16px}}' +
     '.foil{position:relative;--b-lt:#fff;--b-lt:color-mix(in srgb,var(--brand,#888) 40%,#fff);--b-a2:var(--brand2,var(--brand,#888))}' +
     '.foil > *{position:relative;z-index:2}' +
@@ -89,6 +90,13 @@
     '<img class="pj-logo" src="' + BASE + 'CarrdResopalLogo.svg" alt="Resopal logo">' +
     '<div class="pj-name">Resopal</div>' +
     '<div class="pj-desc">Palworld deck<br>Importer</div>' +
+    '</a>' +
+
+    '<a class="pj-item foil" href="https://pwcounter.dalek.coffee/" target="_blank" rel="noopener noreferrer" style="--brand:#EF5A63; --brand2:#E3B762; --b-lt:#FFF3CF">' +
+    '<span class="pj-arrow" aria-hidden="true">↗</span>' +
+    '<img class="pj-logo" src="' + BASE + 'CarrdPWCounterLogo.svg" alt="PW Counter logo">' +
+    '<div class="pj-name">PW Counter</div>' +
+    '<div class="pj-desc">A Palworld counter<br>buddy</div>' +
     '</a>' +
 
     '</div>' +
