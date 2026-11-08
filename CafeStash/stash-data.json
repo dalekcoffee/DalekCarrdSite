@@ -28,7 +28,7 @@
       "label": "Snacks",
       "icon": "🍬",
       "items": [
-        { "label": "Coffee Candy", "name": "IMINT Espresso & Americano", "desc": "Sugar-free coffee candy mints - Dalek is addicted to these. His favorite coffee-flavored snack!", "url": "https://link.amazon/B090NvDgH", "img": "Images/Coffee/IMINT Coffee Bonbons Espresso Americano.png", "favorite": true }
+        { "label": "Coffee Candy", "name": "IMINT Espresso & Americano", "desc": "Sugar-free coffee candy mints. I am ADDICTED to these things, my favorite coffee-flavored snack!", "url": "https://link.amazon/B090NvDgH", "img": "Images/Coffee/IMINT Coffee Bonbons Espresso Americano.png", "favorite": true }
       ]
     },
     "right": {
