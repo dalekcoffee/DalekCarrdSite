@@ -24,6 +24,13 @@
         { "label": "Whole Bean", "name": "Lavazza Espresso",          "desc": "Classic Italian espresso - bold and aromatic.",       "url": "https://amzn.to/4cr1S08", "img": "Images/Coffee/Lavazza Espresso Whole Bean Coffee.png" }
       ]
     },
+    "snacks": {
+      "label": "Snacks",
+      "icon": "🍬",
+      "items": [
+        { "label": "Coffee Candy", "name": "IMINT Espresso & Americano", "desc": "Sugar-free coffee candy mints - Dalek is addicted to these. His favorite coffee-flavored snack!", "url": "https://link.amazon/B090NvDgH", "img": "Images/Coffee/IMINT Coffee Bonbons Espresso Americano.png", "favorite": true }
+      ]
+    },
     "right": {
       "label": "Gear",
       "icon": "⚙️",

@@ -158,11 +158,25 @@
     var c = data.coffee;
     var beans = c.left.items.map(buildCoffeeCard).join('');
     var gear  = c.right.items.map(buildCoffeeCard).join('');
+    /* Snacks sit beside the beans, not under the gear: they are consumables
+       like the beans. On wide screens the two share one row, each column
+       sized by its item count (--n) so every card comes out the same width;
+       narrower screens stack them (see .coffee-top in the CSS). */
+    var snackItems = (c.snacks && c.snacks.items) || [];
+    var beansBlock = '<div class="coffee-top-col" style="--n:' + c.left.items.length + '">' +
+      colGroup(c.left.icon, c.left.label) +
+      '<div class="coffee-beans-grid">' + beans + '</div></div>';
+    var top = snackItems.length
+      ? '<div class="coffee-top">' + beansBlock +
+          '<div class="coffee-top-col" style="--n:' + snackItems.length + '">' +
+            colGroup(c.snacks.icon, c.snacks.label) +
+            '<div class="coffee-beans-grid">' + snackItems.map(buildCoffeeCard).join('') + '</div>' +
+          '</div></div>'
+      : colGroup(c.left.icon, c.left.label) + '<div class="coffee-beans-grid">' + beans + '</div>';
     var disclaimer = c.disclaimer ? sectionFooter(c.disclaimer) : '';
     return '<div class="stash-panel">' +
       secHead(c.heading, c.tag) +
-      colGroup(c.left.icon, c.left.label) +
-      '<div class="coffee-beans-grid">' + beans + '</div>' +
+      top +
       colGroup(c.right.icon, c.right.label) +
       '<div class="gear-grid">' + gear + '</div>' +
       disclaimer +
